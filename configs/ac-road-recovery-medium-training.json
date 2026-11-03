@@ -1,0 +1,70 @@
+{
+  "source_checkpoint": "runs/ac-gpu-parallel-joint-training-20261028-t414/checkpoint.pt",
+  "source_checkpoint_sha256": "02a3486d9d60be227d0b23afc7482500aab45e9afd0fa4531108a62500e8e269",
+  "seed": 862953,
+  "epochs": 64,
+  "chunk_length": 64,
+  "learning_rate": 0.0002,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "action_profile": "normalized_ac_absolute",
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "organ_validity_mode": "gate_only",
+  "pedal_mode": "independent",
+  "episodes_per_batch": null,
+  "readout_gain_parameterization": "log",
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "teacher_label_contract": {
+    "kind": "geometric_recovery_fixed_task",
+    "maximum_speed_kmh": 30.0,
+    "reference_sha256": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4",
+    "track_sha256": "adfbf94c3625c872507b406d02b6e375274901427db77555f7899121a2d1c414",
+    "kinematic_calibration_sha256": "449293c71a648b31bf7ca71841ef95a9014d7b6655aa16af3a464a0a50bbeecd",
+    "teacher_implementation_sha256": "9d0fc7ea310214209d17a23df9682b497924def6548e8a7226ef1ed1d0cda421",
+    "interpretation": "teacher-only geometric desired canonical control at recorded state; execution status recorded separately"
+  },
+  "brake_positive_weight": 1.0,
+  "brake_label_threshold": 0.05,
+  "optimizer_update_scope": "epoch",
+  "evaluation_exclusion": {
+    "directory": "runs\\ac-bundled-yaw-teacher-sealed-20261028-t347\\dataset",
+    "manifest_sha256": "067215f1e72480e6d37f1a48aded0513f329b0dd21ea2c87257ca67e94da71c0",
+    "role": "next recorded track section reserved from gradient updates; not a final circuit test"
+  },
+  "device": "cuda",
+  "training_sparse_backend": "cached_csr_gpu",
+  "deployment_sparse_backend": "cached_csr_cpu",
+  "chunk_validated_training": true,
+  "data_addition": {
+    "dataset": "runs/ac-road-recovery-training-data-20261028-t497",
+    "decisions": 4377,
+    "episodes": 11,
+    "brake_positive_samples": 691,
+    "latest_failed_trial": "runs/ac-road-brake-student-trial-20261028-t492",
+    "new_decisions": 922,
+    "new_brake_positive_samples": 186,
+    "original_actor_arrays_unchanged": true,
+    "labels_executed": false
+  },
+  "resource_experiment": {
+    "scope": "Same source414, exact 11-episode pool, anchor3, brake weight1, 64 epochs and seed; only sensory learning rate differs. t482/483/484 all selected final epoch24, motivating longer fitting.",
+    "fixed_neural_connections": true,
+    "seed": 862953,
+    "readout_gain_learning_rate_unchanged": 0.03
+  },
+  "readout_gain_learning_rate": 0.03,
+  "policy_anchor": {
+    "checkpoint_sha256": "02a3486d9d60be227d0b23afc7482500aab45e9afd0fa4531108a62500e8e269",
+    "episode_sha256": [
+      "6dbb42860d1aabed11ebe59356170a99d7da3414fa903049795b62a02aff7a05"
+    ],
+    "coefficient": 3.0,
+    "source_success_evidence": "runs/ac-120m-student-audit-20261028-t435",
+    "target_semantics": "frozen source414 requests on identical actor arrays; training regularizer, not expert labels"
+  }
+}

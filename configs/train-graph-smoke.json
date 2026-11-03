@@ -1,0 +1,13 @@
+{
+  "purpose": "synthetic graph code smoke; not measured fly connectome",
+  "seed": 1,
+  "policy": "graph",
+  "graph_source": "synthetic_demo",
+  "graph_seed": 7,
+  "torch_threads": 1,
+  "horizon": 64,
+  "updates": 2,
+  "epochs": 2,
+  "learning_rate": 0.0003,
+  "environment": {"mode": "O", "max_steps": 128, "image_size": 32}
+}

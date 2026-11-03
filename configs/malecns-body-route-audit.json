@@ -1,0 +1,15 @@
+{
+  "status": "measured_structural_routes_only_not_functional_port_mapping",
+  "audit_path": "assets/external/malecns-body-route-audit-20261027/audit.json",
+  "paths_path": "assets/external/malecns-body-route-audit-20261027/paths.json",
+  "selectors": "configs/body-route-selectors.json",
+  "source_neurons": 626,
+  "edge_records": 64458,
+  "synapse_counts_sum": 352701,
+  "source_registry": "configs/malecns-recovered-source.json",
+  "artifacts_sha256": {
+    "audit.json": "78ac74a09f46634adec88b31adc351ec9a89875f8fc5fc665cb0542bc067741f",
+    "direct-edges.npz": "44e675e3758ced57e12cf180ef1f330134a34a3b0cfcf5306ac1d5bf3a317d5c",
+    "paths.json": "f9cbf7f40b2a8400491afd2cae58cd3bc5159a8063accf5b3ce71f566a67cfc5"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "flybrain.prospective_pace_recording.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "command": "expert-pace60-100-stop30",
+  "profile": {
+    "schema": "flybrain.pace60_100_stop30_profile.v1",
+    "command": "expert-pace60-100-stop30",
+    "duration_seconds": 30,
+    "hard_speed_kmh": 120,
+    "hard_displacement_m": 1100,
+    "speed_schedule": [
+      {
+        "after_seconds": 0,
+        "speed_hint_kmh": 60
+      },
+      {
+        "after_seconds": 5,
+        "speed_hint_kmh": 100
+      },
+      {
+        "after_seconds": 15,
+        "speed_hint_kmh": 0
+      },
+      {
+        "after_seconds": 23,
+        "speed_hint_kmh": 60
+      }
+    ],
+    "natural_ai_braking_label": false,
+    "brake_intervention": {
+      "api": "physics.setAIStopCounter",
+      "requested_seconds": 8,
+      "after_seconds": 15,
+      "speed_window_kmh": [
+        40,
+        110
+      ],
+      "attempts_maximum": 1,
+      "clear_after_seconds": 23,
+      "clear_requires_actual_moving_brake_and_stop": true
+    }
+  },
+  "actor_world_input": false,
+  "engine_pid": 45604,
+  "generation": "37294426ULL:0.0014905",
+  "raw_camera_qualification": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1711-new-engine-camera-raw-audit",
+  "camera_configuration": "configs/ac-csp-exterior-front-v3-retina.json",
+  "scope": "First actualnewpaceprofile diagnostic. NoexistingDATAroleconversion. Movingnativebrake/highspeed/task/gear mustbeindependentlyaudited; notoptimalracinglabels orstudentcontrol.",
+  "input_sha256": {
+    "scripts/record_pace_task.py": "6153942920800e1c340ff35c2d7cf2f252240f912114aee60ff023474d24c7d2",
+    "scripts/record_ac_engine_ai_probe.py": "d2dac3138d1100666cbcf9e26e035ac5b9c436dcdb9d12115bec638af4d6bd82",
+    "scripts/control_ac_session.py": "2f83c118b6d48144fe6a8848f68e81f17f45806c1473394c5300d9d980027580",
+    "src/flybrain_drive/teacher_pace.py": "446de4524e3a8632164f05f26df6adacb626e9d8ac651723f8e48200a89ea8b8",
+    "src/flybrain_drive/prospective_corpus.py": "84bbd5a4ba9ccccb2c90723c5cf1c708a33ba3411b36780592fee5719143c9b6",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "c984364d016d2d7018285e083f93b35bf0e0751d2b81de6e1a2e77912d2be777",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1711-new-engine-camera-raw-audit/result.json": "09228d49f4a67054f30170db14a393953348e43fc889e4800d1dbd2ffb0696eb",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1708-pace-predeploy-review/result.json": "85a1488bca6ea37f0209356e3bcf34435ab182bb56dcbf866c1ccfa3e3ec6a3f"
+  }
+}

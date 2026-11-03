@@ -1,0 +1,41 @@
+{
+  "scope": "Stationary axes plus explicit zero-based gear buttons; not policy driving",
+  "dll_path": "C:/Program Files/vJoy/x64/vJoyInterface.dll",
+  "dll_sha256": "199316aaefac95118e869c07e7f332ce492dd9a8b6dac5a3ca20b1d5bb5058a1",
+  "device_id": 1,
+  "instance_guid": "C7967020-D214-11F1-8002-444553540000",
+  "profile_path": "C:/Users/jeff4/OneDrive - 엔시스코리아/문서/Assetto Corsa/cfg/controls.ini",
+  "profile_sha256": "4e2cbe378e4d7d3d032051be9ec5c233f3a5e864aff4cd22c9521aa37a26048b",
+  "car_model": "bmw_z4_gt3",
+  "track": "monza",
+  "bindings": [
+    {
+      "channel": "steering",
+      "hid_usage": 48,
+      "inverted": false
+    },
+    {
+      "channel": "throttle",
+      "hid_usage": 49,
+      "inverted": false
+    },
+    {
+      "channel": "brake",
+      "hid_usage": 50,
+      "inverted": false
+    }
+  ],
+  "budgets": {
+    "samples_per_stage": 8,
+    "period_seconds": 0.05,
+    "max_speed_kmh": 2.0
+  },
+  "axis_response_verified": false,
+  "profile_applied": true,
+  "execution_default": "read-only preflight; no device acquisition or axis updates",
+  "gear_buttons_zero_based": {
+    "up": 0,
+    "down": 1
+  },
+  "gear_up_response_evidence": "runs/ac-hotlap-gear-up-20261028-t58d/result.json"
+}

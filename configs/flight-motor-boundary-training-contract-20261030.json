@@ -1,0 +1,110 @@
+{
+  "schema": "flybrain.flight.motor_training_contract.v1",
+  "status": "implemented_label_and_boundary_contract_not_driving_qualified",
+  "boundary_contract": {
+    "schema": "flybrain.flight.learnable_physical_boundary.v1",
+    "source_input_contract": {
+      "schema": "flybrain.flight.physical_maneuver.v1",
+      "fields": [
+        "desired_yaw_left_rad_s",
+        "desired_speed_m_s"
+      ],
+      "maximum_absolute_yaw_rad_s": 2.0,
+      "yaw_scale_rad_s": 1.0,
+      "speed_error_scale_m_s": 10.0,
+      "source": "Vision/body actor estimate; oracle inputs restricted to labelled diagnostics",
+      "external_goal": {
+        "schema": "flybrain.flight.racing_goal.v1",
+        "fields": [
+          "visual_road_following_turn_bias",
+          "external_speed_ceiling_fraction"
+        ],
+        "speed_scale_kmh": 100.0,
+        "maximum_supported_ceiling_kmh": 350.0,
+        "objective": "Minimize valid lap time; accelerate/brake from vision and body feedback",
+        "speed_semantics": "Externally declared ceiling, not a constant desired cruising speed",
+        "teacher_curve_profile_actor_input": false,
+        "checkpoint_compatibility": "New specification/training required; reject speed-goal v2",
+        "biological_claim": "Engineering task boundary, not measured fly tuning"
+      },
+      "yaw_feedback": "Raw yaw enters protected haltere boundary once; no external yaw subtraction",
+      "speed_feedback": "desired_speed minus unsigned measured speed, once at DNg02 boundary",
+      "biological_claim": "Engineering physical-unit command encoding; no measured DN tuning",
+      "checkpoint_compatibility": "New encoding; never reinterpret legacy speed_fraction as m/s",
+      "tensor_precision": "Actor tensors match the circuit floating dtype; preserve original records"
+    },
+    "trainable_scalars": [
+      "left_DNa_gain",
+      "right_DNa_gain",
+      "DNg_error_gain",
+      "DNg_speed_ff"
+    ],
+    "initialization": "Exactly original .2 turn/2 power/.05 tonic command currents",
+    "turn_gain_bounds": [
+      0.05,
+      0.8
+    ],
+    "power_gain_bounds": [
+      0.5,
+      8.0
+    ],
+    "speed_feedforward_logit_bound": 0.5,
+    "unrouted_body_channels": "load8:12/temperature12:16/wheelrotation17:21",
+    "protected_paths": "Original chemical graph/body haltere/motor readout remain frozen",
+    "biological_claim": "Engineering DN-current calibration, not measured fly plasticity"
+  },
+  "episode_schema": "flybrain.flight.motor_training_episode.v1",
+  "loader_requirement": "Verify source manifest SHA and pass its immutable episode record; originalrole must be TRAIN, original fullobservation count/clock/bodymask fingerprint retained. No DEV1465 or anydevelopment/evaluation role conversion.",
+  "supervision_kind": "observed_teacher_applied_axis_imitation",
+  "native_target_is_optimal_control": false,
+  "command_source": [
+    "declared_external_task_and_teacher_yaw_reference",
+    "vision_actor_prediction_and_declared_external_task"
+  ],
+  "required_arrays": [
+    "decision_clock",
+    "native_receipt_clock",
+    "native_packet",
+    "control_native_receipt_clock",
+    "control_native_packet",
+    "body",
+    "body_valid",
+    "physical_command",
+    "racing_goals",
+    "native_control",
+    "native_control_valid"
+  ],
+  "clock_contract": "Original increasingdecision clocks withallintervals<=80ms. Body/nativecontrol samepacket andfirstreceipt; bodyreceivedbeforedecision age<=50ms. Do not redate/shift/dropframes or repairinvalidbody fromoracle.",
+  "target_projection_policies": [
+    "reject_unreachable",
+    "nearest_reachable"
+  ],
+  "default_target_projection_policy": "reject_unreachable",
+  "teacher_native_vs_actuator_domain": "Built-in AI canapplycontinuousnativepedals below.02; keeporiginalnative, computeseparatereachabletarget, flagprojection/unreachable. Rejectsupervisionunlessexplicitnearestprojectiondeclared; no fictitiouscanonicalpreimageforsubfloorrawtarget.",
+  "pedal_preimages": {
+    "zero": [
+      0.0,
+      0.01
+    ],
+    "minimum_positive": {
+      "lower_exclusive": 0.01,
+      "upper_inclusive": 0.02,
+      "training_margin": 0.0001
+    },
+    "above_minimum": "identity"
+  },
+  "native_pedal_floor": 0.02,
+  "native_floor_measurement_tolerance": 0.0001,
+  "coactivation": "Any simultaneouspositive nativegas/brake isoutsideonesignedforwardintent; explicitlymaskbothlongitudinalsupervisioncells only, retainallstateframesandoriginalbodyvalidity.",
+  "steering": "Nativegain1.406249850988388/request reviewedonlysmallrequestabs<=.1 t1671/currentprofile. Maskout-of-domainsteeringlabels; do notlinear-extrapolate.",
+  "loss": "Set-valued applied-axis imitation distance plusseparatelyreportedlatentcodecfeasibilitydistance. Neitherisoptimalcontroltruth. No straight-throughactuatorgradient.",
+  "promotion_requirements": [
+    "NewpreregisteredsourceTRAINphysicaltasks+actualappliednativeaxes+bodyresponses,notstudentlow-speedrequestselftargets",
+    "Excitationbothdesiredyawdirections,positive/zero/negative speederror, movingbrake/coast/acceleration,60to100variablepaces/gears",
+    "Exactstate/time/maskreplay andindependentnewheldoutregions; originalchemicalgraph/bodyhaltere/motorreadoutbitwiseunchanged",
+    "Functionalremovalcomparisons andactualnativeapplication/plantresponse/loads,notjustrequestdispatch",
+    "No visual/student/racingpromotionuntiloriginalmechanismandvalidlap/line/laptimegatesactuallypass"
+  ],
+  "tiny_component_data": "t1689 goal1m/s fixedcomponentinjection is initparity/clock/gradientreference only; it cannotidentifyhighspeedplant,optimalbraking,grip/tyres,ornativephysicalyawtracking.",
+  "retained_full_objective": "Flycompoundeye/motionvision+flightderivedbalance/motorcircuit, carvirtualbodytilt/rotation/load/tyre feedback,steer/accel/brake/gears/setupadaptation,60to100/variablepaces,validlapsandfastracingline/laptime."
+}

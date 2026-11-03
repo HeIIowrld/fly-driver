@@ -1,0 +1,28 @@
+{
+  "status": "fixed_checkpoint_repeat_completed",
+  "summary_path": "runs/routed-repeat-20261027/summary.json",
+  "protocol": "configs/routed-fixed-checkpoint-repeat.json",
+  "completion": "30/30",
+  "batches": [
+    {
+      "batch": 1,
+      "completion": "10/10",
+      "criterion_passed": true,
+      "mean_case_lateral_rms_m": 0.13714483355695778
+    },
+    {
+      "batch": 2,
+      "completion": "10/10",
+      "criterion_passed": true,
+      "mean_case_lateral_rms_m": 0.10004490181457484
+    },
+    {
+      "batch": 3,
+      "completion": "10/10",
+      "criterion_passed": true,
+      "mean_case_lateral_rms_m": 0.09737558083028292
+    }
+  ],
+  "three_training_seed_gate_passed": false,
+  "AC_driving": false
+}

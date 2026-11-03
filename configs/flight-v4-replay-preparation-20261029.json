@@ -1,0 +1,19 @@
+{
+  "scope": "Complete preassigned TRAIN/development sensory replay only; fixed author weights, no fitting or vehicle actuation",
+  "collection": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1412-teacher-corpus-v4",
+  "audits": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1415-v4-prefix-audits",
+  "collection_pid": 46660,
+  "audit_pid": 23292,
+  "source_snapshot": "C:/Users/jeff4/AppData/Local/flybrain/execution-snapshots/20261029-t1406",
+  "base_python": "C:/Users/jeff4/AppData/Local/Programs/Python/Python312/python.exe",
+  "gpu_site": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-env/Lib/site-packages",
+  "model": "assets/external/flyvis-pretrained-20261029/unpacked/results/flow/0000/000",
+  "cache": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-data-windows-v1",
+  "camera_config": "configs/ac-csp-yaw-retina.json",
+  "body_contract": "configs/ac-virtual-body-v1.json",
+  "gpu_policy": "One owned GPU replay/audit child at a time, only after collection is actually terminal; do not terminate foreign GPU users",
+  "history_policy": "Every observation, original clock and held interval; one initialization per original lease, four independent author states; no slicing or hidden neural resets",
+  "roles": "Skip evaluation before opening any recording/receipt/array. Do not change roles or reclassify failed recordings.",
+  "failure_policy": "Keep original failures; never restart child on timeout. A terminal incomplete collection can prepare only its audited completed prefix, explicitly marked incomplete.",
+  "goal_achieved": false
+}

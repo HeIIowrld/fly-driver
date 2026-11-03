@@ -1,0 +1,60 @@
+{
+  "schema": "flybrain.flyvis.component_probe.v1",
+  "source_commit": "0a69fa2fc8e1bfe1d837d722c252ab5f5d6fcbfa",
+  "model": "flow/0000/000",
+  "model_selection": "first published network before any response inspection; no cherry picking",
+  "dt": 0.005,
+  "flash": {
+    "dynamic_range": [
+      0,
+      1
+    ],
+    "t_pre": 1,
+    "t_stim": 1,
+    "radius": [
+      -1,
+      6
+    ],
+    "alternations": [
+      0,
+      1,
+      0
+    ]
+  },
+  "moving_edge": {
+    "offsets": [
+      -10,
+      11
+    ],
+    "intensities": [
+      0,
+      1
+    ],
+    "speeds": [
+      19
+    ],
+    "height": 80,
+    "t_pre": 1,
+    "t_post": 1,
+    "angles": [
+      0,
+      90,
+      180,
+      270
+    ]
+  },
+  "readout": "central cells, full sequence; no new learned decoder",
+  "response_expectations": {
+    "ON_T4": "positive bright-vs-dark preference on moving edges",
+    "OFF_T5": "negative bright-vs-dark preference on moving edges",
+    "direction": "compare cardinal preferred direction with author groundtruth_utils direction table; cardinal pilot is not full angular tuning reproduction"
+  },
+  "technical_gates": [
+    "strict original checkpoint load",
+    "finite responses",
+    "no optimizer updates",
+    "same author network equations and connectome",
+    "independent stimulus resets only, no within-episode resets"
+  ],
+  "completion_claim": "Component execution and selected response checks only; no AC integration or full physiological replication claim"
+}

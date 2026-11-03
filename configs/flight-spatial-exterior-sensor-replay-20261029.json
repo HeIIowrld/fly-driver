@@ -1,0 +1,32 @@
+{
+  "schema": "flybrain.spatial_flight_sensor_replay.v1",
+  "collection": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1633-spatial-native-corrected-completion",
+  "audits": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1634-spatial-complete-raw-audit",
+  "cpu_python": "C:/Users/jeff4/AppData/Local/flybrain-review-20261027/venv/Scripts/python.exe",
+  "gpu_python": "C:/Users/jeff4/AppData/Local/Programs/Python/Python312/python.exe",
+  "gpu_site": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-env/Lib/site-packages",
+  "model_dir": "assets/external/flyvis-pretrained-20261029/unpacked/results/flow/0000/000",
+  "cache_root": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-data-windows-v1",
+  "body_contract": "configs/ac-virtual-navigation-body-v2.json",
+  "camera_config": "configs/ac-csp-exterior-front-v3-retina.json",
+  "types": [
+    "L1",
+    "L2",
+    "Mi1",
+    "Tm3",
+    "Tm1",
+    "Tm9"
+  ],
+  "source_sha256": {
+    "scripts/replay_spatial_flight_sensors.py": "8c5614d4c91e0747b61e50627b67c18d3560ae70d13c4b4cb2c04b8e2edb7437",
+    "scripts/replay_virtual_body.py": "26d7c5e9db77fecca50653943105b9939010390e81fc8b10f9db1dda588aeff6",
+    "scripts/replay_flyvis_cameras.py": "855a17565d43cb11f9e8b824e47d4a210dffb72886abc0b5720a18571c07a6aa",
+    "src/flybrain_drive/virtual_body.py": "ab310cfcf3b1d826d22d88e2fbee3a10be4bff5ecf62dc7e5e010d425de6b065",
+    "src/flybrain_drive/virtual_navigation_body.py": "e3bff2c8b0c3ebec3ffaf9a0bc25aa6bc626acb018b47411767f91fd1397e00e",
+    "configs/ac-virtual-navigation-body-v2.json": "5cf92b9af473092c8baf2b56783f826c41b93e77ab876795276fc07943c1ed50",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8"
+  },
+  "author_weights_frozen": true,
+  "optimizer_updates": 0,
+  "student_deployed": false
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "flybrain.actor_cadence_trace.v1",
+  "nominal_actor_seconds": 0.03,
+  "actor_budget_starts": "before_child_poll_and_status",
+  "camera_period_seconds": 0.04,
+  "candidate_wait_seconds": 0.04,
+  "cached_candidate_age_seconds": 0.11,
+  "maximum_camera_age_seconds": 0.15,
+  "maximum_actor_interval_seconds": 0.08,
+  "maximum_heartbeat_age_seconds": 2.0,
+  "maximum_iterations": 8192,
+  "records_per_iteration": 24,
+  "raw_trace_capacity_bytes": 4718592,
+  "trace_counter_bytes": 16384,
+  "original_budget_clock_bytes": 65536,
+  "requested_sleep_seconds_bytes": 65536,
+  "original_decision_clock_bytes": 16384,
+  "original_clock_values_unchanged": true,
+  "scope": "actor_timing_and_trace_only_no_policy_or_performance_claim"
+}

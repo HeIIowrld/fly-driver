@@ -1,0 +1,11 @@
+{
+  "seed": 863006,
+  "sources": [
+    {
+      "recording": "runs/ac-shared-lateral-recovery-recording-20261029-t935",
+      "targets": "runs/ac-shared-lateral-recovery-targets-20261029-t937",
+      "raw_audit": "runs/ac-shared-lateral-recovery-raw-audit-20261029-t936"
+    }
+  ],
+  "scope": "Actual shared-camera AI15kmh off-centre stationary continuation at failed student location; original separate episode, not preserved student neural history. All zero outside tyres at lease entry; not the special one-tyre recovery preset."
+}

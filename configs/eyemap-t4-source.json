@@ -1,0 +1,41 @@
+{
+  "status": "axes_connected_to_live_observations_and_development_routed_driver_4_of_4",
+  "geometry_path": "assets/external/eyemap-t4-20261027/eye-axes.npz",
+  "geometry_sha256": "f744085d1d66f7a624cb87754a362560d6782fc7c2ace4507663c779924c6dc6",
+  "upstream_commit": "99d2a43123db636cedb55af9ff31a59657e7d17e",
+  "paper": "https://doi.org/10.1038/s41586-025-09276-5",
+  "repository": "https://github.com/reiserlab/eyemap_T4",
+  "left_axes": 857,
+  "right_axes": 852,
+  "MaleCNS_retinal_neurons_registered": 0,
+  "acceptance_sigma_measured": false,
+  "current_driver_uses_this_geometry": true,
+  "source_field_audit": "runs/anatomical-eye-import-20261027/runs/anatomical-eye-field-t8/audit.json",
+  "field_coverage_under_sigma_1deg_assumption": {
+    "left": {
+      "axes": 857,
+      "observed": 460,
+      "observed_fraction": 0.5367561260210035,
+      "eye_map_sha256": "2494777f6f92ac94cf02de53456a562961a8423cfb710440ddb8fe21e57a3835"
+    },
+    "right": {
+      "axes": 852,
+      "observed": 446,
+      "observed_fraction": 0.5234741784037559,
+      "eye_map_sha256": "6e64127a63f5984453465d18902336b00a51ff8a6a2b3768883ebf6f55de7d6a"
+    }
+  },
+  "files_sha256": {
+    "eye-axes.json": "49b3339ac50645e8f8a1d8d82001b23056b05c221defc4cfa93f0a12139b1fb1",
+    "eye-axes.npz": "f744085d1d66f7a624cb87754a362560d6782fc7c2ace4507663c779924c6dc6",
+    "upstream/Fig_0.R": "a3711406f372bd7131d56ccf9b8eac444780eb051bf34bac38f954462c84bdab",
+    "upstream/LICENSE": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809",
+    "upstream/proc_uCT.R": "e25c2bff1037bb0735b2c6ff850c5033c11c67a1164e26ce73bf7472c3025bb3",
+    "upstream/README.md": "92c66aae791f2ed597b5f507d874a768044c8e764bf3a9529f98602cf176c93c",
+    "upstream/data/microCT/20240701.RData": "8408447f8c5798fbc6d751de79ef4983d08c342a500c9a55b2a3b4b38d92deec",
+    "upstream/data/microCT/20240701_position/cone.csv": "ec2df0ec61c2ac9c1a43b483c4009675d51a0125c70e4aa8eda604a336fdcd23",
+    "upstream/data/microCT/20240701_position/lens.csv": "6cc2e95c593e95ecee361a034e0888047819f3f8285d6cb7ce3f077dd11c369a"
+  },
+  "driving_evidence": "docs/anatomical-eye-driving-20261027.md",
+  "synthetic_reference_preserved": true
+}

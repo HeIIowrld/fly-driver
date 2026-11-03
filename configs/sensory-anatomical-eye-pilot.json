@@ -1,0 +1,157 @@
+{
+  "purpose": "Reconstructed anatomical optical-axis pilot; partial camera coverage, assumed acceptance and virtual mount; not full fly or AC",
+  "seed": 101101,
+  "device": "cpu",
+  "torch_threads": 1,
+  "policy": "gru",
+  "fixed_speed_mps": 1.5,
+  "environment": {
+    "mode": "V",
+    "actuation_mode": "legacy",
+    "control_dt": 0.01,
+    "physics_dt": 0.001,
+    "camera_hz": 25,
+    "max_steps": 8000,
+    "vehicle": {
+      "max_speed": 4.0
+    },
+    "road": {
+      "length": 100,
+      "width": 6,
+      "flattened": true,
+      "turn_amplitude": 2,
+      "turn_period": 70
+    },
+    "camera": {
+      "fovy": 120,
+      "source_size": 96,
+      "forward": 0.95,
+      "pitch_degrees": -15,
+      "near_m": 0.03,
+      "far_m": 250
+    },
+    "road_visual": "lane_surface"
+  },
+  "sensory_preprocessing": {
+    "eye": {
+      "geometry_path": "assets/external/eyemap-t4-20261027/eye-axes.npz",
+      "sigma_degrees": 1,
+      "head_to_body_rotation": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    "rotation_scale": 5,
+    "specific_force_scale": 20,
+    "wheel_speed_scale": 50,
+    "max_sample_age": 0.15,
+    "visual_encoder": "global_points"
+  },
+  "behavior_cloning": {
+    "data_seed": 105101,
+    "learning_rate": 0.0005,
+    "epochs": 32,
+    "chunk_length": 128,
+    "batching": "parallel_episodes",
+    "episodes_per_batch": 6,
+    "episodes": [
+      {
+        "start_x": 3,
+        "steps": 8000
+      },
+      {
+        "start_x": 3,
+        "steps": 400,
+        "lateral_offset": -0.5,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 3,
+        "steps": 400,
+        "lateral_offset": 0.5,
+        "heading_offset_degrees": 4
+      },
+      {
+        "start_x": 25,
+        "steps": 400,
+        "lateral_offset": -0.5,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 25,
+        "steps": 400,
+        "lateral_offset": 0.5,
+        "heading_offset_degrees": 4
+      },
+      {
+        "start_x": 50,
+        "steps": 400,
+        "lateral_offset": -0.5,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 50,
+        "steps": 400,
+        "lateral_offset": 0.5,
+        "heading_offset_degrees": 4
+      },
+      {
+        "start_x": 75,
+        "steps": 400,
+        "lateral_offset": -0.5,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 75,
+        "steps": 400,
+        "lateral_offset": 0.5,
+        "heading_offset_degrees": 4
+      }
+    ],
+    "dagger_rounds": []
+  },
+  "evaluation": {
+    "role": "development_pilot_not_locked_final_test",
+    "steps": 8000,
+    "cases": [
+      {
+        "name": "nominal_start",
+        "seed": 102101,
+        "start_x": 3
+      },
+      {
+        "name": "midcourse_start",
+        "seed": 102102,
+        "start_x": 35
+      },
+      {
+        "name": "recovery_left",
+        "seed": 102103,
+        "start_x": 3,
+        "lateral_offset": 0.7,
+        "heading_offset_degrees": 5
+      },
+      {
+        "name": "recovery_right",
+        "seed": 102104,
+        "start_x": 3,
+        "lateral_offset": -0.7,
+        "heading_offset_degrees": -5
+      }
+    ]
+  },
+  "evaluate_vision_missing": true
+}

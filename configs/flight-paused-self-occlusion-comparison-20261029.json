@@ -1,0 +1,21 @@
+{
+  "schema": "flybrain.paused.self_occlusion_comparison.v1",
+  "frames": 1,
+  "period_seconds": 0.1,
+  "deadline_seconds": 4,
+  "static_pre_seconds": 0.6,
+  "motion_seconds": 1.2,
+  "conditions": [
+    {
+      "index": 0,
+      "scene": "full_scene",
+      "yaw_left_rad_s": 0.0
+    },
+    {
+      "index": 1,
+      "scene": "track_only",
+      "yaw_left_rad_s": 0.0
+    }
+  ],
+  "scope": "Paired static source comparison; no camera yaw, no physical actuation, not actor-admissible; track-only excludes all cars, not just ego"
+}

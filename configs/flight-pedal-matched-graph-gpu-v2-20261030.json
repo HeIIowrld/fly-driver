@@ -1,0 +1,123 @@
+{
+  "schema": "flybrain.flight.matched_original_graph_pedal_gradient.v1",
+  "created_utc": "2026-10-29T23:16:17.005888+00:00",
+  "fit_allowed": false,
+  "optimizer_updates": 0,
+  "teacher_data_used": false,
+  "conditions_goal_body_kmh": [
+    [
+      0,
+      100
+    ],
+    [
+      60,
+      100
+    ],
+    [
+      100,
+      60
+    ],
+    [
+      60,
+      20
+    ]
+  ],
+  "diagnostic_pedal_target_basis": [
+    [
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0
+    ]
+  ],
+  "quiet_steps": 100,
+  "quiet_dt_seconds": 0.01,
+  "endpoint_seconds": 0.05,
+  "body_valid_indices": [
+    0,
+    1,
+    4,
+    16
+  ],
+  "cpu_threads": 1,
+  "seed": 18201820,
+  "wall_budget_seconds": 180,
+  "expected_torch": "2.9.1+rocm7.2.1",
+  "expected_device": "AMD Radeon RX 9070 XT",
+  "expected_hip": "7.2.53211-158bd99533",
+  "spec": "configs/flight-circuit-separated-v5-20261029.json",
+  "checkpoint": "runs/flight-separated-command-probe-20261029-t1081/checkpoint.pt",
+  "cpu_reference": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1734-cpu-mn-anchor-qualification/reference.json",
+  "cpu_readout": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1741-matched-gpu-mn-qualification/cpu-readout-state.json",
+  "original_cpu_result": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1820-original-graph-pedal-gradient/actual/result.json",
+  "gates": {
+    "state_absolute": 1e-06,
+    "output_absolute": 0.0001,
+    "gradient_absolute": 1e-05,
+    "gradient_relative": 0.001
+  },
+  "gradient_rule": "EVERY cell abs(GPU-CPU)<=1e-5+1e-3*abs(CPU), including CPUzero; no widening",
+  "rank_rule": "Same1820 float64SVD on float32gradients, threshold max(1e-12,max(matrix.shape)*float32epsilon*smax)",
+  "compare_all100quiet_states_and_endpoint_states": true,
+  "GPU_actual_quiet_hash_equals_CPU_not_required": true,
+  "GPU_quiet_encoded_pedals_required_zero": true,
+  "CPU_reference_installation": "Each of2same original models computes actual100x.01 CPUquiet before CPU-only install3privatebuffers with exactCPUhash. GPUroute then changes executionbackend selector CPU->cached_csr_gpu and moves buffers toGPU; no GPUquiet hash is substituted withCPUhash and no reanchor.",
+  "preparatory_CPU_quiet_initializations": 2,
+  "diagnostic_cases": "Exactly4fixed CPU+GPU pairs, each freshinitialstate->100quiet->50ms continuousstep. CPU staging quiet is initialization proof, not a new step condition.",
+  "original_graph_autograd_required": "_FixedCSRMessageBackward plus actual GPU CSR and transpose device metadata; graph/body/readout/weights frozen, only2DNg active",
+  "all_conditions_basis_clamps_retained": true,
+  "no_intermediate_reset_no_anchor_selection": true,
+  "no_large_payload_copies": true,
+  "cleanup": "Release ownedPython tensor/modelrefs, synchronize and report actual allocated/reserved bytes. Does not claim totaldeviceutilization0; original process end requires separate tool/OS receipt afterscriptreturn.",
+  "source_payload_reference_hashes_reused_from_1820": true,
+  "large_payloads_not_opened_or_rehashed_during_preparation": true,
+  "all_inputs_rehashed_before_any_actual_model_execution": true,
+  "input_sha256": {
+    "scripts/qualify_flight_pedal_graph_v2.py": "15222dcf38e004193b895d8c6fa03c45832b31bf610d9b17b4c33b8e1adcb9d2",
+    "src/flybrain_drive/__init__.py": "76dae33de86681918c1748c1ed7049913d49d24122c0ba3685ff99a81c15d7d4",
+    "src/flybrain_drive/episode_storage.py": "e53dd663b7781a8f2dfc6fa1ba7ff757f78424480e700882f62039292702f63c",
+    "src/flybrain_drive/flight_circuit.py": "ea8c6ce537c3ea41f23ce192a932ea081572eeb181f368acb9e83fd92f715eca",
+    "src/flybrain_drive/flight_commands.py": "8339875605819e610234f695b6665e44d9d1bc3c3b6c8e516a06787a90615e95",
+    "src/flybrain_drive/flight_embodiment.py": "c0298e4b1a86cb94d4746f5338e4c4ea65172fe9d68a1a37fef72250a670c829",
+    "src/flybrain_drive/flight_learning.py": "eb1198d2ac9cdda9d8c7cdfd2ffea23e811d886cf17d606776bfbc009a3d1e7e",
+    "src/flybrain_drive/flight_maneuver.py": "6219f0b1dc8b7a330f5dd31476acf1ed7b836f42085307932082437a524f9e92",
+    "src/flybrain_drive/flight_maneuver_learning.py": "e75f1af1f21d3c4d101378132f6dccd78c00927d2566ae6dc1c6920883ba165f",
+    "src/flybrain_drive/flight_pedal_learning_v2.py": "90ebc3cdd7098d0ef8d2f03e8fa61980a1ac05d57b27e17b1e35bd45ec2d4b07",
+    "src/flybrain_drive/graph.py": "33cf5986625481109782cafbd0f552f2c4da011741c7f4daedf597b50c47ad7f",
+    "src/flybrain_drive/local_retinal_circuit.py": "95e33655e8b0aaa5a513518d634613ba01a8bc08e11592e1a19a873802117326",
+    "src/flybrain_drive/modality_ports.py": "f0644a2cec61f7f23db661c4f480949677edbd0d83101ff48f1ac23e361573e5",
+    "src/flybrain_drive/racing_goal.py": "1e90d9df76b1a070ff9058ec5db8a58232cc9b0aab16231581d6bab7e7c7ef3d",
+    "src/flybrain_drive/sensor_contract.py": "a5fb8297f0a7b5d6b66f5df2bf7ded4458bf57c3713b8ca5cd4deb6560f9f43c",
+    "src/flybrain_drive/sensory_policy.py": "7f4288d207180cb708504de1593a1f9f59b2d248b7c57e9292f2bf930b0020f4",
+    "src/flybrain_drive/vehicle_circuit.py": "cf30f028307d2c4ed795a73d531ae0e17cfa9715ea7a233e669da8ea21ba30d5",
+    "tests/test_flight_pedal_graph_qualification.py": "8fc4e5659ba73e6f02ad12c40ea34f0d7026a9bc4b3445c62cd149fbb752e54d",
+    "configs/flight-circuit-separated-v5-20261029.json": "521d1641a4a7ef50eb95f19ed9ad5380faf8a22ea83400d5aefbe2963d70c33f",
+    "runs\\fly-flight-routes-20261029-t1023\\graph.npz": "25812dbdbf681e3470c1717875b56991eebcdc9086e6afb0096fc0390776931b",
+    "runs\\fly-flight-routes-20261029-t1023\\selected-annotations.json": "624536f29aa292f01555e8a7ebdd17bd79321e4f54203d539a6eb2b62e392a54",
+    "runs\\fly-flight-routes-20261029-t1023\\boundary.json": "dcd52e112d1c625f72437650d1d643ea31090e10bbe388a8c469b9a3c815551c",
+    "runs/fly-flight-routes-audit-20261029-t1024/neurotransmitter-annotations.json": "783629bdbcdef5ee733c5ae31a697291641e8ec4c748452e96ae7afe75b71cbd",
+    "runs/ac-flyvis-continuous-camera-replay-20261029-t1029/retina-registration.npz": "f9d546ac4d87c5d2f14ac869a39b276f1ad0af38bf46a52f26f730ec04b22e13",
+    "runs/flight-separated-command-probe-20261029-t1081/checkpoint.pt": "01a7a68372b76c68336f0403da48702a7f2f6f181f3e2567aecc6e9bd0e43116",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1734-cpu-mn-anchor-qualification/reference.json": "97fc57dff725808150972f4555a2b83d33a2fd096b90c30427cb668f89130175",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1741-matched-gpu-mn-qualification/cpu-readout-state.json": "1647d180c7e66b1f98ac6902b729342cbacf5f598cf98580d71d192ae88dd032",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1705-motor-boundary-learning-qualification-v3/executed-program.py": "f2b03bdfa1e31064c838f43de9b4376b20897fb0478931362293a83bafc9ac34",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1734-cpu-mn-anchor-qualification/executed-program.py": "a8a38bf0e5b8335d1e1d36bf736b478ab1c2172fd49f376988722986845d82e3",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1734-cpu-mn-anchor-qualification/registration-before-trajectory.json": "0cf4d37b0951b2818b3e105943da49eb92e4f6017d378abee2024f79178a3eb7",
+    "configs/flight-pedal-v2-component-training-contract-20261030.json": "ea6404e700d944603090fa50a622e76e3ef1ae2da2a157b8b2f82c6bf59e9e39",
+    "scripts/qualify_flight_pedal_graph_gpu_v2.py": "5a960f6fd61789f1ab93cfaba3ce433e85d5f900325edaa78fa3038e7c1779ee",
+    "tests/test_flight_pedal_graph_gpu_plan.py": "3fccc5cdf39ae97843ccdec1e72ce67c877eee16cc932f9ee6ef9abb878640e6",
+    "configs/flight-pedal-original-graph-cpu-20261030.json": "d53399278ce50976fbef938a3a5154eef1efd025d72ac911b93af7319ff7b262",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1820-original-graph-pedal-gradient/actual/result.json": "6254a1d178183a83da17d5d4604bc5d46f729e7408b8e0184b1cfc0b25faaf73",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1820-original-graph-pedal-gradient/actual/receipt.json": "50ffd23538136a627cd7b69ef2ab7d36d566a00da5780736ece11293fb989b5d",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1820-original-graph-pedal-gradient/actual/executed-program.py": "15222dcf38e004193b895d8c6fa03c45832b31bf610d9b17b4c33b8e1adcb9d2",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1741-matched-gpu-mn-qualification/result.json": "dbd21224f167915614c4317b196972d48aaa046dfc9ec8a139a764fd8a153800",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1741-matched-gpu-mn-qualification/numerical-comparison.json": "de03dc974b166aab56b6efed8697e6053a986e5535618bba098db7771a01906a",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1741-matched-gpu-mn-qualification/executed-program.py": "22d7016fa2e1bc7e151aabb89d4e53a1767d601ad431a815422db0dfe4bc12f6",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1741-matched-gpu-mn-qualification/matched-reference.json": "4b95753a56444b44246fa320a8750215f4e11befb8cbe636748479bd6d5557d0"
+  },
+  "revision": 2,
+  "prior_plan_sha256": "05397356da6b9b6ac318a776c56405eca2ae312bd8aef890d0c85bf071b331ec",
+  "revision_reason": "Require exact CPU loss_basis scalars against saved1820 in addition to state/raw/MN/canonical/encoded/lossgradients/pedalJacobian"
+}

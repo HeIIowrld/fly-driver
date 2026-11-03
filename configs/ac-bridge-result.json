@@ -1,0 +1,39 @@
+{
+  "updated_at": "2026-10-27",
+  "scope": "read-only protocol and synthetic interoperability; no game runtime",
+  "source_commit": "ef0fa502bdd257fc2affad9361c02b3dbdfe1632",
+  "source_registry": "assets/external/ac-gym-interface-20261027/source.json",
+  "report": "docs/ac-bridge-20261027.md",
+  "deployment_instructions": "integrations/ac/README.md",
+  "game_runtime_verified": false,
+  "actor_stream_created": false,
+  "actuator_messages_sent": 0,
+  "collection": {
+    "path": "runs/ac-bridge-20261027",
+    "sha256_verified_files": 198,
+    "current_python_sources_matching_tested_snapshot": 119
+  },
+  "windows": {
+    "selected_tests_passed": 22,
+    "udp_test_excluded_due_known_timeout": 1,
+    "tcp_fixture_cli_recorded_samples": 20,
+    "native_ac_mappings": "absent; not created by probe",
+    "udp_python_and_dotnet": "TimeoutError; cause unresolved; security settings unchanged"
+  },
+  "wsl": {
+    "full_tests_passed": 184,
+    "windows_native_tests_skipped": 2,
+    "ruff_passed": true,
+    "udp_fixture_packets_replayed": 3,
+    "tcp_fixture_cli_recorded_samples": 20
+  },
+  "unverified": [
+    "actual AC SDK and embedded Python runtime",
+    "native units, axes and steering angle meaning",
+    "simulation clock including pause, reset, replay and lap boundaries",
+    "camera projection and exposure identity/time",
+    "request versus applied actuator acknowledgement",
+    "actual circuit driving, speed and braking"
+  ],
+  "next_action": "record 100 raw sensor samples on installed AC PC, then calibrate and seal eye/body/control contracts"
+}

@@ -1,0 +1,177 @@
+{
+  "schema": "flybrain.ac.stationary_pedal_transfer.v1",
+  "calibration": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\result.json",
+  "program": [
+    [
+      "brake_1.0",
+      0.0,
+      0.0,
+      1.0,
+      0.2
+    ],
+    [
+      "brake_0.5",
+      0.0,
+      0.0,
+      0.5,
+      0.2
+    ],
+    [
+      "brake_0.1",
+      0.0,
+      0.0,
+      0.1,
+      0.2
+    ],
+    [
+      "brake_0.05",
+      0.0,
+      0.0,
+      0.05,
+      0.2
+    ],
+    [
+      "brake_0.03",
+      0.0,
+      0.0,
+      0.03,
+      0.2
+    ],
+    [
+      "brake_0.025",
+      0.0,
+      0.0,
+      0.025,
+      0.2
+    ],
+    [
+      "brake_0.02",
+      0.0,
+      0.0,
+      0.02,
+      0.2
+    ],
+    [
+      "brake_0.015",
+      0.0,
+      0.0,
+      0.015,
+      0.2
+    ],
+    [
+      "brake_0.01",
+      0.0,
+      0.0,
+      0.01,
+      0.2
+    ],
+    [
+      "brake_0.005",
+      0.0,
+      0.0,
+      0.005,
+      0.2
+    ],
+    [
+      "brake_0.0",
+      0.0,
+      0.0,
+      0.0,
+      0.2
+    ],
+    [
+      "brake_0.03",
+      0.0,
+      0.0,
+      0.03,
+      0.2
+    ],
+    [
+      "brake_0.1",
+      0.0,
+      0.0,
+      0.1,
+      0.2
+    ],
+    [
+      "brake_1.0",
+      0.0,
+      0.0,
+      1.0,
+      0.2
+    ],
+    [
+      "gas_0.005",
+      0.0,
+      0.005,
+      1.0,
+      0.2
+    ],
+    [
+      "gas_0.01",
+      0.0,
+      0.01,
+      1.0,
+      0.2
+    ],
+    [
+      "gas_0.02",
+      0.0,
+      0.02,
+      1.0,
+      0.2
+    ],
+    [
+      "gas_0.03",
+      0.0,
+      0.03,
+      1.0,
+      0.2
+    ],
+    [
+      "gas_0.05",
+      0.0,
+      0.05,
+      1.0,
+      0.2
+    ],
+    [
+      "gas_0.1",
+      0.0,
+      0.1,
+      1.0,
+      0.2
+    ],
+    [
+      "gas_0.15",
+      0.0,
+      0.15,
+      1.0,
+      0.2
+    ]
+  ],
+  "scope": "Stationary neutral-gear throttle/brake transfer calibration. Single downshift from1st to neutral only if needed; all original observations retained. No model/vision/road following.",
+  "hard_speed_kmh": 12,
+  "hard_displacement_m": 8,
+  "request_limits": {
+    "steering_abs": 0.05,
+    "throttle": 0.15,
+    "brake": 1.0
+  },
+  "final_brake_deadline_seconds": 3,
+  "world_position": "Privileged displacement safety bound/diagnostics only; never road following or actor input",
+  "source_date": "2026-10-30",
+  "model_action_requests": 0,
+  "actor_input": false,
+  "input_sha256": {
+    "scripts/probe_ac_maneuver_plant.py": "b5fd5a4a792f1ede8390535d119fe3e7e57f027770015ee795ddc917e0423580",
+    "scripts/calibrate_ac_sdk_steering.py": "7fee785fb105dffc58e35c2f73bcfd9bb44f1c7b76d7d0253913a96e323805a2",
+    "src/flybrain_drive/ac_vjoy.py": "d5d9fb74300bb502bc3faa183f2492ed70977e5802106823a46b91e6f14e7be4",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "src/flybrain_drive/ac_teacher_status.py": "07668a3fadd1e29734388ea9ea71909c055685d8011b0c9b02ea356e1d414f83",
+    "configs/ac-axis-probe.json": "1df2d1fc5dfe767c93eacb33b429561641c809821f3eb29d291ea44ac268158c",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\result.json": "035f68ce1c7933c3d32d48e007255a7e93734e808db7ea676a9f60d4f215a9ae",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\samples.jsonl": "56710bb4528a225830102083ca6d26493309d714f5a27169d87ba522d1739a05"
+  },
+  "mode": "stationary_pedal_transfer"
+}

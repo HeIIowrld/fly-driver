@@ -1,0 +1,19 @@
+{
+  "schema": "flybrain.flight.moving_body_probe.v1",
+  "inference_config": "configs/flight-stream-batched-v1-20261029.json",
+  "inference_verification": "runs/flight-stream-batched-replay-20261029-t1132",
+  "axis_config": "configs/ac-axis-probe.json",
+  "stationary_response_audit": "runs/flight-stationary-steering-audit-20261029-t1150",
+  "period_seconds": 0.04,
+  "maximum_speed_kmh": 10,
+  "maximum_displacement_m": 20,
+  "stages": [
+    {"name": "stationary_prefix", "task_turn_bias": 0, "samples": 25},
+    {"name": "launch", "task_turn_bias": 0, "samples": 75},
+    {"name": "left_task_command", "task_turn_bias": 0.5, "samples": 25},
+    {"name": "right_task_command", "task_turn_bias": -0.5, "samples": 25},
+    {"name": "return_to_visual", "task_turn_bias": 0, "samples": 25},
+    {"name": "braking", "task_turn_bias": 0, "samples": 50}
+  ],
+  "scope": "Fixed low-speed pedal harness, flight steering only; continuous original stationary/launch/turn/brake neural history. Diagnostic world position/gear/tyres guard only, never actor input. Not learned navigation or learned longitudinal driving."
+}

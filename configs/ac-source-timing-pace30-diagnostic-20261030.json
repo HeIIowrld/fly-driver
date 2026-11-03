@@ -1,0 +1,170 @@
+{
+  "schema": "flybrain.source_timing_pace30_diagnostic.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "profile": {
+    "schema": "flybrain.pace60_100_stop30_profile.v1",
+    "command": "expert-pace60-100-stop30",
+    "duration_seconds": 30,
+    "hard_speed_kmh": 120,
+    "hard_displacement_m": 1100,
+    "speed_schedule": [
+      {
+        "after_seconds": 0,
+        "speed_hint_kmh": 60
+      },
+      {
+        "after_seconds": 5,
+        "speed_hint_kmh": 100
+      },
+      {
+        "after_seconds": 15,
+        "speed_hint_kmh": 0
+      },
+      {
+        "after_seconds": 23,
+        "speed_hint_kmh": 60
+      }
+    ],
+    "natural_ai_braking_label": false,
+    "brake_intervention": {
+      "api": "physics.setAIStopCounter",
+      "requested_seconds": 8,
+      "after_seconds": 15,
+      "speed_window_kmh": [
+        40,
+        110
+      ],
+      "attempts_maximum": 1,
+      "clear_after_seconds": 23,
+      "clear_requires_actual_moving_brake_and_stop": true
+    }
+  },
+  "source_timing_v1": true,
+  "expected_engine_pid": 45604,
+  "expected_generation": "37294426ULL:0.0013415",
+  "input_sha256": {
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "b6d87d2708a13b37e858bf6cfe87f362540bf645514223e18e2c870fbd66e1f7",
+    "src/flybrain_drive/ac_csp_vision.py": "7a10bc801e0aea492254476308459f532c900f50f50bb41b46f1f393dbfe13b9",
+    "scripts/record_ac_engine_ai_probe.py": "3f327e62788ff05e1dd893cc8c53c4b33d84c48b11cbc05725c95cec36ec656c",
+    "scripts/control_ac_session.py": "2f83c118b6d48144fe6a8848f68e81f17f45806c1473394c5300d9d980027580",
+    "src/flybrain_drive/teacher_pace.py": "707cd2bca2878d8e04a398fc11b85470c1830ceed2bee79af547a90712dd1a4f",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1744-timed-raw-audits/camera3/result.json": "a8ada948d1c2512ff0c0aaebb6fdece4b156cc6e7f8e37d35a86151899a18c21",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1739-source-timed-camera3/result.json": "1deacc591a2546fa2d67c4ecf63ef3cbd5c9611777a2dbe6212e90942210966c",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1737-source-timing-review/result.json": "f2d0e7440af3918576283a426182dcdc56005709857c58d2e0240457d03db10f"
+  },
+  "preactivation_paused_baseline": {
+    "session": {
+      "script_clock": 319.947986,
+      "is_online": false,
+      "in_menu": false,
+      "paused": true,
+      "live": false,
+      "speed_kmh": 0.0052505866624415,
+      "car_id": "bmw_z4_gt3",
+      "camera_active": false,
+      "generation": "37294426ULL:0.0013415",
+      "ai_controlled": false,
+      "ideal_line_shown": false,
+      "gas": 0,
+      "brake": 1,
+      "brake_settle_active": false,
+      "api_types": {
+        "restart": "cdata",
+        "pause": "function",
+        "start": "function",
+        "restart_engine": "function"
+      },
+      "track_id": "monza",
+      "receipt_protocol": "accepted_plus_immutable_terminal_v2",
+      "capabilities": {
+        "expert_pace60_100_stop30": true,
+        "expert_brake_pulse30": true,
+        "expert_speed_recovery15": true,
+        "expert_speed20_recovery15": true,
+        "expert_lateral_recovery15": true,
+        "expert_moving_handoff3": true,
+        "expert_moving_handoff30": true,
+        "brake_settle_after_teacher": true,
+        "pause": true,
+        "start": true,
+        "disable_ideal_line": true,
+        "restart_engine": true,
+        "restart": true,
+        "expert_probe": true,
+        "expert_motion_probe": true,
+        "expert_collect30": true,
+        "expert_motion_speed30": true,
+        "expert_collect30_speed30": true,
+        "expert_motion_speed60": true,
+        "expert_collect30_speed60": true
+      },
+      "expert_probe_active": false,
+      "heartbeat_write_failures": 1,
+      "renderer_origin_shift_diagnostic": [
+        -1024,
+        0,
+        1280
+      ],
+      "physics_api_allowed": true,
+      "schema": "flybrain.csp.session.status.v1",
+      "epoch": 0,
+      "window_handle": "37294426ULL"
+    },
+    "native": {
+      "gas": 0.0,
+      "brake": 1.0,
+      "steerAngle": 0.0,
+      "speedKmh": 0.004722608719021082,
+      "accG": [
+        0.0007755521801300347,
+        -0.004669679328799248,
+        0.005096446257084608
+      ],
+      "wheelLoad": [
+        3220.745849609375,
+        3493.984375,
+        3137.208984375,
+        3236.377197265625
+      ],
+      "wheelsPressure": [
+        19.508283615112305,
+        19.769630432128906,
+        18.543638229370117,
+        18.59062385559082
+      ],
+      "wheelAngularSpeed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "tyreCoreTemperature": [
+        47.92677307128906,
+        49.5601921081543,
+        41.89773941040039,
+        42.1913948059082
+      ],
+      "suspensionTravel": [
+        0.018352806568145752,
+        0.019306957721710205,
+        0.06576043367385864,
+        0.06636690348386765
+      ],
+      "localAngularVel": [
+        -0.0011601813603192568,
+        0.00012227265688125044,
+        -0.0003928669902961701
+      ]
+    },
+    "engine_pid": 45604,
+    "student_owner_qualification": false
+  },
+  "free_bytes": 80977489920,
+  "other_owned_gpu_jobs": 0,
+  "no_tolerance_changes": true,
+  "no_role_conversion": true,
+  "ui_actions_sent": 0,
+  "optimizer_updates": 0
+}

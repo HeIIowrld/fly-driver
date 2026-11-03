@@ -1,0 +1,27 @@
+{
+  "schema": "flybrain.fast_haltere_prototype_experiment.v1",
+  "stream_config": "configs/flight-stream-batched-v1-20261029.json",
+  "inventory": "runs/flight-current-fast-route-inventory-20261029-t1256",
+  "body_recording": "runs/flight-reclaimed-gpu-block0-20261029-t1239/trial-00",
+  "original_frequency_probe": "runs/flight-yaw-frequency-probe-20261029-t1253",
+  "hypotheses": [
+    {"name": "original", "fast_tau_seconds": 0.05, "coupling": 0.0},
+    {"name": "fast_cells_only", "fast_tau_seconds": 0.005, "coupling": 0.0},
+    {"name": "contact_gap_0p1", "fast_tau_seconds": 0.005, "coupling": 0.1},
+    {"name": "contact_gap_0p3", "fast_tau_seconds": 0.005, "coupling": 0.3},
+    {"name": "contact_gap_1", "fast_tau_seconds": 0.005, "coupling": 1.0}
+  ],
+  "frequencies_hz": [0.5, 1.0, 2.0, 4.0, 8.0, 12.0],
+  "amplitudes_rad_s": [0.005, 0.02],
+  "cadence_ticks": [1, 4],
+  "nominal_dt_seconds": 0.01,
+  "maximum_internal_microstep_seconds": 0.001,
+  "settling_seconds": 2.0,
+  "stimulus_seconds": 20.0,
+  "fit_final_seconds": 8.0,
+  "claim": "Existing chemical contacts constrain a separately inferred electrical-current proxy on original haltere and b1 states. Electrical conductance, per-cell time constants and correspondence to voltage are hypotheses, not measurements. No FANC identities inserted into the male graph.",
+  "selection": "Report every declared hypothesis and failed sign/phase result. No automatic candidate promotion, live deployment or steering residual. Preserve original chemical graph, checkpoint, encoder and readout.",
+  "physiological_reproduction_verified": false,
+  "physical_vehicle_control_allowed": false,
+  "goal_achieved": false
+}

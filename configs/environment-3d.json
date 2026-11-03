@@ -1,0 +1,20 @@
+{
+  "mode": "O",
+  "max_steps": 2000,
+  "image_size": 32,
+  "control_dt": 0.01,
+  "physics_dt": 0.001,
+  "camera_hz": 30,
+  "road": {
+    "length": 100.0,
+    "width": 6.0,
+    "grade": 0.02,
+    "hill_amplitude": 0.6,
+    "hill_period": 70.0,
+    "bank_degrees": 6.0,
+    "turn_amplitude": 2.0,
+    "turn_period": 70.0,
+    "bump_height": 0.03,
+    "flattened": false
+  }
+}

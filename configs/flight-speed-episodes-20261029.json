@@ -1,0 +1,56 @@
+{
+  "schema": "flybrain.flight.speed_episode_plan.v1",
+  "seed": 863090,
+  "spec": "configs/flight-circuit-speed-goal-v4-20261029.json",
+  "episodes": [
+    {
+      "recording": "runs/ac-local-launch-trial-20261029-t1002",
+      "scene_replay": "runs/ac-flyvis-continuous-camera-replay-20261029-t1029",
+      "body_replay": "runs/ac-virtual-body-sealed-replay-20261029-t1028",
+      "teacher_dataset": "runs/ac-local-launch-sealed-20261029-t1005",
+      "teacher_episode": "episode-00.npz",
+      "desired_speed_kmh": 15,
+      "role": "train"
+    },
+    {
+      "recording": "runs/flight-diverse-expert30-recording-20261029-t1048",
+      "scene_replay": "runs/flight-diverse-vision-expert30-20261029-t1053",
+      "body_replay": "runs/flight-diverse-body-expert30-20261029-t1049",
+      "teacher_dataset": "runs/flight-diverse-expert30-sealed-20261029-t1054",
+      "teacher_episode": "episode-00-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "train"
+    },
+    {
+      "recording": "runs/flight-next-straight-recording-20261029-t1059",
+      "scene_replay": "runs/flight-next-straight-vision-20261029-t1067",
+      "body_replay": "runs/flight-next-straight-body-20261029-t1063",
+      "teacher_dataset": "runs/flight-next-straight-sealed-20261029-t1069",
+      "teacher_episode": "episode-00-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "train"
+    },
+    {
+      "recording": "runs/flight-next-curve-recording-20261029-t1058",
+      "scene_replay": "runs/flight-next-curve-vision-20261029-t1066",
+      "body_replay": "runs/flight-next-curve-body-20261029-t1062",
+      "teacher_dataset": "runs/flight-next-curve-sealed-20261029-t1068",
+      "teacher_episode": "episode-00-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "development"
+    },
+    {
+      "recording": "runs/ac-moving-handoff30-trial-20261028-t799",
+      "scene_replay": "runs/flight-diverse-vision-handoff30-20261029-t1047",
+      "body_replay": "runs/flight-diverse-body-handoff30-20261029-t1045",
+      "teacher_dataset": "runs/ac-shared-lateral-recovery-merged-20261029-t946",
+      "teacher_episode": "source-00-episode-007.npz",
+      "desired_speed_kmh": 15,
+      "role": "development"
+    }
+  ],
+  "split_policy": "complete original recordings only, no shared history across roles; roles declared before inspecting new applied-target arrays or any v4 fit",
+  "development_is_blind": false,
+  "development_limitation": "previous comparator data/route and raw telemetry were observed; sparse15kmh development targets; not an independent course/generalization trial",
+  "scope": "Preparation for distinct speed-task offline learning, not braking competence or driving qualification"
+}

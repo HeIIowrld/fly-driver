@@ -1,0 +1,47 @@
+{
+  "status": "closed_loop_failed_not_promoted",
+  "evidence": "docs/local-retinal-circuit-20261027.md",
+  "collected_root": "runs/local-retinal-circuit-20261027",
+  "graph_nodes": 2626,
+  "graph_edges": 92740,
+  "MeTu_local_input_ports": 1009,
+  "rays_per_port": 12,
+  "trainable_parameters": 36324,
+  "anatomical_retinal_registration": false,
+  "physiological_synaptic_signs_assigned": false,
+  "organ_adapter_weights": "frozen_zero",
+  "checkpoint": "runs/local-retinal-circuit-20261027/t11c/runs/local-retinal-linear-low-lr-t11c/checkpoint.pt",
+  "checkpoint_sha256": "19af0ee357233359a4aed6eaffd191085a2ef60a52f6475965c23bb57eb14334",
+  "static_result": {
+    "test_rmse": {
+      "normal": 0.16055776178836823,
+      "vision_missing": 0.8036235570907593,
+      "circuit_cut": 0.8036235570907593,
+      "EPG_silenced": 0.6597838997840881
+    },
+    "test_clipped_rmse": {
+      "normal": 0.13771475851535797,
+      "vision_missing": 0.8036235570907593,
+      "circuit_cut": 0.8036235570907593,
+      "EPG_silenced": 0.6597838997840881
+    },
+    "scope": "static held-out-position steering probe; no closed-loop driving proof",
+    "trainable_parameters": 36324,
+    "readout_gain": 532141.25,
+    "checkpoint_restore_max_error": 0
+  },
+  "closed_loop_completion": "0/4",
+  "EPG_silenced_closed_loop_completion": "0/4",
+  "readout_gain": 532141.25,
+  "teacher_training_data": "runs/local-retinal-circuit-20261027/t11c/runs/anatomical-teacher-sequences-t11c",
+  "teacher_training_decisions": 10700,
+  "teacher_episode_seeds": [
+    731101,
+    731102,
+    731103,
+    731104
+  ],
+  "tests_passed": 150,
+  "verified_collected_files": 86,
+  "AC_success": false
+}

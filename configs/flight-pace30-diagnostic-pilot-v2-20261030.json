@@ -1,0 +1,67 @@
+{
+  "schema": "flybrain.prospective_pace_recording.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "command": "expert-pace60-100-stop30",
+  "profile": {
+    "schema": "flybrain.pace60_100_stop30_profile.v1",
+    "command": "expert-pace60-100-stop30",
+    "duration_seconds": 30,
+    "hard_speed_kmh": 120,
+    "hard_displacement_m": 1100,
+    "speed_schedule": [
+      {
+        "after_seconds": 0,
+        "speed_hint_kmh": 60
+      },
+      {
+        "after_seconds": 5,
+        "speed_hint_kmh": 100
+      },
+      {
+        "after_seconds": 15,
+        "speed_hint_kmh": 0
+      },
+      {
+        "after_seconds": 23,
+        "speed_hint_kmh": 60
+      }
+    ],
+    "natural_ai_braking_label": false,
+    "brake_intervention": {
+      "api": "physics.setAIStopCounter",
+      "requested_seconds": 8,
+      "after_seconds": 15,
+      "speed_window_kmh": [
+        40,
+        110
+      ],
+      "attempts_maximum": 1,
+      "clear_after_seconds": 23,
+      "clear_requires_actual_moving_brake_and_stop": true
+    }
+  },
+  "actor_world_input": false,
+  "engine_pid": 45604,
+  "generation": "37294426ULL:0.0014905",
+  "raw_camera_qualification": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1711-new-engine-camera-raw-audit",
+  "camera_configuration": "configs/ac-csp-exterior-front-v3-retina.json",
+  "scope": "First complete physical pace profile diagnostic after preserved failed t1713. No DATA role conversion; no student control or training.",
+  "input_sha256": {
+    "scripts/record_pace_task.py": "bab63aa4c6b62ac4b290586bfe81923fb7760f73094f6071787bebab9bac57c0",
+    "scripts/record_ac_engine_ai_probe.py": "f83e938c187415be579c73c838d4485a24dd6ddae43dd3bcfcbc48b20c4c16f9",
+    "scripts/control_ac_session.py": "2f83c118b6d48144fe6a8848f68e81f17f45806c1473394c5300d9d980027580",
+    "src/flybrain_drive/teacher_pace.py": "707cd2bca2878d8e04a398fc11b85470c1830ceed2bee79af547a90712dd1a4f",
+    "src/flybrain_drive/prospective_corpus.py": "84bbd5a4ba9ccccb2c90723c5cf1c708a33ba3411b36780592fee5719143c9b6",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "c984364d016d2d7018285e083f93b35bf0e0751d2b81de6e1a2e77912d2be777",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1711-new-engine-camera-raw-audit/result.json": "09228d49f4a67054f30170db14a393953348e43fc889e4800d1dbd2ffb0696eb",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1708-pace-predeploy-review/result.json": "85a1488bca6ea37f0209356e3bcf34435ab182bb56dcbf866c1ccfa3e3ec6a3f",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1713-pace30-diagnostic-pilot/result.json": "512dcf115f825fb512b3c899624911ddd5e71d3742a451262b65376b102aef59",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1713-pace30-diagnostic-pilot/recording/control/api-receipt.json": "3456d4055a02cc5a59183a7df16fb96e4691319bcf31102e4e563753ff659437",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1714-task-serialization-audit/result.json": "602d38e4250f468fab7e33c69084b5d7d90c7b2ffba7837f34d994b6ec2ae4fb"
+  },
+  "revision": "v2-serialization-only",
+  "revision_reason": "Original t1713 failed on JSON numeric representation. Raw task numeric and clocks retained; only absolute serialization tolerance corrected. New request and immutable plan; failed original never relabeled.",
+  "preexecution_disk_free_bytes": 104645386240
+}

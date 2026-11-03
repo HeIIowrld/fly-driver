@@ -1,0 +1,79 @@
+{
+  "role": "development_curve_stress_not_final_test",
+  "purpose": "larger curve amplitudes, without a shared straight global-Y lane corridor; frozen candidates and fixed speed",
+  "steps": 10000,
+  "cases": [
+    {
+      "name": "amp4_nominal_start",
+      "seed": 750101,
+      "start_x": 3,
+      "road": {
+        "turn_amplitude": 4
+      }
+    },
+    {
+      "name": "amp4_midcourse_start",
+      "seed": 750102,
+      "start_x": 35,
+      "road": {
+        "turn_amplitude": 4
+      }
+    },
+    {
+      "name": "amp4_recovery_left",
+      "seed": 750103,
+      "start_x": 3,
+      "lateral_offset": 0.7,
+      "heading_offset_degrees": 5,
+      "road": {
+        "turn_amplitude": 4
+      }
+    },
+    {
+      "name": "amp4_recovery_right",
+      "seed": 750104,
+      "start_x": 3,
+      "lateral_offset": -0.7,
+      "heading_offset_degrees": -5,
+      "road": {
+        "turn_amplitude": 4
+      }
+    },
+    {
+      "name": "amp6_nominal_start",
+      "seed": 750105,
+      "start_x": 3,
+      "road": {
+        "turn_amplitude": 6
+      }
+    },
+    {
+      "name": "amp6_midcourse_start",
+      "seed": 750106,
+      "start_x": 35,
+      "road": {
+        "turn_amplitude": 6
+      }
+    },
+    {
+      "name": "amp6_recovery_left",
+      "seed": 750107,
+      "start_x": 3,
+      "lateral_offset": 0.7,
+      "heading_offset_degrees": 5,
+      "road": {
+        "turn_amplitude": 6
+      }
+    },
+    {
+      "name": "amp6_recovery_right",
+      "seed": 750108,
+      "start_x": 3,
+      "lateral_offset": -0.7,
+      "heading_offset_degrees": -5,
+      "road": {
+        "turn_amplitude": 6
+      }
+    }
+  ]
+}

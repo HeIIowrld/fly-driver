@@ -1,0 +1,12 @@
+{
+  "seed": 863156,
+  "require_aid_off": true,
+  "sources": [
+    {
+      "recording": "runs/flight-aid-free-expert30-recording-20261029-t1109",
+      "targets": "runs/flight-aid-free-expert30-targets-20261029-t1113",
+      "raw_audit": "runs/flight-aid-free-expert30-raw-audit-20261029-t1110"
+    }
+  ],
+  "scope": "Complete original background AI30 lease with all-frame aid-OFF proof; raw applied-control surrogate only. No slicing or new actor qualification."
+}

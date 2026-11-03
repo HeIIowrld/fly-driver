@@ -1,0 +1,11 @@
+{
+  "seed": 863080,
+  "sources": [
+    {
+      "recording": "runs/flight-diverse-expert30-recording-20261029-t1048",
+      "targets": "runs/flight-diverse-expert30-targets-20261029-t1052",
+      "raw_audit": "runs/flight-diverse-expert30-raw-audit-20261029-t1050"
+    }
+  ],
+  "scope": "Original uninterrupted30second background AI30kmh lease; separate from AI15 task. Preserve all742 observations,737 target rows, raw receipt surrogate and original clocks. No flight model training or driving promotion; no braking/countersteering or race-optimal expert claim."
+}

@@ -1,0 +1,11 @@
+{
+  "scope": "Original-clock and cross-history feature coverage diagnosis; no fitting, relabeling, deployment or evaluation-role access",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1360-v2-flight-episode-cache",
+  "normalization_std_floor": 0.005,
+  "feature_clip": 5,
+  "neighbor_policy": "One nearest valid TRAIN scene; exclude entire same original recording for TRAIN queries; all TRAIN for development. Squared Euclidean distance divided by576. No query labels in selection.",
+  "yaw_comparison_lags_seconds": [-0.32, 0, 0.08, 0.16, 0.32],
+  "yaw_match_tolerance_seconds": 0.025,
+  "lag_policy": "Descriptive physical response only. Positive lag compares original target at t to measured body yaw at t+lag; future body is never an actor input. No best-lag selection or original target modification.",
+  "goal_achieved": false
+}

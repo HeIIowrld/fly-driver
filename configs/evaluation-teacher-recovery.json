@@ -1,0 +1,20 @@
+{
+  "purpose": "80-second independent paired heldout evaluations; allows low-speed uphill teacher reference",
+  "steps": 8000,
+  "cases": [
+    {
+      "name": "heldout_recovery_left",
+      "seed": 8006,
+      "start_x": 3.0,
+      "lateral_offset": 0.9,
+      "heading_offset_degrees": 7.0
+    },
+    {
+      "name": "heldout_recovery_right",
+      "seed": 8007,
+      "start_x": 3.0,
+      "lateral_offset": -0.9,
+      "heading_offset_degrees": -7.0
+    }
+  ]
+}

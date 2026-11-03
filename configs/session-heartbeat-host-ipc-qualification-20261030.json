@@ -1,0 +1,29 @@
+{
+  "schema": "flybrain.session_heartbeat.host_ipc_qualification.v1",
+  "scope": "host_QPC_producer_fixture_only",
+  "fit_allowed": false,
+  "optimizer_updates": 0,
+  "snapshots": 4,
+  "game_or_CSP_calls_allowed": false,
+  "actual_Lua_qualified": false,
+  "legacy_quantization_padding": true,
+  "namespace": "Local/FlyBrainHeartbeatIPCQualification_<fresh128bitnonce>_[0,1]",
+  "producer": "One finite owned Python subprocess; original source clock is shared Windows QPC fixture, not CSP os.preciseClock",
+  "target": "New unique runtime-runs directory/fixture-status.json only, never live csp-session/status.json",
+  "legacy_age_gate": "0<=time.time()-mtime<=2 exactly; explicit pastward padding by reported wall resolution, no age-budget widening",
+  "coarse_clock_and_ntfs_quantum_measured": true,
+  "source_preservation": "Exact immutable fixture snapshot JSON/source_clock/SHA, proof-before-status, no redating of source",
+  "excluded_qualifications": [
+    "Actual CSP clock calibration",
+    "Actual LuaJIT/FFI visibility",
+    "Production ACK/retire handoff",
+    "Game/status namespace",
+    "GPU/vehicle/control or training"
+  ],
+  "input_sha256": {
+    "scripts/qualify_session_heartbeat_ipc.py": "b5f12776e48f0d9891f2394c8e5ba9a3763f0c027f4b51b9235bff039d16351b",
+    "src/flybrain_drive/session_heartbeat_candidate.py": "e343eb2dd5811c017d9a70ef53335ebee7973226231ff0d70fabc239074253af",
+    "src/flybrain_drive/session_heartbeat_provenance.py": "e5e4f129b6adfc9ca499625171039ef3b82198a2f54a1592d229cd53a1f0586f",
+    "src/flybrain_drive/evidence.py": "03f44aa2b11bdb0db8584f539798ecd61f5ea6faed4cb2472eadd1a053108bd3"
+  }
+}

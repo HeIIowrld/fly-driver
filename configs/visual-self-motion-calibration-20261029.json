@@ -1,0 +1,54 @@
+{
+  "schema": "flybrain.visual_self_motion.calibration.v1",
+  "camera_config": "configs/ac-csp-yaw-retina.json",
+  "camera_origins_body_m": [
+    [
+      -0.344583847039893,
+      0.3610935111884668,
+      0.9047425128561375
+    ],
+    [
+      2.491180290066508e-05,
+      1.15000317318581,
+      1.000000065252037
+    ],
+    [
+      -2.4910652905510422e-05,
+      -1.1500031726018727,
+      0.9999997348419483
+    ],
+    [
+      -2.3999973011104987,
+      1.1737707786008134e-06,
+      0.9999996261965933
+    ]
+  ],
+  "origin_source": "runs\\ac-local-launch-trial-20261029-t1002\\vision\\camera.zip",
+  "origin_source_member": "frame-0000.json",
+  "origin_member_sha256": "8175d59cbfbdd44d87770230db49f8122eac99a018d89c04945f878efa04597c",
+  "sphere_radius_m": 20,
+  "frame_dt": 0.04,
+  "frames": 41,
+  "static_pre_seconds": 0.4,
+  "average_last_frames": 10,
+  "train": {
+    "texture_seed": 863031,
+    "angular_amplitude": 0.35,
+    "normalized_translation_amplitude": 0.2
+  },
+  "validation": {
+    "texture_seed": 863032,
+    "angular_amplitude": 0.23,
+    "normalized_translation_amplitude": 0.13
+  },
+  "model": "flow/0000/000; fixed original weights including T4d mismatch",
+  "pooling": "six geometry matched T4/T5 opponent-flow templates, summed across separate view rays; engineering HS/VS-like functional pooling, not measured cells",
+  "calibration": "ridge affine 6-to-6 mapping; synthetic self-motion targets only, no game route/pose/control labels",
+  "ridge": 0.05,
+  "gates": {
+    "nonzero_case_sign_accuracy_min": 1.0,
+    "dominant_axis_accuracy_min": 0.8333333333333334,
+    "normalized_rmse_max": 0.75
+  },
+  "scope": "component motion interpretation and explicit functional adapter, not flight controller or driving success"
+}

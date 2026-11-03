@@ -1,0 +1,246 @@
+{
+  "scope": "Exact type lists expanded from Traced annotation inventory; structural hypothesis",
+  "inventory_family_expansion": {
+    "MeTu": [
+      "MeTu"
+    ],
+    "TuTu": [
+      "TuTu"
+    ],
+    "TuBu": [
+      "TuBu"
+    ],
+    "ER": [
+      "ER"
+    ],
+    "compass_recurrent": [
+      "EPG",
+      "PEN_",
+      "PEG"
+    ],
+    "Delta7": [
+      "Delta7"
+    ],
+    "PFL": [
+      "PFL2",
+      "PFL3"
+    ],
+    "FC2_goal_candidate": [
+      "FC2"
+    ]
+  },
+  "groups": {
+    "MeTu": {
+      "types": [
+        "MeTu1",
+        "MeTu2a",
+        "MeTu2b",
+        "MeTu3a",
+        "MeTu3b",
+        "MeTu3c",
+        "MeTu4_unclear",
+        "MeTu4a",
+        "MeTu4b",
+        "MeTu4c",
+        "MeTu4d",
+        "MeTu4e",
+        "MeTu4f"
+      ],
+      "role": "input"
+    },
+    "TuTu": {
+      "types": [
+        "TuTuA_1",
+        "TuTuA_2",
+        "TuTuB_a",
+        "TuTuB_b"
+      ],
+      "role": "internal"
+    },
+    "TuBu": {
+      "types": [
+        "TuBu01",
+        "TuBu02",
+        "TuBu03",
+        "TuBu04",
+        "TuBu05",
+        "TuBu06",
+        "TuBu07",
+        "TuBu08",
+        "TuBu09",
+        "TuBu10"
+      ],
+      "role": "internal"
+    },
+    "ER": {
+      "types": [
+        "ER1_a",
+        "ER1_b",
+        "ER1_c",
+        "ER2_a",
+        "ER2_b",
+        "ER2_c",
+        "ER2_d",
+        "ER3a_a",
+        "ER3a_b",
+        "ER3a_c",
+        "ER3a_d",
+        "ER3d_a",
+        "ER3d_b",
+        "ER3d_c",
+        "ER3d_d",
+        "ER3d_e",
+        "ER3m",
+        "ER3p_a",
+        "ER3p_b",
+        "ER3w_a",
+        "ER3w_b",
+        "ER3w_c",
+        "ER4d",
+        "ER4m",
+        "ER5",
+        "ER6"
+      ],
+      "role": "internal"
+    },
+    "compass_recurrent": {
+      "types": [
+        "EPG",
+        "EPGt",
+        "PEG",
+        "PEN_a(PEN1)",
+        "PEN_b(PEN2)"
+      ],
+      "role": "internal"
+    },
+    "Delta7": {
+      "types": [
+        "Delta7"
+      ],
+      "role": "internal"
+    },
+    "PFL": {
+      "types": [
+        "PFL2",
+        "PFL3"
+      ],
+      "role": "internal"
+    },
+    "FC2_goal_candidate": {
+      "types": [
+        "FC2A",
+        "FC2B",
+        "FC2C"
+      ],
+      "role": "internal"
+    }
+  },
+  "replace_boundary_types": [
+    "PFL2",
+    "PFL3"
+  ],
+  "selection_rationale": "Anterior visual pathway plus heading recurrent core, PFL steering and FC2 goal candidate; no neuron count cap or edge threshold",
+  "sources": [
+    "https://doi.org/10.1038/s41586-024-07967-z",
+    "https://doi.org/10.1038/s41586-024-07039-2",
+    "https://doi.org/10.1038/s41586-023-07006-3"
+  ],
+  "limitations": [
+    "Type correspondence from literature is a hypothesis in this individual",
+    "MeTu receptive fields are not assigned",
+    "FC2 goal input remains cut, not solved by a compass signal",
+    "ER includes siblings with distinct or incompletely assigned modalities",
+    "Soma side and instance names are not retinal coordinates or vehicle sign"
+  ],
+  "ordered_path_stages": [
+    {
+      "name": "MeTu",
+      "types": [
+        "MeTu1",
+        "MeTu2a",
+        "MeTu2b",
+        "MeTu3a",
+        "MeTu3b",
+        "MeTu3c",
+        "MeTu4_unclear",
+        "MeTu4a",
+        "MeTu4b",
+        "MeTu4c",
+        "MeTu4d",
+        "MeTu4e",
+        "MeTu4f"
+      ]
+    },
+    {
+      "name": "TuBu",
+      "types": [
+        "TuBu01",
+        "TuBu02",
+        "TuBu03",
+        "TuBu04",
+        "TuBu05",
+        "TuBu06",
+        "TuBu07",
+        "TuBu08",
+        "TuBu09",
+        "TuBu10"
+      ]
+    },
+    {
+      "name": "ER",
+      "types": [
+        "ER1_a",
+        "ER1_b",
+        "ER1_c",
+        "ER2_a",
+        "ER2_b",
+        "ER2_c",
+        "ER2_d",
+        "ER3a_a",
+        "ER3a_b",
+        "ER3a_c",
+        "ER3a_d",
+        "ER3d_a",
+        "ER3d_b",
+        "ER3d_c",
+        "ER3d_d",
+        "ER3d_e",
+        "ER3m",
+        "ER3p_a",
+        "ER3p_b",
+        "ER3w_a",
+        "ER3w_b",
+        "ER3w_c",
+        "ER4d",
+        "ER4m",
+        "ER5",
+        "ER6"
+      ]
+    },
+    {
+      "name": "EPG",
+      "types": [
+        "EPG"
+      ]
+    },
+    {
+      "name": "Delta7",
+      "types": [
+        "Delta7"
+      ]
+    },
+    {
+      "name": "PFL",
+      "types": [
+        "PFL2",
+        "PFL3"
+      ]
+    },
+    {
+      "name": "DNa02",
+      "types": [
+        "DNa02"
+      ]
+    }
+  ]
+}

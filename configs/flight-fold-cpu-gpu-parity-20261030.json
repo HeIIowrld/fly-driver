@@ -1,0 +1,52 @@
+{
+  "schema": "flybrain.fold_cpu_gpu_parity.v1",
+  "fold_setup": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup",
+  "train_ids": [
+    "episode-04-train",
+    "episode-05-train",
+    "episode-06-train"
+  ],
+  "indices": [
+    0,
+    31,
+    150,
+    738
+  ],
+  "maximum_feature_error": 2e-06,
+  "maximum_raw_prediction_error": 1e-05,
+  "normalized_feature_error": "report maximum; no separate gate, downstream raw prediction gate applies",
+  "body_route_indices": [
+    0,
+    1,
+    4,
+    16
+  ],
+  "optimizer_updates": 0,
+  "known_development_access": false,
+  "candidate_rule": "all36casepassed, exact support, nofailedcaseomission",
+  "input_sha256": {
+    "scripts/probe_flyvis_fold_parity.py": "7bfc33e978b0aeef3b8c7c7b305b8c7d450772f217cfe4ffde841a2bacbafca9",
+    "scripts/prepare_flyvis_preview_folds.py": "276093e2bb6b3b46d146c4ab9c4c6d893550e7df87c09925066192cc4ecf770e",
+    "scripts/probe_flyvis_registered_gradient.py": "21357664108c8017ba3fb04aef52d476be9301753812483139855c88c7d490fd",
+    "scripts/train_body_registered_preview.py": "cce7b4a4060fa1102ed84d8f9ddabf3756c7afc268f5779df80e20ded04b788f",
+    "scripts/train_visual_body_preview.py": "6529f7f992f14c4abdd850406bd1d22df62b503b19fa0981e7e784b199ab15e8",
+    "src/flybrain_drive/body_retinal_plane.py": "d0888d063b42e5a24146cc15bf295ef4bc2cc7a6e39603c8072387101176f668",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup\\manifest.json": "4f06987e03cc7887f7ad095388808b9043ce8479cc6cf06052ece7eadbb8381e",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup\\result.json": "c6aef95948d4b9c1b349589a26600bcc9b3232b5d1e8846f7734ac9002382a2b",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-04-train\\vision\\responses.npz": "9d925489ada804b2821ed8bc2fba4c55e61c0554c93d55de503fb360b184bd42",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-04-train\\body21\\virtual-body.npz": "03312ca15d90541eb644c01a08f463bb26136a799a70cd0b2c9fb2d08c23c66b",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-04-train\\vision\\retina-registration.npz": "a909539b7e5db2269b51f959c06f0a04875a104dfeb972f1ebe75913ded593e2",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-05-train\\vision\\responses.npz": "7a1452dda96166d884f7f221cba0839075a574a28134b8a8f5aaf827e05a77db",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-05-train\\body21\\virtual-body.npz": "98a9a14168f08ecc6dff039862ac00d39d0c96309dfe6790007d528dd43a04a8",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-05-train\\vision\\retina-registration.npz": "a909539b7e5db2269b51f959c06f0a04875a104dfeb972f1ebe75913ded593e2",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-06-train\\vision\\responses.npz": "c55a0a658ff2398660eb7e5d541ad3e5a1120235b779dbff5cc2484462ae10e1",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-06-train\\body21\\virtual-body.npz": "5d9242660238010d48a6d1dd9c1d73e92bd1877a62c653e21ae28684213c9168",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-06-train\\vision\\retina-registration.npz": "a909539b7e5db2269b51f959c06f0a04875a104dfeb972f1ebe75913ded593e2",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup\\episode-04-train\\vision_body.pt": "5908b8f55a951082980e30d43c6da56c1443991640f9840f5bf8525e6775d2ab",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup\\episode-04-train\\normalization.npz": "70519a9ab9217e3417be5ea659bc39674a781a9f786c54af336bcb0b55aaa19a",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup\\episode-05-train\\vision_body.pt": "2a9d209d50af359f50106ed37d5f2ec866a00a70fd91537c0f73ea898bac268f",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup\\episode-05-train\\normalization.npz": "868465b42928bed7e94f991f73d41f16ceeb427fe9305b1216043f2308f9af9c",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup\\episode-06-train\\vision_body.pt": "9f943ba2f145e96d869785c9dbce10e834d64f72dbabccd54a867c5b5512adf1",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1692-fold-setup\\episode-06-train\\normalization.npz": "e0b449d1aeaa45695433dfad0ba0663add42570be78df2daf558aeb9c5827aec"
+  }
+}

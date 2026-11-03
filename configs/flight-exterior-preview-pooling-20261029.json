@@ -1,0 +1,37 @@
+{
+  "schema": "flybrain.exterior_preview_pooling.v1",
+  "camera_config": "configs/ac-csp-exterior-front-v3-retina.json",
+  "camera_mount_contract": {
+    "schema": "flybrain.ac.camera_mount.v1",
+    "layout_id": "exterior_front_v3",
+    "layout_revision": 3,
+    "front_mount": "bmw_z4_gt3_bumper_v1",
+    "front_offset_forward_m": 2.5,
+    "front_offset_up_m": 1.0,
+    "scene": "full_scene",
+    "car_id": "bmw_z4_gt3"
+  },
+  "scene_basis": {
+    "rows": 4,
+    "columns": 4,
+    "sigma_image_uv": 0.18,
+    "processed_channels": [
+      "L1",
+      "L2",
+      "Mi1",
+      "Tm3",
+      "Tm1",
+      "Tm9",
+      "T4a",
+      "T4b",
+      "T4c",
+      "T4d",
+      "T5a",
+      "T5b",
+      "T5c",
+      "T5d"
+    ]
+  },
+  "registration": "Each complete new exterior replay must have exactly equal image_uv,body_directions,view_order,motion_types,body_origins_m; no dashboard registration reinterpreted",
+  "motor_policy": false
+}

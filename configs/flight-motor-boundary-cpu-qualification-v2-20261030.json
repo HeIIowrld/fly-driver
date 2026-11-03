@@ -1,0 +1,81 @@
+{
+  "schema": "flybrain.flight.motor_boundary_cpu_qualification.v1",
+  "spec": "configs/flight-circuit-separated-v5-20261029.json",
+  "checkpoint": "runs/flight-separated-command-probe-20261029-t1081/checkpoint.pt",
+  "original_events": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1689-native-neural-actuator/events.jsonl",
+  "optimizer_steps": 1,
+  "diagnostic_learning_rate": 0.001,
+  "seed": 17051705,
+  "diagnostic_objective": "fixed weighted squared original motor activity",
+  "new_boundary_contract": {
+    "schema": "flybrain.flight.learnable_physical_boundary.v1",
+    "source_input_contract": {
+      "schema": "flybrain.flight.physical_maneuver.v1",
+      "fields": [
+        "desired_yaw_left_rad_s",
+        "desired_speed_m_s"
+      ],
+      "maximum_absolute_yaw_rad_s": 2.0,
+      "yaw_scale_rad_s": 1.0,
+      "speed_error_scale_m_s": 10.0,
+      "source": "Vision/body actor estimate; oracle inputs restricted to labelled diagnostics",
+      "external_goal": {
+        "schema": "flybrain.flight.racing_goal.v1",
+        "fields": [
+          "visual_road_following_turn_bias",
+          "external_speed_ceiling_fraction"
+        ],
+        "speed_scale_kmh": 100.0,
+        "maximum_supported_ceiling_kmh": 350.0,
+        "objective": "Minimize valid lap time; accelerate/brake from vision and body feedback",
+        "speed_semantics": "Externally declared ceiling, not a constant desired cruising speed",
+        "teacher_curve_profile_actor_input": false,
+        "checkpoint_compatibility": "New specification/training required; reject speed-goal v2",
+        "biological_claim": "Engineering task boundary, not measured fly tuning"
+      },
+      "yaw_feedback": "Raw yaw enters protected haltere boundary once; no external yaw subtraction",
+      "speed_feedback": "desired_speed minus unsigned measured speed, once at DNg02 boundary",
+      "biological_claim": "Engineering physical-unit command encoding; no measured DN tuning",
+      "checkpoint_compatibility": "New encoding; never reinterpret legacy speed_fraction as m/s",
+      "tensor_precision": "Actor tensors match the circuit floating dtype; preserve original records"
+    },
+    "trainable_scalars": [
+      "left_DNa_gain",
+      "right_DNa_gain",
+      "DNg_error_gain",
+      "DNg_speed_ff"
+    ],
+    "initialization": "Exactly original .2 turn/2 power/.05 tonic command currents",
+    "turn_gain_bounds": [
+      0.05,
+      0.8
+    ],
+    "power_gain_bounds": [
+      0.5,
+      8.0
+    ],
+    "speed_feedforward_logit_bound": 0.5,
+    "unrouted_body_channels": "load8:12/temperature12:16/wheelrotation17:21",
+    "protected_paths": "Original chemical graph/body haltere/motor readout remain frozen",
+    "biological_claim": "Engineering DN-current calibration, not measured fly plasticity"
+  },
+  "not_driving_training": true,
+  "input_sha256": {
+    "scripts/qualify_trainable_maneuver_boundary.py": "54fb0fc67c40f7b14abe019142d6c331c531121264ae06cb8bb9a5f196225727",
+    "src/flybrain_drive/flight_maneuver_learning.py": "e75f1af1f21d3c4d101378132f6dccd78c00927d2566ae6dc1c6920883ba165f",
+    "src/flybrain_drive/flight_maneuver.py": "6219f0b1dc8b7a330f5dd31476acf1ed7b836f42085307932082437a524f9e92",
+    "src/flybrain_drive/flight_commands.py": "8339875605819e610234f695b6665e44d9d1bc3c3b6c8e516a06787a90615e95",
+    "src/flybrain_drive/flight_circuit.py": "ea8c6ce537c3ea41f23ce192a932ea081572eeb181f368acb9e83fd92f715eca",
+    "src/flybrain_drive/vehicle_circuit.py": "cf30f028307d2c4ed795a73d531ae0e17cfa9715ea7a233e669da8ea21ba30d5",
+    "src/flybrain_drive/actuator_codec.py": "d0966d4c62ecab0bd57d2429f3cc51fa1696131aa22991add112ad20f2c2cad2",
+    "src/flybrain_drive/flight_actuator.py": "1ea383a8abbcca788a279f672611435d9f1596630bca5b22bead087a9340be2f",
+    "tests/test_flight_maneuver_learning.py": "df353c8248215040aefd10c59b64b1317ce3dfd36f34de5e01e8dc273950b325",
+    "configs\\flight-motor-boundary-training-contract-20261030.json": "268e0189be9246c4a3b4c6397943fa85701b56e59b1fd47cb3ad4fd1f82761f4",
+    "configs/flight-circuit-separated-v5-20261029.json": "521d1641a4a7ef50eb95f19ed9ad5380faf8a22ea83400d5aefbe2963d70c33f",
+    "runs/flight-separated-command-probe-20261029-t1081/checkpoint.pt": "01a7a68372b76c68336f0403da48702a7f2f6f181f3e2567aecc6e9bd0e43116",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1689-native-neural-actuator/events.jsonl": "8cdeabd6de8fad2767f695393277a82abfc537b3271f5da8987ab03ab243304b",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1689-native-neural-actuator/manifest.json": "38a810a63fa042d71aadd53bce198c10e467e36f1a358b7810f7ce43fdbe3926"
+  },
+  "revision": 2,
+  "revision_reason": "Preserve t1705 SparseCPU equal checker failure; compare exact sparse layout/indices/values without densification or graph edits."
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "flybrain.frame_host_copy_profile.v4",
+  "name": "exclusive_host_payload_precopy_trace_v4",
+  "persistence": {
+    "schema": "flybrain.frame_persistence.bounded_profile.v1",
+    "name": "buffered32_32mib_v1",
+    "maximum_pending": 32,
+    "maximum_retained_payload_bytes": 33554432,
+    "maximum_group_payload_bytes": 1048576,
+    "maximum_groups": 1200
+  },
+  "namespace": "exclusive_client_request_host_payload_v4",
+  "collision_policy": "ram_exact_sequential_targets_then_xb_no_overwrite",
+  "trace_record_schema": "group_phase_QPCns_threadCPUns",
+  "trace_maximum_groups": 1200,
+  "trace_events_per_group": 160,
+  "trace_maximum_binary_bytes": 3840000,
+  "failed_data_retirement_minimum_remaining_seconds": 8,
+  "original_camera_freshness_seconds": 0.15,
+  "original_actor_interval_seconds": 0.08,
+  "original_heartbeat_age_seconds": 2.0
+}

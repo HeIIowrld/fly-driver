@@ -1,0 +1,62 @@
+{
+  "source_checkpoint": "runs/ac-gpu-onpolicy-correction-training-20261028-t373/checkpoint.pt",
+  "source_checkpoint_sha256": "2b007a34615ed8d0b02f7f50875cee3a04af58c2f6c4c05bfe5d4ddf03e1cba1",
+  "seed": 862919,
+  "epochs": 8,
+  "chunk_length": 64,
+  "learning_rate": 0.00015,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "action_profile": "normalized_ac_absolute",
+  "trainable_groups": [
+    "visual",
+    "organs"
+  ],
+  "organ_validity_mode": "gate_only",
+  "pedal_mode": "independent",
+  "episodes_per_batch": null,
+  "readout_gain_parameterization": "log",
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "teacher_label_contract": {
+    "kind": "geometric_recovery_fixed_task",
+    "maximum_speed_kmh": 30.0,
+    "reference_sha256": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4",
+    "track_sha256": "adfbf94c3625c872507b406d02b6e375274901427db77555f7899121a2d1c414",
+    "kinematic_calibration_sha256": "449293c71a648b31bf7ca71841ef95a9014d7b6655aa16af3a464a0a50bbeecd",
+    "teacher_implementation_sha256": "9d0fc7ea310214209d17a23df9682b497924def6548e8a7226ef1ed1d0cda421",
+    "interpretation": "teacher-only geometric desired canonical control at recorded state; execution status recorded separately"
+  },
+  "brake_positive_weight": 3.0,
+  "brake_label_threshold": 0.05,
+  "optimizer_update_scope": "epoch",
+  "evaluation_exclusion": {
+    "directory": "runs\\ac-bundled-yaw-teacher-sealed-20261028-t347\\dataset",
+    "manifest_sha256": "067215f1e72480e6d37f1a48aded0513f329b0dd21ea2c87257ca67e94da71c0",
+    "role": "next recorded track section reserved from gradient updates; not a final circuit test"
+  },
+  "device": "cuda",
+  "training_sparse_backend": "cached_csr_gpu",
+  "deployment_sparse_backend": "cached_csr_cpu",
+  "chunk_validated_training": true,
+  "data_addition": {
+    "source": "runs/ac-longer-student-expert-labels-20261028-t395/dataset",
+    "kind": "unexecuted geometric expert labels on exact 60m student trajectory",
+    "new_decisions": 265,
+    "new_brake_over_005": 121,
+    "new_brake_over_03": 103,
+    "actor_truth_inputs_added": false,
+    "evaluation_exclusion_unchanged": true
+  },
+  "brake_balance_rationale": {
+    "positive_samples": 139,
+    "negative_samples": 1668,
+    "weight": 3.0,
+    "effective_positive_mass": 417,
+    "reason": "Brake positives expanded 18 to 139; lower weight avoids making their weighted mass dominate the 1668 nonbraking examples. Paired development experiment, not independent test."
+  },
+  "resource_experiment": {
+    "scope": "matched full training replay with GPU fixed CSR; peer experiments share GPU",
+    "baseline": "runs/ac-longer-balanced-brake-training-20261028-t401"
+  }
+}

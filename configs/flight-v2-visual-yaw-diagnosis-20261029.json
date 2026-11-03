@@ -1,0 +1,19 @@
+{
+  "schema": "flybrain.flight.visual_yaw_diagnosis.v1",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1360-v2-flight-episode-cache",
+  "camera_config": "configs/ac-csp-yaw-retina.json",
+  "variants": ["geometry_opponent6", "per_camera_geometry24", "coarse_motion512"],
+  "target": "Existing registered angular_body.yaw_left_rad_s body feature4; body is calibration target only, never a predictor",
+  "target_lags_seconds": [0.0, 0.08],
+  "past_target_match_tolerance_seconds": 0.025,
+  "active_yaw_threshold_rad_s": 0.02,
+  "ridge_penalty": 10.0,
+  "normalization_std_floor": 0.005,
+  "feature_clip": 5.0,
+  "baseline": "TRAIN mean yaw and zero yaw, reported on all valid original frames and active-yaw subset",
+  "pooling": "Original geometry matched direction-opponent T4/T5 vote pool; author network unchanged",
+  "stationary_reference_scope": "No verified stationary reference is available in these saved actor streams. This is a separate train-only diagnostic yaw readout, not the passed synthetic stationary-reference decoder or permission to bypass its guard.",
+  "lag_scope": "80ms condition estimates a past body rate from current neural features, with explicit matched indices. No actor label, source timestamp or neural integration interval is moved.",
+  "comparison_scope": "Known development diagnosis, no physiology/driver qualification, no tuning from evaluation role, no picking a winning lag as a preregistered success",
+  "goal_achieved": false
+}

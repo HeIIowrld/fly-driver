@@ -1,0 +1,40 @@
+{
+  "scope": "Next session bootstrap proposal only; no active game changes",
+  "launcher_mode_path": [
+    "Challenge",
+    "Hotlap"
+  ],
+  "mode_source": {
+    "repository": "https://github.com/dasGringuen/assetto_corsa_gym",
+    "revision": "ef0fa502bdd257fc2affad9361c02b3dbdfe1632",
+    "file": "INSTALL.md",
+    "sha256": "8080791d25da210e559a96c21e251665382030013cf02f0ebd26d54771ed4a8b"
+  },
+  "expected_native_graphics_session": 3,
+  "native_session_source": "assets/external/ac-native-memory-20261027/upstream/sim_info.py:AC_HOTLAP",
+  "race_ini_type_written": false,
+  "required_checks_after_launch": [
+    "actual window bounds and rendered dimensions",
+    "car and track identity",
+    "new producer session and live SDK extension",
+    "actual native session3 and actual track position",
+    "stationary steering calibration matching active profile",
+    "explicit vJoy gear button response if neutral",
+    "short teacher observation/domain inspection before control"
+  ],
+  "proposal_files": "runs/ac-background-control-profile-candidate-20261028-t55",
+  "reset_automation": {
+    "public_source_requires_CSP": true,
+    "CSP_installation_performed": false,
+    "CSP_installation_requested": false,
+    "bounded_first_segment_requires_no_auto_reset": true
+  },
+  "exact_public_training_manifest_available": false,
+  "camera_calibration_after_resize_verified": false,
+  "foreground_restart_timing_answer_pending": false,
+  "active_game_files_changed": true,
+  "autonomous_lap_verified": false,
+  "observed_native_graphics_session": 3,
+  "observed_hotlap_cockpit": true,
+  "profile_and_gear_up_verified": true
+}

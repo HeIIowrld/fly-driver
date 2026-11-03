@@ -1,0 +1,86 @@
+{
+  "schema": "flybrain.pace30.prospective_role.v1",
+  "status": "CPU_role_contract_only_first_actual_profile_run_diagnostic_fit_false",
+  "engine_pid": 45604,
+  "fresh_generation_and_native_ownership_required": true,
+  "role": "train_candidate_after_independent_raw_and_labels_audit",
+  "spline_interval": [
+    0.275,
+    0.54
+  ],
+  "eligible_start_interval": [
+    0.275,
+    0.44
+  ],
+  "preferred_buffered_start_interval": [
+    0.285,
+    0.425
+  ],
+  "planning_advance_estimate": 0.1,
+  "estimate_is_not_physical_arc_length_bound": true,
+  "whole_before_driving_stopping_after_route_admission_required": true,
+  "no_slicing_or_role_conversion": true,
+  "protected_development_regions": [
+    [
+      0.2,
+      0.25
+    ],
+    [
+      0.67,
+      0.84
+    ],
+    [
+      0.94,
+      1.0
+    ]
+  ],
+  "protected_evaluation_regions": [
+    [
+      0.08,
+      0.125
+    ]
+  ],
+  "profile": {
+    "schema": "flybrain.pace60_100_stop30_profile.v1",
+    "command": "expert-pace60-100-stop30",
+    "duration_seconds": 30,
+    "hard_speed_kmh": 120,
+    "hard_displacement_m": 1100,
+    "speed_schedule": [
+      {
+        "after_seconds": 0,
+        "speed_hint_kmh": 60
+      },
+      {
+        "after_seconds": 5,
+        "speed_hint_kmh": 100
+      },
+      {
+        "after_seconds": 15,
+        "speed_hint_kmh": 0
+      },
+      {
+        "after_seconds": 23,
+        "speed_hint_kmh": 60
+      }
+    ],
+    "natural_ai_braking_label": false,
+    "brake_intervention": {
+      "api": "physics.setAIStopCounter",
+      "requested_seconds": 8,
+      "after_seconds": 15,
+      "speed_window_kmh": [
+        40,
+        110
+      ],
+      "attempts_maximum": 1,
+      "clear_after_seconds": 23,
+      "clear_requires_actual_moving_brake_and_stop": true
+    }
+  },
+  "fit_allowed": false,
+  "existing8_12_proposal_profiles_not_implemented": true,
+  "source_sha256": {
+    "src/flybrain_drive/prospective_corpus.py": "84bbd5a4ba9ccccb2c90723c5cf1c708a33ba3411b36780592fee5719143c9b6"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "flybrain.flight.visual_guarded_training.v2_balanced",
+  "spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "source": "runs/flight-separated-command-probe-20261029-t1081",
+  "data": "runs/flight-speed-episode-data-20261029-t1070",
+  "seed": 863160,
+  "epochs": 6,
+  "chunk_observations": 64,
+  "learning_rate": 0.003,
+  "normalization_std_floor": 0.005,
+  "maximum_line_search_trials": 8,
+  "line_search_contraction": 0.5,
+  "armijo": 0.0001,
+  "turn_objective": "equal_left_right_neutral",
+  "loss_precision": "float64 class losses and accumulation, float32 neural state and parameters",
+  "training_objective": "one third mean bounded logistic loss for each observed left/right/neutral training stratum, threshold .01; explicit label-dependent cost-sensitive objective",
+  "gradient": "fixed parameters throughout each complete chronological training pass; numerical state preserved across 64-observation derivative detaches",
+  "checkpoint_selection": "last fixed sixth epoch; no development or fresh evaluation arrays opened for fitting or normalization",
+  "source_recordings_aid_absence_verified": false,
+  "scope": "controlled training-imbalance diagnosis from same initial model/data as t1103; no actor, biology or physical-plant qualification"
+}

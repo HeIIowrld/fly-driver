@@ -1,0 +1,38 @@
+{
+  "source_checkpoint": "runs\\ac-yaw-brake-recovery-training-20261028-t317\\checkpoint.pt",
+  "source_checkpoint_sha256": "00c7f519da0ee7f6113285f9a56f7885635fd0d7a98a6187f8850ced04404b5b",
+  "seed": 862891,
+  "epochs": 8,
+  "chunk_length": 16,
+  "learning_rate": 0.0003,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "action_profile": "normalized_ac_absolute",
+  "trainable_groups": [
+    "visual",
+    "organs"
+  ],
+  "organ_validity_mode": "gate_only",
+  "pedal_mode": "independent",
+  "episodes_per_batch": null,
+  "readout_gain_parameterization": "log",
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "teacher_label_contract": {
+    "kind": "geometric_recovery_fixed_task",
+    "maximum_speed_kmh": 30.0,
+    "reference_sha256": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4",
+    "track_sha256": "adfbf94c3625c872507b406d02b6e375274901427db77555f7899121a2d1c414",
+    "kinematic_calibration_sha256": "449293c71a648b31bf7ca71841ef95a9014d7b6655aa16af3a464a0a50bbeecd",
+    "teacher_implementation_sha256": "9d0fc7ea310214209d17a23df9682b497924def6548e8a7226ef1ed1d0cda421",
+    "interpretation": "teacher-only geometric desired canonical control at recorded state; execution status recorded separately"
+  },
+  "brake_positive_weight": 20.0,
+  "brake_label_threshold": 0.05,
+  "optimizer_update_scope": "epoch",
+  "evaluation_exclusion": {
+    "directory": "runs\\ac-bundled-yaw-teacher-sealed-20261028-t347\\dataset",
+    "manifest_sha256": "067215f1e72480e6d37f1a48aded0513f329b0dd21ea2c87257ca67e94da71c0",
+    "role": "next recorded track section reserved from gradient updates; not a final circuit test"
+  }
+}

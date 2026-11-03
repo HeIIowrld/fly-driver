@@ -1,0 +1,134 @@
+{
+  "schema": "flybrain.flight.physical_yaw_perturbation.v2",
+  "inference_config": "configs/flight-stream-batched-v1-20261029.json",
+  "inference_verification": "runs/flight-stream-batched-replay-20261029-t1132",
+  "yaw_adapter_verification": "runs/flight-yaw-boundaries-verification-20261029-t1160",
+  "axis_config": "configs/ac-axis-probe.json",
+  "stationary_response_audit": "runs/flight-stationary-steering-audit-20261029-t1150",
+  "period_seconds": 0.04,
+  "task_speed_kmh": 6,
+  "maximum_speed_kmh": 10,
+  "maximum_displacement_m": 20,
+  "stages": [
+    {
+      "name": "stationary_prefix",
+      "task_turn_bias": 0,
+      "samples": 25
+    },
+    {
+      "name": "launch",
+      "task_turn_bias": 0,
+      "samples": 100
+    },
+    {
+      "name": "baseline",
+      "task_turn_bias": 0,
+      "samples": 25
+    },
+    {
+      "name": "perturbation",
+      "task_turn_bias": 0,
+      "samples": 7
+    },
+    {
+      "name": "recovery",
+      "task_turn_bias": 0,
+      "samples": 50
+    },
+    {
+      "name": "braking",
+      "task_turn_bias": 0,
+      "samples": 50
+    }
+  ],
+  "perturbation_steering_amplitude": 0.05,
+  "total_steering_limit": 0.1,
+  "trials": [
+    {
+      "block": 0,
+      "mode": "full",
+      "sign": 1
+    },
+    {
+      "block": 0,
+      "mode": "zero_yaw",
+      "sign": 1
+    },
+    {
+      "block": 0,
+      "mode": "zero_yaw",
+      "sign": -1
+    },
+    {
+      "block": 0,
+      "mode": "full",
+      "sign": -1
+    },
+    {
+      "block": 1,
+      "mode": "zero_yaw",
+      "sign": 1
+    },
+    {
+      "block": 1,
+      "mode": "full",
+      "sign": 1
+    },
+    {
+      "block": 1,
+      "mode": "full",
+      "sign": -1
+    },
+    {
+      "block": 1,
+      "mode": "zero_yaw",
+      "sign": -1
+    },
+    {
+      "block": 2,
+      "mode": "full",
+      "sign": -1
+    },
+    {
+      "block": 2,
+      "mode": "zero_yaw",
+      "sign": -1
+    },
+    {
+      "block": 2,
+      "mode": "zero_yaw",
+      "sign": 1
+    },
+    {
+      "block": 2,
+      "mode": "full",
+      "sign": 1
+    }
+  ],
+  "evaluation": {
+    "baseline_seconds": 0.3,
+    "recovery_seconds": 1.6,
+    "settling_absolute_band_rad_s": 0.002,
+    "settling_peak_fraction": 0.1,
+    "minimum_settled_observation_seconds": 0.2,
+    "maximum_native_gap_seconds": 0.05,
+    "pair_start_position_tolerance_m": 0.03,
+    "pair_baseline_speed_tolerance_kmh": 0.2,
+    "pair_baseline_yaw_tolerance_rad_s": 0.003,
+    "minimum_median_iae_improvement_fraction": 0.01,
+    "required_positive_pairs": 6,
+    "required_blocks": 3,
+    "pair_pulse_width_tolerance_seconds": 0.01,
+    "maximum_pulse_width_error_seconds": 0.01
+  },
+  "scope": "Predeclared original12 physical trials, unchanged257 observations, periods and guards. Four private HIP/CUDA graphs capture unchanged author5ms steps in1/2/4/8-step chunks; original fractional steps stay eager, original input/state copied without retiming. No inherited physical trials; no navigation or physiology qualification. Before any actual neural observation, record2s genuine stationary native engine preparation after API resume. No reset, invented observation or retimed prefix; every original actor observation remains mandatory. Fresh12-trial comparison using pinned bounded diagnostic new-sequence waiting; original50ms diagnostic age,80ms command lease and150ms camera guard unchanged. Earlier t1205 successful full trial remains separate evidence, not inherited into this study. Verified actual new publisher after single CSP engine-process restart with original PID exit0 and new producer metadata.3ms same-serialized-packet replacement retry, no changed sensor clocks or control guards. Fresh study, no prior physical trials inherited.",
+  "timed_pulse_seconds": 0.28,
+  "timed_actuator_verification": "runs/ac-timed-steering-command-lease-audit-20261029-t1183",
+  "scratch_warmup_verification": "runs/flight-graphed-batch-coupled-verification-20261029-t1197",
+  "actuator_guard_contract": "150ms original camera age checked at every non-safe SDK request;80ms accepted-command lease; original neural-observation80ms invariant unchanged",
+  "visual_backend": "graphed_visual_tail",
+  "visual_backend_stage_verification": "runs/flyvis-graphed-batch-stage-20261029-t1196",
+  "preparation_engine_settle_seconds": 2.0,
+  "diagnostic_transport_verification": "runs/ac-new-publisher-diagnostic-proof-20261029-t1218",
+  "publisher_restart_verification": "runs/ac-engine-publisher-restart-20261029-t1213"
+}

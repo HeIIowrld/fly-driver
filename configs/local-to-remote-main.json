@@ -1,0 +1,21 @@
+{
+  "schema": "flybrain/local-to-remote-main-v1",
+  "role": "Promote replicated local hyperparameter candidates; retain existing remote experiments",
+  "max_candidates": 2,
+  "training": {
+    "num_envs": 8,
+    "horizon": 256,
+    "updates": 128,
+    "torch_threads": 2,
+    "seeds": [6101, 6102, 6103]
+  },
+  "launch": {
+    "partition": "partition1",
+    "node": "auto",
+    "time_limit": "03:00:00",
+    "array_concurrency": 2
+  },
+  "ranking": "Descending minimum paired relative progress gain across replicated development seeds",
+  "initialization": "Fresh model/optimizer per main-training seed; collect remote teacher and DAgger data",
+  "evaluation": "Preserve the separate remote evaluation suite and include all failed/timeout tasks"
+}

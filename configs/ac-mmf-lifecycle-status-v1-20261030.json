@@ -1,0 +1,8 @@
+{
+  "schema": "flybrain.csp.camera.status_publication_profile.v1",
+  "policy": "mmf_lifecycle_only_v1",
+  "transport": "shared_immutable_MMF_only",
+  "periodic_active_status_write": false,
+  "initial_terminal_idle_error_writes_unchanged": true,
+  "clocks_frames_ACK_cleanup_and_limits_unchanged": true
+}

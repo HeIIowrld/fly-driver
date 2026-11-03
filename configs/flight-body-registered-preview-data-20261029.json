@@ -1,0 +1,35 @@
+{
+  "schema": "flybrain.body_registered_preview_build.v1",
+  "reference_data": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1636-exterior-flight-preview-data",
+  "sensor_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors",
+  "body_contract": "configs/ac-virtual-navigation-body-v2.json",
+  "conditions": [
+    "image_grid",
+    "registered",
+    "registered_level"
+  ],
+  "source_sha256": {
+    "src/flybrain_drive/body_retinal_plane.py": "399ba73af4bd8df3d44a75188723ebae8f24c5ab6b5a4219bad821b3f65e899c",
+    "scripts/build_body_registered_preview.py": "a203410802b10af565d6e015f2a95b40e0b5141e2daad98bbb314bc11e81ba1e",
+    "scripts/train_visual_body_preview.py": "589ea836fce4db65a5adf90f7eb5fcdf0ff7527f02e465a81c33f1c059865f87",
+    "scripts/build_retinotopic_preview_dataset.py": "1d314d111754039c640eacad9c140c14d3d2ae0195c9f7dd8825c5d20dd886c3",
+    "configs/ac-virtual-navigation-body-v2.json": "5cf92b9af473092c8baf2b56783f826c41b93e77ab876795276fc07943c1ed50",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1636-exterior-flight-preview-data\\dataset.json": "8b670ed9f30c45b32136a22a9ebed784dc658521bbc4fa092596c528235ec600",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\result.json": "ca411340690725150d3125cb126221ad81b63fee8724f3a402927f90bcd592e6"
+  },
+  "projection": "Virtual horizontal plane through levelled body reference; NOT measured road height, road membership or scene depth. Forward/left/up, pitch nose-up, roll left-up; no absolute heading/world pose/map.",
+  "scalar_fusion": "L1/L2/Mi1/Tm3/Tm1/Tm9 only, equal supported-camera weights on8x8 body grid",
+  "motion": "Keep8 directional types per original camera separate on4x4 body grid; no unverified preferred-direction rotation.",
+  "bounds": {
+    "forward_m": [
+      -30,
+      30
+    ],
+    "left_m": [
+      -15,
+      15
+    ]
+  },
+  "support": "Explicit ray-plane support flags; unsupported bins are not synthetic pixels or measured road visibility.",
+  "actor_deployed": false
+}

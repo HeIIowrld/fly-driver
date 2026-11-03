@@ -1,0 +1,10 @@
+{
+  "seed": 862987,
+  "sources": [
+    {
+      "recording": "runs/ac-ai-speed20-recovery-collection-20261028-t742",
+      "raw_audit": "runs/ac-ai-speed20-recovery-raw-audit-20261028-t743",
+      "targets": "runs/ac-ai-speed20-recovery-receipt-targets-20261028-t744"
+    }
+  ]
+}

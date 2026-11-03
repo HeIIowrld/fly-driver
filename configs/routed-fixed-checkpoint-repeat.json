@@ -1,0 +1,55 @@
+{
+  "protocol_id": "routed-fixed-checkpoint-repeat-20261027-t8",
+  "registered_utc": "2026-10-26T18:17:40.936162+00:00",
+  "status": "registered_before_evaluation",
+  "checkpoint_sha256": "149686a70f42fb2506e8da08e283d0796d1e1141b3ac135be545ca96707b8d18",
+  "base_config": "configs/sensory-visible-bc-pilot.json",
+  "suites": [
+    {
+      "path": "configs/routed-repeat-suite-b1.json",
+      "sha256": "57ace7c20be281f705912a369e7dba5c28f289747958a506b105d768e1497930",
+      "seed": 720101
+    },
+    {
+      "path": "configs/routed-repeat-suite-b2.json",
+      "sha256": "7cab0a6cb0cacfc0648f945a9307129fd9b2cddab105c1628f50e394080a4f8a",
+      "seed": 720201
+    },
+    {
+      "path": "configs/routed-repeat-suite-b3.json",
+      "sha256": "868163b90c36a31e4281a249be8a618b48f0050340f769a897f2518f54bf0e08",
+      "seed": 720301
+    }
+  ],
+  "selection": {
+    "start_x_m": [
+      1.5,
+      2.0,
+      2.5,
+      4.0,
+      4.5,
+      5.0,
+      5.5,
+      6.0,
+      6.5,
+      7.0
+    ],
+    "offset_m_uniform": [
+      -1,
+      1
+    ],
+    "heading_deg_uniform": [
+      -8,
+      8
+    ]
+  },
+  "criterion": "each batch of 10 has at least 9 completion results under original simulator criteria",
+  "fixed_model_no_recalibration": true,
+  "claim_limit": "30 new initial conditions for one fixed model; not three independently trained models",
+  "not_assessed": [
+    "new track",
+    "biological visual/CX fidelity",
+    "AC driving",
+    "hard real-time deadlines"
+  ]
+}

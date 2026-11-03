@@ -1,0 +1,152 @@
+{
+  "status": "development_V_plus_body_12_of_12_not_target_ready",
+  "nodes": 2626,
+  "edge_records": 92740,
+  "graph_path": "assets/external/malecns-visual-cx-candidate-20261027/visual-cx-body.npz",
+  "groups_path": "configs/malecns-visual-cx-groups.json",
+  "old_PFL_input_injection_removed": true,
+  "groups": {
+    "MeTu": {
+      "neurons": 1009,
+      "reaches_output": 1006,
+      "incoming_fraction_retained": 0.12941584962305808,
+      "path_lengths_to_output": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "TuTu": {
+      "neurons": 8,
+      "reaches_output": 8,
+      "incoming_fraction_retained": 0.21479274611398963,
+      "path_lengths_to_output": [
+        2,
+        3,
+        4
+      ]
+    },
+    "TuBu": {
+      "neurons": 156,
+      "reaches_output": 156,
+      "incoming_fraction_retained": 0.7956048978806322,
+      "path_lengths_to_output": [
+        3,
+        4
+      ]
+    },
+    "ER": {
+      "neurons": 282,
+      "reaches_output": 282,
+      "incoming_fraction_retained": 0.8277746992381909,
+      "path_lengths_to_output": [
+        2,
+        3
+      ]
+    },
+    "compass_recurrent": {
+      "neurons": 110,
+      "reaches_output": 110,
+      "incoming_fraction_retained": 0.7440222032450897,
+      "path_lengths_to_output": [
+        2,
+        3
+      ]
+    },
+    "Delta7": {
+      "neurons": 42,
+      "reaches_output": 42,
+      "incoming_fraction_retained": 0.9355037465466182,
+      "path_lengths_to_output": [
+        2
+      ]
+    },
+    "PFL": {
+      "neurons": 36,
+      "reaches_output": 36,
+      "incoming_fraction_retained": 0.27146750478032483,
+      "path_lengths_to_output": [
+        1,
+        2
+      ]
+    },
+    "FC2_goal_candidate": {
+      "neurons": 92,
+      "reaches_output": 92,
+      "incoming_fraction_retained": 0.01838441042089525,
+      "path_lengths_to_output": [
+        2
+      ]
+    },
+    "base_body_steering": {
+      "neurons": 891,
+      "reaches_output": 866,
+      "incoming_fraction_retained": 0.0864331118595252,
+      "path_lengths_to_output": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  },
+  "ordered_direct_chain": [
+    {
+      "stage": "MeTu",
+      "neurons": 1009,
+      "reaches_output_via_every_later_stage": 974
+    },
+    {
+      "stage": "TuBu",
+      "neurons": 156,
+      "reaches_output_via_every_later_stage": 156
+    },
+    {
+      "stage": "ER",
+      "neurons": 282,
+      "reaches_output_via_every_later_stage": 282
+    },
+    {
+      "stage": "EPG",
+      "neurons": 46,
+      "reaches_output_via_every_later_stage": 46
+    },
+    {
+      "stage": "Delta7",
+      "neurons": 42,
+      "reaches_output_via_every_later_stage": 42
+    },
+    {
+      "stage": "PFL",
+      "neurons": 36,
+      "reaches_output_via_every_later_stage": 28
+    },
+    {
+      "stage": "DNa02",
+      "neurons": 2,
+      "reaches_output_via_every_later_stage": 2
+    }
+  ],
+  "driving_evaluated": true,
+  "retinal_registration_assigned": false,
+  "signs_assigned": false,
+  "evidence": "docs/visual-cx-audit-20261027.md",
+  "files_sha256": {
+    "annotations.json": "ba18b00ea1c29903115bde2b36d1c147d54ff6ab3ca7a6762797885a9fe3d767",
+    "audit.json": "476860eb2ed6c4ecf5f51de5a91546b02c33b7ef8d2307fdfbb6eef05f831a49",
+    "candidate-neurotransmitters.json": "45b5e30a486302fc8c087e06f66f59ec54b346a3eee5b7bc0ab9d812f0638c27",
+    "summary.json": "e3c9b4dfc0e2116630133bcdb837ad17f405b1d7bc0c7525e92abe41c9a19601",
+    "visual-cx-body.npz": "60a3e19d6c0e29217d3549375f15e670c65b9e03b3123b813d1f23f3fc4f538b"
+  },
+  "experimental_model_result": "configs/local-organ-result.json",
+  "experimental_model_completion": "base4/4; larger_curves8/8",
+  "policy_ready": false,
+  "prior_local_model_result": "configs/local-retinal-circuit-result.json",
+  "body_feedback_active": true
+}

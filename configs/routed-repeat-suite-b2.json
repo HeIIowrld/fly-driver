@@ -1,0 +1,77 @@
+{
+  "role": "preregistered_fixed_checkpoint_initial_condition_repeat",
+  "protocol_id": "routed-fixed-checkpoint-repeat-20261027-t8",
+  "steps": 8000,
+  "cases": [
+    {
+      "name": "repeat_b2_c01",
+      "seed": 720201,
+      "start_x": 1.5,
+      "lateral_offset": 0.8447238398276806,
+      "heading_offset_degrees": -2.5718723871794165
+    },
+    {
+      "name": "repeat_b2_c02",
+      "seed": 720202,
+      "start_x": 2.0,
+      "lateral_offset": -0.5370285325312973,
+      "heading_offset_degrees": -5.028008951082187
+    },
+    {
+      "name": "repeat_b2_c03",
+      "seed": 720203,
+      "start_x": 2.5,
+      "lateral_offset": 0.22194792654566542,
+      "heading_offset_degrees": -7.611797339691854
+    },
+    {
+      "name": "repeat_b2_c04",
+      "seed": 720204,
+      "start_x": 4.0,
+      "lateral_offset": -0.00044015180977696744,
+      "heading_offset_degrees": -1.465028579555625
+    },
+    {
+      "name": "repeat_b2_c05",
+      "seed": 720205,
+      "start_x": 4.5,
+      "lateral_offset": -0.320985630089887,
+      "heading_offset_degrees": 5.424087771303158
+    },
+    {
+      "name": "repeat_b2_c06",
+      "seed": 720206,
+      "start_x": 5.0,
+      "lateral_offset": -0.7334222889854294,
+      "heading_offset_degrees": -4.366888529831606
+    },
+    {
+      "name": "repeat_b2_c07",
+      "seed": 720207,
+      "start_x": 5.5,
+      "lateral_offset": -0.003711594379685712,
+      "heading_offset_degrees": -3.479052502393028
+    },
+    {
+      "name": "repeat_b2_c08",
+      "seed": 720208,
+      "start_x": 6.0,
+      "lateral_offset": -0.5997955391921048,
+      "heading_offset_degrees": 6.436591974262647
+    },
+    {
+      "name": "repeat_b2_c09",
+      "seed": 720209,
+      "start_x": 6.5,
+      "lateral_offset": -0.6755486316931711,
+      "heading_offset_degrees": 6.9369204011430075
+    },
+    {
+      "name": "repeat_b2_c10",
+      "seed": 720210,
+      "start_x": 7.0,
+      "lateral_offset": -0.2069560942772386,
+      "heading_offset_degrees": -1.4223086106038743
+    }
+  ]
+}

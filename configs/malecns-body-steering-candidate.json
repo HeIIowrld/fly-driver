@@ -1,0 +1,40 @@
+{
+  "status": "structural_candidate_not_policy_ready",
+  "nodes": 927,
+  "edge_records": 11526,
+  "input_ports": 662,
+  "organ_inputs": 626,
+  "visual_CX_boundary_inputs": 36,
+  "output_body_ids": [
+    "10360",
+    "523769"
+  ],
+  "output_incoming_fraction_retained": {
+    "10360": 0.09404998344918901,
+    "523769": 0.10823558876320073
+  },
+  "untyped_body_ids": [
+    "31696",
+    "32951",
+    "35044",
+    "99866",
+    "813942",
+    "814943",
+    "825792"
+  ],
+  "graph_path": "assets/external/malecns-body-steering-candidate-20261027/body-steering.npz",
+  "ports_path": "assets/external/malecns-body-steering-candidate-20261027/ports.json",
+  "limitations": [
+    "PFL is a cut visual/CX boundary, upstream visual circuit absent",
+    "organ tuning/subtype and vehicle transduction are not assigned",
+    "separate visual/body adapters absent; fused injection is prohibited",
+    "signs, receptors, time constants and vehicle output sign unverified"
+  ],
+  "artifacts_sha256": {
+    "audit.json": "822ebdf76f298383dfba92762ff8da2049ea759c670a015ec17cf1558f388573",
+    "body-steering.json": "e2c6f6fe1c54cef1fc36e4e7a9b0481159945f0c6535c0c7369a0a5c2368708a",
+    "body-steering.npz": "d06012073b05df988736ea55bc9a89d3f3c26961901bcbab366ca2c7d6e1c0c9",
+    "port-reachability.json": "21199f3e8fe0044949edc7c8476ea5ad58ec098bd24beda7837c9b9dbcd8d8f0",
+    "ports.json": "ff57c508bc22c083d8b820ad05ac69757426444cc004b37c984087aef1c12f44"
+  }
+}

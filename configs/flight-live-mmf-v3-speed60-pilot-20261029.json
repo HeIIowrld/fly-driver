@@ -1,0 +1,36 @@
+{
+  "schema": "flybrain.live_mmf_v3_calibration.v1",
+  "role": "calibration",
+  "fit_allowed": false,
+  "student_deployed": false,
+  "duration_seconds": 30,
+  "teacher_speed_kmh": 60,
+  "actor_speed_ceiling_kmh": 80,
+  "maximum_frames": 1200,
+  "maximum_pending_groups": 8,
+  "maximum_group_bytes": 1048576,
+  "actor_camera_max_age_seconds": 0.15,
+  "actor_wait_max_age_seconds": 0.11,
+  "required_raw_evidence": [
+    "four BMPs",
+    "original source JSON",
+    "original ACK JSON",
+    "actual frame and ACK map slots",
+    "stream line hash and terminal persistence readback"
+  ],
+  "required_paused_proof": "20261029-t1516-paused-mmf-shared-qualification",
+  "required_paused_audit": "20261029-t1517-paused-mmf-raw-audit",
+  "source_sha256": {
+    "src/flybrain_drive/ac_metadata_mmf.py": "1df14bb6fb391a1bfdffc2f2e531364c9aa40b89a6b3432618e1bbc5f9f9f731",
+    "src/flybrain_drive/ac_csp_vision.py": "1d61dc5ba66e06a006868832c6c71d914f3d3cb15c362017d48f2e16fc4ba2af",
+    "src/flybrain_drive/immutable_frame_writer.py": "6e61bc194f53b08a7da4321b1e8935f58f43bcad4570e59587fa249b934ac04b",
+    "src/flybrain_drive/ac_camera_archive.py": "e527162935ccead14627dbefe1e10992bf324250969bedb69fb41e5fd2a6387e",
+    "src/flybrain_drive/ac_shared_texture.py": "bed33b2b71ba597597a92867d82832e6d3848466d2ed7dca36958fdc317e6eaa",
+    "scripts/record_ac_engine_ai_probe.py": "6959dae0ac697933c2b3895c47e71cd3001ae9a21b5357fe21e4b8879d919f9f",
+    "scripts/audit_ac_engine_ai_probe.py": "2d6c073ee0d0e9b4f3bdd683fe0a2ae811462196063b0919b6d14c95c2d74a9e",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "a9f583e54da981c5e700b186d51af09fdb9249aa6112cf89a87608cd05940386"
+  },
+  "failure_policy": "Preserve raw failed slots and incomplete original payloads; no retry, dropped frames or clock changes",
+  "required_moving_preflight": "20261029-t1521-live-mmf-v3-preflight",
+  "required_moving_raw_audit": "20261029-t1522-live-mmf-v3-preflight-raw-audit"
+}

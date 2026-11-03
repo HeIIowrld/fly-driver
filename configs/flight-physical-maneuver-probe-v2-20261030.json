@@ -1,0 +1,38 @@
+{
+  "schema": "flybrain.physical_maneuver_component_probe.v1",
+  "source_spec": "configs/flight-circuit-separated-v5-20261029.json",
+  "source_checkpoint": "runs/flight-separated-command-probe-20261029-t1081/checkpoint.pt",
+  "registered_data": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1649-body-registered-preview-data",
+  "prediction_file": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1659-author-registered-adaptation\\episode-04-development-predictions.npz",
+  "injected_cases": "10 labelled synthetic commands, fixed quiet-body60kmh, .3rad/s yaw, desired20/60/100kmh; no AC inputs sent",
+  "replay": "All739 original DEVELOPMENT observations and738 intervals. Predicted20m chord curvature -> yaw_left=-unsigned_body_speed*predicted_curvature. Fixed desired60kmh for component diagnostic, external ceiling100kmh. Not qualified anticipation, racing pace or a production policy.",
+  "interventions": [
+    "intact",
+    "desired_yaw",
+    "speed_error",
+    "yaw_feedback"
+  ],
+  "predeclared_checks": "Left/right and acceleration/braking signed differences; both yaw feedback directions; ceiling-only invariance; target/speed/yaw-feedback matched intervention pair errors <=1e-7; cut all driven neural input populations -> all motor activity <=1e-7. Whole original replay, no clipping labels/commands, no hidden resets or gap repair. Passing only component signal routing, not physiological or vehicle qualification.",
+  "optimizer_updates": 0,
+  "actor_qualified": false,
+  "source_date": "2026-10-30",
+  "input_sha256": {
+    "src/flybrain_drive/flight_maneuver.py": "6219f0b1dc8b7a330f5dd31476acf1ed7b836f42085307932082437a524f9e92",
+    "src/flybrain_drive/flight_commands.py": "8339875605819e610234f695b6665e44d9d1bc3c3b6c8e516a06787a90615e95",
+    "src/flybrain_drive/flight_circuit.py": "ea8c6ce537c3ea41f23ce192a932ea081572eeb181f368acb9e83fd92f715eca",
+    "src/flybrain_drive/vehicle_circuit.py": "cf30f028307d2c4ed795a73d531ae0e17cfa9715ea7a233e669da8ea21ba30d5",
+    "src/flybrain_drive/racing_goal.py": "1e90d9df76b1a070ff9058ec5db8a58232cc9b0aab16231581d6bab7e7c7ef3d",
+    "src/flybrain_drive/flight_actuator.py": "1ea383a8abbcca788a279f672611435d9f1596630bca5b22bead087a9340be2f",
+    "scripts/probe_physical_flight_maneuver.py": "9f4439a6338cf0fb3c7b1453b22c919fce7d6421fdd0fece282058c65ee62690",
+    "scripts/train_visual_body_preview.py": "6529f7f992f14c4abdd850406bd1d22df62b503b19fa0981e7e784b199ab15e8",
+    "configs/flight-circuit-separated-v5-20261029.json": "521d1641a4a7ef50eb95f19ed9ad5380faf8a22ea83400d5aefbe2963d70c33f",
+    "configs/ac-virtual-navigation-body-v2.json": "5cf92b9af473092c8baf2b56783f826c41b93e77ab876795276fc07943c1ed50",
+    "runs/flight-separated-command-probe-20261029-t1081/checkpoint.pt": "01a7a68372b76c68336f0403da48702a7f2f6f181f3e2567aecc6e9bd0e43116",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1649-body-registered-preview-data\\dataset.json": "60b6c77e8690d0e832a8fa309487a9b2383cecca8ddb1d612bb5ed10b25ab365",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1659-author-registered-adaptation\\episode-04-development-predictions.npz": "8d331d7318c0d8e5aa196fa42e736a500eb0421509882d7b1a6ba266972bc04c",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1660-author-registered-adaptation-audit\\result.json": "11c8c1f460cd0c4832d7e6f32e9b63eb683ceaeb94b881ad7da908b2f5d7b434"
+  },
+  "revision": 2,
+  "previous_failed_run": "20261030-t1662-physical-maneuver-probe",
+  "body_precision": "Original float64 body21 records retained; explicit float32 tensor at fixed float32 neural boundary; masks unchanged"
+}

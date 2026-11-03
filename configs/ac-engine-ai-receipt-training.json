@@ -1,0 +1,57 @@
+{
+  "source_checkpoint": "runs/ac-road-recovery-base-training-20261028-t499/checkpoint.pt",
+  "source_checkpoint_sha256": "212c00d1859a539c9a483d2fe0e564e98887be5c838c2b983ccb5c63e2d6f83d",
+  "seed": 862963,
+  "epochs": 16,
+  "chunk_length": 64,
+  "learning_rate": 2e-05,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "action_profile": "normalized_ac_absolute",
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "organ_validity_mode": "gate_only",
+  "pedal_mode": "independent",
+  "episodes_per_batch": null,
+  "readout_gain_parameterization": "log",
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "teacher_label_contract": {
+    "kind": "engine_ai_future_applied_control_receipt_v1",
+    "actor_steering_device_scale": 0.6,
+    "ai_steer_multiplier": 0.9,
+    "ai_speed_hint_kmh": 15,
+    "target_receipt_horizon_seconds": 0.04,
+    "maximum_target_lateness_seconds": 0.025,
+    "clock": "host_monotonic_QPC_time.perf_counter",
+    "physical_command_time_verified": false,
+    "interpretation": "Executed applied native-control receipt surrogate, not internal AI request. Inverse stationary codec; moving control lag remains an engineering approximation."
+  },
+  "brake_positive_weight": 1.0,
+  "brake_label_threshold": 0.05,
+  "optimizer_update_scope": "epoch",
+  "evaluation_exclusion": {
+    "directory": "runs\\ac-bundled-yaw-teacher-sealed-20261028-t347\\dataset",
+    "manifest_sha256": "067215f1e72480e6d37f1a48aded0513f329b0dd21ea2c87257ca67e94da71c0",
+    "role": "next recorded track section reserved from gradient updates; not a final circuit test"
+  },
+  "device": "cuda",
+  "training_sparse_backend": "cached_csr_gpu",
+  "deployment_sparse_backend": "cached_csr_cpu",
+  "chunk_validated_training": true,
+  "readout_gain_learning_rate": 0.005,
+  "resource_experiment": {
+    "scope": "First executed applied-control receipt surrogate fit, independent from geometric desired-command objective. Source499 keeps its existing bounded qualification; this candidate is not deployed.",
+    "workers": 1,
+    "data_decisions": 1473,
+    "supervised_per_head": 1464,
+    "explicit_clips": 3,
+    "frozen_source_graph": true,
+    "source_success_regression_evaluation_required": true,
+    "policy_anchors_in_training": false,
+    "live_capture_and_training_scheduled_separately": true
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "flybrain.flight.speed_episode_plan.v1",
+  "seed": 863451,
+  "spec": "configs/flight-circuit-speed-goal-v4-20261029.json",
+  "episodes": [
+    {
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1412-teacher-corpus-v4\\episode-00-train",
+      "scene_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-00-train\\vision",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-00-train\\body",
+      "teacher_dataset": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1425-v4-fixed-roles\\train-dataset",
+      "teacher_episode": "episode-00-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "train"
+    },
+    {
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1412-teacher-corpus-v4\\episode-01-train",
+      "scene_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-01-train\\vision",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-01-train\\body",
+      "teacher_dataset": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1425-v4-fixed-roles\\train-dataset",
+      "teacher_episode": "episode-01-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "train"
+    },
+    {
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1412-teacher-corpus-v4\\episode-02-development",
+      "scene_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-02-development\\vision",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-02-development\\body",
+      "teacher_dataset": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1425-v4-fixed-roles\\development-dataset",
+      "teacher_episode": "episode-00-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "development"
+    },
+    {
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1412-teacher-corpus-v4\\episode-03-train",
+      "scene_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-03-train\\vision",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-03-train\\body",
+      "teacher_dataset": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1425-v4-fixed-roles\\train-dataset",
+      "teacher_episode": "episode-02-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "train"
+    },
+    {
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1412-teacher-corpus-v4\\episode-04-train",
+      "scene_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-04-train\\vision",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-04-train\\body",
+      "teacher_dataset": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1425-v4-fixed-roles\\train-dataset",
+      "teacher_episode": "episode-03-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "train"
+    },
+    {
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1412-teacher-corpus-v4\\episode-06-train",
+      "scene_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-06-train\\vision",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1417-v4-visual-body-preparation\\episode-06-train\\body",
+      "teacher_dataset": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1425-v4-fixed-roles\\train-dataset",
+      "teacher_episode": "episode-04-00.npz",
+      "desired_speed_kmh": 30,
+      "role": "train"
+    }
+  ],
+  "source_preparation": "20261029-t1417-v4-visual-body-preparation",
+  "source_role_seal": "20261029-t1425-v4-fixed-roles",
+  "role_policy": "Original preassigned train5/development1, evaluation and failed partial excluded; no source aid-absence qualification upgrade; no braking qualification"
+}

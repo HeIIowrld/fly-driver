@@ -1,0 +1,203 @@
+{
+  "date": "2026-10-27",
+  "scope": "four-view shared 6557-neuron circuit; fixed 1.5m/s MuJoCo curvature proxy; open model roads",
+  "dataset_decisions": 2781,
+  "episodes": 13,
+  "epochs": 6,
+  "optimizer_updates": 264,
+  "results": {
+    "coo": {
+      "cases": [
+        {
+          "condition": "teacher_reference",
+          "case": "full-road-base",
+          "seed": 830301,
+          "steps": 1675,
+          "reason": "completion",
+          "completion": true,
+          "progress_delta_m": 96.74166793084324,
+          "lateral_rms_m": 0.027934613272374124,
+          "steering_rms": 0.038306042167080015
+        },
+        {
+          "condition": "teacher_reference",
+          "case": "full-road-new-curve",
+          "seed": 830302,
+          "steps": 1677,
+          "reason": "completion",
+          "completion": true,
+          "progress_delta_m": 96.8540774326889,
+          "lateral_rms_m": 0.022308354307322392,
+          "steering_rms": 0.030621537051183954
+        },
+        {
+          "condition": "normal",
+          "case": "full-road-base",
+          "seed": 830301,
+          "steps": 1676,
+          "reason": "completion",
+          "completion": true,
+          "progress_delta_m": 96.74146052594772,
+          "lateral_rms_m": 0.05378304411421405,
+          "steering_rms": 0.07201071658892516
+        },
+        {
+          "condition": "normal",
+          "case": "full-road-new-curve",
+          "seed": 830302,
+          "steps": 1678,
+          "reason": "completion",
+          "completion": true,
+          "progress_delta_m": 96.8644486108222,
+          "lateral_rms_m": 0.05274922141609426,
+          "steering_rms": 0.0569240507114111
+        },
+        {
+          "condition": "vision_missing",
+          "case": "full-road-base",
+          "seed": 830301,
+          "steps": 414,
+          "reason": "track_exit",
+          "completion": false,
+          "progress_delta_m": 22.677873024598668,
+          "lateral_rms_m": 1.2553265358681902,
+          "steering_rms": 3.192531117511947e-09
+        },
+        {
+          "condition": "vision_missing",
+          "case": "full-road-new-curve",
+          "seed": 830302,
+          "steps": 462,
+          "reason": "track_exit",
+          "completion": false,
+          "progress_delta_m": 25.514208376301905,
+          "lateral_rms_m": 1.2331743724916542,
+          "steering_rms": 3.2292288874492395e-09
+        }
+      ],
+      "closed_loop_evaluated": true,
+      "AC_ready": false,
+      "goal_achieved": false,
+      "note": "Surviving this short segment is not a completed circuit lap"
+    },
+    "cached_csr_cpu": {
+      "cases": [
+        {
+          "condition": "teacher_reference",
+          "case": "full-road-base",
+          "seed": 830301,
+          "steps": 1675,
+          "reason": "completion",
+          "completion": true,
+          "progress_delta_m": 96.74166793084324,
+          "lateral_rms_m": 0.027934613272374124,
+          "steering_rms": 0.038306042167080015
+        },
+        {
+          "condition": "teacher_reference",
+          "case": "full-road-new-curve",
+          "seed": 830302,
+          "steps": 1677,
+          "reason": "completion",
+          "completion": true,
+          "progress_delta_m": 96.8540774326889,
+          "lateral_rms_m": 0.022308354307322392,
+          "steering_rms": 0.030621537051183954
+        },
+        {
+          "condition": "normal",
+          "case": "full-road-base",
+          "seed": 830301,
+          "steps": 1676,
+          "reason": "completion",
+          "completion": true,
+          "progress_delta_m": 96.72952360306738,
+          "lateral_rms_m": 0.05252600061455667,
+          "steering_rms": 0.07311057343713086
+        },
+        {
+          "condition": "normal",
+          "case": "full-road-new-curve",
+          "seed": 830302,
+          "steps": 1678,
+          "reason": "completion",
+          "completion": true,
+          "progress_delta_m": 96.85958351649364,
+          "lateral_rms_m": 0.05105162240586097,
+          "steering_rms": 0.059711335021833165
+        },
+        {
+          "condition": "vision_missing",
+          "case": "full-road-base",
+          "seed": 830301,
+          "steps": 414,
+          "reason": "track_exit",
+          "completion": false,
+          "progress_delta_m": 22.677873024598668,
+          "lateral_rms_m": 1.2553265358681902,
+          "steering_rms": 3.192531117511947e-09
+        },
+        {
+          "condition": "vision_missing",
+          "case": "full-road-new-curve",
+          "seed": 830302,
+          "steps": 462,
+          "reason": "track_exit",
+          "completion": false,
+          "progress_delta_m": 25.514208376301905,
+          "lateral_rms_m": 1.2331743724916542,
+          "steering_rms": 3.2292288874492395e-09
+        }
+      ],
+      "closed_loop_evaluated": true,
+      "AC_ready": false,
+      "goal_achieved": false,
+      "note": "Surviving this short segment is not a completed circuit lap"
+    }
+  },
+  "comparison": {
+    "scope": "same sealed data, parent, optimizer and constructor; sparse backend differs",
+    "checkpoint_sha256": [
+      "76b053ed44d891fdad5a84578f810d817d5a9ed1d8ed91b1d2419a421b8a4284",
+      "14c8b79ac124ddfe9b704480aae8c6501e8e70d4315437bd0cfe707da7235f87"
+    ],
+    "selected_epoch": 6,
+    "optimizer_updates": 264,
+    "max_floating_state_dict_error": 1.9650906324386597e-07,
+    "nonzero_state_dict_errors": {
+      "adapter.visual_adapter.weight": 1.9650906324386597e-07
+    },
+    "epoch_rmse_absolute_errors": [
+      8.374675952715904e-10,
+      1.2773559154855008e-09,
+      6.941080765709984e-10,
+      2.279209557198847e-09,
+      3.353538557959723e-10,
+      1.4164768247226789e-09
+    ],
+    "epoch_seconds": [
+      [
+        204.91099024,
+        205.19574032700007,
+        206.54777571,
+        205.66122701100005,
+        199.65515384399987,
+        197.75013358899992
+      ],
+      [
+        42.64496001700002,
+        43.410321253000006,
+        42.850697310999976,
+        42.41583620999995,
+        43.106975975999944,
+        44.03858245399999
+      ]
+    ],
+    "timing_caveat": "runs overlapped on same host; not a biological architecture comparison"
+  },
+  "native_AC_driving_verified": false,
+  "native_pedals_trained": false,
+  "multi_view_advantage_verified": false,
+  "goal_achieved": false,
+  "report": "docs/multiview-dagger-20261027.md"
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "flybrain.flight.visual_guarded_training.v2_balanced",
+  "spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "source": "runs/flight-separated-command-probe-20261029-t1081",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1360-v2-flight-episode-cache",
+  "dataset_plan": "configs/flight-v2-complete-train-development-episodes-20261029.json",
+  "seed": 863361,
+  "epochs": 6,
+  "chunk_observations": 64,
+  "learning_rate": 0.003,
+  "normalization_std_floor": 0.005,
+  "maximum_line_search_trials": 8,
+  "line_search_contraction": 0.5,
+  "armijo": 0.0001,
+  "turn_objective": "equal_left_right_neutral",
+  "loss_precision": "float64 class losses and accumulation, float32 neural state and parameters",
+  "training_objective": "Equal left/right/neutral bounded logistic loss on all original valid train targets. Threshold0.01; no label duplication, deletion or retiming.",
+  "gradient": "Fixed parameters throughout each complete chronological training pass. Numerical recurrent state preserved across64-observation derivative detaches.",
+  "checkpoint_selection": "last fixed sixth epoch; development and evaluation excluded from fit, normalization and line-search acceptance",
+  "source_recordings_aid_absence_verified": false,
+  "new_boundary_fit_recordings_aid_absence_verified": true,
+  "new_data_lineage": {
+    "policy": "complete_original_fixed_roles_v1",
+    "source_dataset": "runs/flight-speed-episode-data-20261029-t1070",
+    "collection": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1335-teacher-corpus-v2",
+    "role_seal": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1344-v2-role-sealed"
+  },
+  "scope": "New visual boundary fit from frozen calibrated v5 source, using6 complete preassigned train episodes. Inherited body encoder, motor references and non-scene parameters stay frozen; old source data aid qualification is not upgraded. Original50ms body circuit only; no fast-path/live qualification inherited. No longitudinal supervision, physiological visual-fusion claim or circuit-lap qualification.",
+  "goal_achieved": false
+}

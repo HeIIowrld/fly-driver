@@ -1,0 +1,15 @@
+{
+  "status": "annotation_inventory_only_not_reviewed_sensor_ports",
+  "inventory_path": "assets/external/malecns-body-port-inventory-20261027/inventory.json",
+  "source_registry": "configs/malecns-recovered-source.json",
+  "script": "scripts/inventory_body_ports.py",
+  "selection": {"status": "Traced", "class": "mechanosensory_proprioceptive"},
+  "annotated_neurons": 1454,
+  "present_in_recovered_graph": 1454,
+  "chordotonal_organ_subclass": 425,
+  "haltere_subclass": 201,
+  "FeCO_claw_hook_club_body_ID_mapping": "not_verified",
+  "vehicle_input_side_sign_mapping": "not_verified",
+  "functional_reference": "https://www.nature.com/articles/s41467-025-59302-3",
+  "reference_dataset": "FANC/FlyWire; physiological roles cannot be assigned to MaleCNS IDs without reviewed mapping"
+}

@@ -1,0 +1,10 @@
+{
+  "purpose": "camera + sensor-only recurrent PPO path smoke; no autonomy claim",
+  "seed": 1,
+  "policy": "gru",
+  "torch_threads": 1,
+  "horizon": 32,
+  "updates": 1,
+  "epochs": 2,
+  "environment": {"mode": "V", "max_steps": 64, "image_size": 32}
+}

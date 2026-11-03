@@ -1,0 +1,77 @@
+{
+  "scope": "Complete 100m open model road evaluation; not a closed circuit lap or native AC driving",
+  "seed": 810101,
+  "data_seed": 810201,
+  "source_checkpoint": "runs/multiview-20261027-t25c/runs/multiview-component/multiview-initialized.pt",
+  "source_checkpoint_sha256": "7831c051d3294eb3b7753d179da9477d5696536ae68a08dfcd33b9eee395d994",
+  "view_maps": "runs/multiview-20261027-t25c/runs/multiview-component/view-maps.json",
+  "view_maps_sha256": "c0818787de8e6516a5a0b360ed794c641b501091461103ee1d049e86535d0bf9",
+  "source_config": "configs/sensory-anatomical-eye-pilot.json",
+  "scalar_calibration": "configs/vehicle-scalar-organs.json",
+  "control_dt_seconds": 0.04,
+  "brain_ticks_per_decision": 4,
+  "source_size": 96,
+  "period_decisions": [
+    1,
+    2,
+    2,
+    2
+  ],
+  "fixed_speed_mps": 1.5,
+  "action_profile": "mujoco_curvature_proxy_only",
+  "trainable": "local multi-view retinal transduction only; recurrent graph and body adapters fixed",
+  "epochs": 8,
+  "chunk_length": 32,
+  "learning_rate": 0.0002,
+  "target_initial_steering_rms": 0.15,
+  "max_steering_gain": 100000000,
+  "training_episodes": [
+    {
+      "name": "train-a",
+      "start_x": 3,
+      "steps": 128
+    },
+    {
+      "name": "train-b",
+      "start_x": 35,
+      "lateral_offset": 0.3,
+      "heading_offset_degrees": 5,
+      "steps": 128
+    },
+    {
+      "name": "train-c",
+      "start_x": 65,
+      "lateral_offset": -0.3,
+      "heading_offset_degrees": -5,
+      "steps": 128
+    },
+    {
+      "name": "train-d",
+      "start_x": 80,
+      "steps": 128
+    }
+  ],
+  "evaluation": {
+    "steps": 2000,
+    "cases": [
+      {
+        "name": "full-road-base",
+        "seed": 820301,
+        "start_x": 3,
+        "lateral_offset": 0,
+        "heading_offset_degrees": 0
+      }
+    ],
+    "conditions": [
+      "normal",
+      "vision_missing"
+    ]
+  },
+  "AC_ready": false,
+  "photometric_normalization": {
+    "rgb_floor": 0.03,
+    "contrast_floor": 0.1
+  },
+  "evaluation_checkpoint": "runs/multiview-photometry-20261027-t27/runs/training/checkpoint.pt",
+  "evaluation_checkpoint_sha256": "a9baddb6413c77948f292a2882ff5ad098fb3990aa606b36165b9259f3aa2262"
+}

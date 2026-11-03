@@ -1,0 +1,12 @@
+{
+  "seed": 862953,
+  "workers": 1,
+  "dataset": "runs/ac-curve-countersteer-training-data-20261028-t571",
+  "experiments": [
+    {
+      "name": "countersteer",
+      "config": "configs/ac-curve-countersteer-training.json",
+      "output": "runs/ac-curve-countersteer-training-20261028-t574"
+    }
+  ]
+}

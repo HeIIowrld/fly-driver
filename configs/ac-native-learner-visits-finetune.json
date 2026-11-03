@@ -1,0 +1,35 @@
+{
+  "source_checkpoint": "runs/ac-native-fixed-task-finetune-20261028-t100/checkpoint.pt",
+  "source_checkpoint_sha256": "72facd78629e9ccb1aaf8d75232f8815b5f565e53a34ba574e43316c38caef09",
+  "seed": 862001,
+  "action_profile": "normalized_ac_absolute",
+  "epochs": 4,
+  "chunk_length": 16,
+  "learning_rate": 0.0001,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "pedal_mode": "independent",
+  "condition_steering_gain": false,
+  "photometric_normalization": {
+    "rgb_floor": 0.03,
+    "contrast_floor": 0.1
+  },
+  "organ_validity_mode": "gate_only",
+  "experiment": "Native learner-visited DAgger: fixed-task 1050 states plus 150 actually visited stalled states, expert queries not executed",
+  "readout_gain_parameterization": "log",
+  "readout_gain_learning_rate": 0.03,
+  "teacher_label_contract": {
+    "kind": "geometric_recovery_fixed_task",
+    "maximum_speed_kmh": 20.0,
+    "reference_sha256": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4",
+    "track_sha256": "adfbf94c3625c872507b406d02b6e375274901427db77555f7899121a2d1c414",
+    "kinematic_calibration_sha256": "74ebd207888e4010870c93fd1e2c4106330048330e1e8845c19043f53044d787",
+    "teacher_implementation_sha256": "634d440a02de2fa576d3f6124bfaec517dca4ee5f0ebb34674583a415f3342df",
+    "interpretation": "teacher-only geometric desired control at recorded states; not executed"
+  }
+}

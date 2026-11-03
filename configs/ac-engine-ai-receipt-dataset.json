@@ -1,0 +1,15 @@
+{
+  "seed": 862953,
+  "sources": [
+    {
+      "recording": "runs/ac-ai-collect30-probe-20261028-t629",
+      "raw_audit": "runs/ac-ai-collect30-fast-audit-20261028-t636",
+      "targets": "runs/ac-ai-collect30-receipt-targets-20261028-t631"
+    },
+    {
+      "recording": "runs/ac-ai-next30-probe-20261028-t634",
+      "raw_audit": "runs/ac-ai-next30-fast-audit-20261028-t637",
+      "targets": "runs/ac-ai-next30-receipt-targets-20261028-t638"
+    }
+  ]
+}

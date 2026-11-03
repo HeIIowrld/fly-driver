@@ -1,0 +1,46 @@
+{
+  "schema": "flybrain.paired_intermediate_preview_learning.v1",
+  "feature_mode": "retinotopic_pair",
+  "readout_batch": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1536-intermediate-visual-readout",
+  "preview_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1533-spatial-preview-dataset",
+  "training_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1537-retinotopic-preview-dataset",
+  "scene_spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "conditions": [
+    "raw_control",
+    "processed_actual"
+  ],
+  "seed": 863537,
+  "epochs": 200,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "channel_scale_floor": 1e-05,
+  "feature_scale_floor": 1e-05,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "architecture": "Identical14to8 shared patch,512to64 tanh,64to6 preview readout in both conditions",
+  "objective": "Six equally weighted standardized TRAIN-valid preview MSEs; no target clipping",
+  "normalization": "Per-channel TRAIN moments before tanh/pooling, then TRAIN pooled-feature moments. No development calibration.",
+  "checkpoint": "Fixed last200; no development-based choice",
+  "actor_input": "Only visual signals; candidate actual L1/L2/Mi1/Tm3/Tm1/Tm9 plus T4/T5, no direct raw-intensity input",
+  "raw_control": "Raw intensity, five constant-zero channels, and same eight T4/T5 channels; identical dimensions and initial weights",
+  "report_periods": [
+    "full",
+    "after3s"
+  ],
+  "roles": "Original8 TRAIN/2 known development unchanged; failed physical episode excluded",
+  "physiological_function_not_asserted": true,
+  "source_sha256": {
+    "scripts/build_retinotopic_preview_dataset.py": "1d314d111754039c640eacad9c140c14d3d2ae0195c9f7dd8825c5d20dd886c3",
+    "scripts/train_spatial_preview_boundary.py": "e9341be68e4bb4cd8a4542ea6aa75f9563ba9a9bc9b76c1b8a4712a59244e762",
+    "src/flybrain_drive/retinotopic_feature_scaling.py": "5a797dd10964f2da53052cf66ec23b7870bf93ee298ec7f41315c19de75ba71a",
+    "src/flybrain_drive/visual_preview_learning.py": "6e6cfd9820f97b6e9b4b3a9db02e027e23784602c1def75c16ad7b71a5b0436a"
+  },
+  "student_deployed": false,
+  "goal_achieved": false
+}

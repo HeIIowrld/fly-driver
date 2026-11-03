@@ -1,0 +1,62 @@
+{
+  "purpose": "80-second independent paired heldout evaluations; allows low-speed uphill teacher reference",
+  "steps": 8000,
+  "cases": [
+    {
+      "name": "nominal_start",
+      "seed": 8001,
+      "start_x": 3.0
+    },
+    {
+      "name": "nominal_crest",
+      "seed": 8002,
+      "start_x": 35.0
+    },
+    {
+      "name": "same_xy_flat",
+      "seed": 8003,
+      "start_x": 3.0,
+      "road": {
+        "flattened": true
+      }
+    },
+    {
+      "name": "heldout_uphill_bank",
+      "seed": 8004,
+      "start_x": 3.0,
+      "road": {
+        "grade": 0.06,
+        "bank_degrees": -10.0,
+        "hill_amplitude": 1.2,
+        "bump_height": 0.06
+      }
+    },
+    {
+      "name": "heldout_downhill_turn",
+      "seed": 8005,
+      "start_x": 3.0,
+      "road": {
+        "grade": -0.06,
+        "bank_degrees": -10.0,
+        "hill_amplitude": 1.2,
+        "turn_amplitude": 3.0,
+        "turn_period": 60.0,
+        "bump_height": 0.06
+      }
+    },
+    {
+      "name": "heldout_recovery_left",
+      "seed": 8006,
+      "start_x": 3.0,
+      "lateral_offset": 0.9,
+      "heading_offset_degrees": 7.0
+    },
+    {
+      "name": "heldout_recovery_right",
+      "seed": 8007,
+      "start_x": 3.0,
+      "lateral_offset": -0.9,
+      "heading_offset_degrees": -7.0
+    }
+  ]
+}

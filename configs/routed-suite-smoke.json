@@ -1,0 +1,15 @@
+{
+  "steps": 3,
+  "cases": [
+    {
+      "name": "override_smoke_a",
+      "seed": 729001,
+      "start_x": 4
+    },
+    {
+      "name": "override_smoke_b",
+      "seed": 729002,
+      "start_x": 5
+    }
+  ]
+}

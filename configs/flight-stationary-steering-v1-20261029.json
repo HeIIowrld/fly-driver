@@ -1,0 +1,20 @@
+{
+  "schema": "flybrain.flight.stationary_steering_probe.v1",
+  "inference_config": "configs/flight-stream-batched-v1-20261029.json",
+  "inference_verification": "runs/flight-stream-batched-replay-20261029-t1132",
+  "axis_config": "configs/ac-axis-probe.json",
+  "calibration_reference": "runs/ac-shared-lateral-recovery-prepare-20261029-t933/calibration",
+  "steering_request_scale": 0.6,
+  "maximum_steering_request": 0.1,
+  "maximum_speed_kmh": 0.1,
+  "period_seconds": 0.04,
+  "samples_per_stage": 25,
+  "stages": [
+    {"name": "visual_baseline", "task_turn_bias": 0.0},
+    {"name": "left_task_command", "task_turn_bias": 0.5},
+    {"name": "right_task_command", "task_turn_bias": -0.5},
+    {"name": "return_to_visual", "task_turn_bias": 0.0}
+  ],
+  "maximum_output_source_age_seconds": 0.15,
+  "scope": "Predetermined task-bias component probe through original measured flight edges. Steering only; throttle0/brake1 override throughout. Not vision-based navigation, longitudinal learning or student driving qualification."
+}

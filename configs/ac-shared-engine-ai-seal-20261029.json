@@ -1,0 +1,26 @@
+{
+  "seed": 863005,
+  "sources": [
+    {
+      "recording": "runs/ac-shared-engine-ai-recording-20261029-t891",
+      "targets": "runs/ac-shared-engine-ai-targets-20261029-t893",
+      "raw_audit": "runs/ac-shared-engine-ai-raw-audit-20261029-t892"
+    },
+    {
+      "recording": "runs/ac-shared-engine-ai-next-recording-20261029-t896",
+      "targets": "runs/ac-shared-engine-ai-next-targets-20261029-t898",
+      "raw_audit": "runs/ac-shared-engine-ai-next-raw-audit-20261029-t897"
+    },
+    {
+      "recording": "runs/ac-shared-engine-ai-curve-recording-20261029-t901",
+      "targets": "runs/ac-shared-engine-ai-curve-targets-20261029-t903",
+      "raw_audit": "runs/ac-shared-engine-ai-curve-raw-audit-20261029-t902"
+    },
+    {
+      "recording": "runs/ac-shared-engine-ai-recovery-recording-20261029-t906",
+      "targets": "runs/ac-shared-engine-ai-recovery-targets-20261029-t908",
+      "raw_audit": "runs/ac-shared-engine-ai-recovery-raw-audit-20261029-t907"
+    }
+  ],
+  "scope": "Actual shared-texture15kmh task; recovery warmup20kmh excluded from labels. No student requests or interpolated observations."
+}

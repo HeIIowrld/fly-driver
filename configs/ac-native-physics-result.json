@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-27",
+  "status": "native AC raw physics recorded; native actor/control pending",
+  "runs": [
+    "runs/ac-native-physics-20261027-t28",
+    "runs/ac-native-physics-20261027-t28b"
+  ],
+  "results": [
+    {
+      "status": "completed",
+      "samples": 50,
+      "first_packet_id": 245968,
+      "last_packet_id": 246306,
+      "identity": {
+        "shared_memory_version": "1.7",
+        "ac_version": "1.16.4",
+        "car_model": "bmw_z4_gt3",
+        "track": "monza"
+      },
+      "actual_motion_response_verified": false,
+      "native_units_and_axes_calibrated": false,
+      "image_synchronization_verified": false,
+      "actor_stream_created": false,
+      "actuator_messages_sent": 0,
+      "goal_achieved": false
+    },
+    {
+      "status": "completed",
+      "samples": 200,
+      "first_packet_id": 336892,
+      "last_packet_id": 338262,
+      "identity": {
+        "shared_memory_version": "1.7",
+        "ac_version": "1.16.4",
+        "car_model": "bmw_z4_gt3",
+        "track": "monza"
+      },
+      "actual_motion_response_verified": false,
+      "native_units_and_axes_calibrated": false,
+      "image_synchronization_verified": false,
+      "actor_stream_created": false,
+      "actuator_messages_sent": 0,
+      "goal_achieved": false
+    }
+  ],
+  "samples": 250,
+  "identity": {
+    "shared_memory_version": "1.7",
+    "ac_version": "1.16.4",
+    "car_model": "bmw_z4_gt3",
+    "track": "monza"
+  },
+  "source_registry": "assets/external/ac-native-memory-20261027/source.json",
+  "native_read_only_mapping": true,
+  "actor_stream_created": false,
+  "native_units_and_axes_calibrated": false,
+  "image_synchronization_verified": false,
+  "actuator_messages_sent": 0,
+  "Windows_security_prompt_requires_user_action": true,
+  "report": "docs/ac-native-physics-20261027.md",
+  "goal_achieved": false
+}

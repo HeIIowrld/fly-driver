@@ -1,0 +1,32 @@
+{
+  "source_checkpoint": "runs/ac-csp-geometric-dagger-training-20261028-t195/checkpoint.pt",
+  "source_checkpoint_sha256": "7f46c6d283f8c38d24543f38518f70a304b099adc589a2d4995869bb6a622d30",
+  "seed": 862829,
+  "action_profile": "normalized_ac_absolute",
+  "epochs": 8,
+  "chunk_length": 16,
+  "learning_rate": 0.0001,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "pedal_mode": "independent",
+  "organ_validity_mode": "gate_only",
+  "readout_gain_parameterization": "log",
+  "readout_gain_learning_rate": 0.03,
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "condition_steering_gain": false,
+  "teacher_label_contract": {
+    "kind": "geometric_recovery_fixed_task",
+    "maximum_speed_kmh": 20.0,
+    "reference_sha256": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4",
+    "track_sha256": "adfbf94c3625c872507b406d02b6e375274901427db77555f7899121a2d1c414",
+    "kinematic_calibration_sha256": "449293c71a648b31bf7ca71841ef95a9014d7b6655aa16af3a464a0a50bbeecd",
+    "teacher_implementation_sha256": "634d440a02de2fa576d3f6124bfaec517dca4ee5f0ebb34674583a415f3342df",
+    "interpretation": "teacher-only geometric desired control at recorded states; not executed"
+  }
+}

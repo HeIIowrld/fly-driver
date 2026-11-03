@@ -1,0 +1,26 @@
+{
+  "source_checkpoint": "runs/ac-native-fly-log-gain-fit-20261028-t71/checkpoint.pt",
+  "source_checkpoint_sha256": "dc0bbbc5af2bfa12661e4ebbcc3d8dd457e5ae00b1676b574e9dd0d0b0bb0c63",
+  "seed": 861601,
+  "action_profile": "normalized_ac_absolute",
+  "epochs": 6,
+  "chunk_length": 16,
+  "learning_rate": 0.0001,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "pedal_mode": "independent",
+  "condition_steering_gain": false,
+  "photometric_normalization": {
+    "rgb_floor": 0.03,
+    "contrast_floor": 0.1
+  },
+  "organ_validity_mode": "gate_only",
+  "experiment": "Fine-tune on original 50 plus 500 actual Parabolica curriculum labels; development segment excluded",
+  "readout_gain_parameterization": "log",
+  "readout_gain_learning_rate": 0.03
+}

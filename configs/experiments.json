@@ -1,0 +1,52 @@
+{
+  "status": "revised_design_with_historical_failed_prototypes",
+  "updated_at": "2026-10-27",
+  "active_roadmap": "configs/assetto-fly-roadmap.json",
+  "primary_goal": "Reviewed fly sensory organs/circuits with vehicle body feedback complete an unassisted vision-based Assetto Corsa lap",
+  "legacy_taxonomy_scope": "E0-E10/T0-T5 below remain reference questions; active execution order and budgets are A0-A8 in assetto-fly-roadmap.json",
+  "mode_contract": {"O": "oracle diagnostics / teacher only", "V": "cameras and declared body sensors", "M": "map + implemented localization; planned"},
+  "comparisons": [
+    {"id": "C0-O", "model": "oracle teacher", "status": "prototype_route_rollout_only"},
+    {"id": "C0-S", "model": "vision perception + estimator + classical control", "status": "planned"},
+    {"id": "C1", "model": "shared encoder + persistent GRU", "status": "prototype"},
+    {"id": "C2", "model": "shared encoder + NCP/LTC", "status": "planned"},
+    {"id": "C3", "model": "reviewed MaleCNS visual/CX/DN functional subgraph", "status": "data_and_ports_required"},
+    {"id": "C4", "model": "FAFB v783 FLYNN reproduction and transfer", "status": "planned"},
+    {"id": "C5", "model": "full MaleCNS extract + explicit ports", "status": "after_C3_gate"},
+    {"id": "C6", "model": "same C3 graph + FlyGM-style shared node function", "status": "planned"},
+    {"id": "C7", "model": "C3 graph with per-node degree-preserving rewire", "status": "rewiring_code_only"},
+    {"id": "C3-V", "model": "reviewed fly visual/CX/DN subgraph with fixed minimum body input", "status": "planned"},
+    {"id": "C7-V", "model": "degree-preserving rewired C3-V", "status": "planned"},
+    {"id": "C3-VB", "model": "C3 plus encoded organs and local/ascending body feedback; target agent", "status": "planned"},
+    {"id": "C1-VB", "model": "GRU with the same organ signals and action authority", "status": "planned"},
+    {"id": "C7-VB", "model": "degree-preserving rewired C3-VB with same organs/ports", "status": "planned"}
+  ],
+  "phases": [
+    {"id": "E0", "question": "camera/physics/time/sign alignment", "gate": "calibration and golden sequences"},
+    {"id": "E1", "question": "input-output paths and neural response", "gate": "reachable outputs, stable state, measured cost"},
+    {"id": "E2", "question": "persistent state vs reset, random vs reviewed ports, MN vs DN", "gate": "30m diagnostic task; one cause at a time"},
+    {"id": "E3", "question": "retinotopy, motion and RGB meaning", "gate": "held-out stimuli and closed-loop sensor contract"},
+    {"id": "E4", "question": "low-speed camera steering", "gate": "C0-S/C1/C2/C3/C7 matched information, BC and small DAgger"},
+    {"id": "E5", "question": "BC vs BC+DAgger recovery", "gate": "validation and independent test failure reduction"},
+    {"id": "E6", "question": "speed/curvature vs direct three-command control", "gate": "matched control authority and staged speed"},
+    {"id": "E7", "question": "RL contribution after imitation", "gate": "no increased failure or limiter intervention"},
+    {"id": "E8", "question": "OOD and sensor faults", "gate": "nominal driving and controlled stop scored separately"},
+    {"id": "E9", "question": "circuit/module ablations", "gate": "predeclared verified validation gain"},
+    {"id": "E10", "question": "compute/backend and SIL/HIL agreement", "gate": "sealed bundle replay and physical contracts"}
+  ],
+  "terrain_phases": [
+    {"id": "T0", "question": "gravity/load/IMU/frames/brakes/timestep", "status": "partial_unit_checks"},
+    {"id": "T1", "question": "flat, grade, crest/valley, banked curve, one-wheel bump", "status": "synthetic_geometry_available"},
+    {"id": "T2", "question": "same XY flat vs 3D", "status": "flattening_available_no_benchmark"},
+    {"id": "T3", "question": "vision / +IMU / +suspension / +estimated load and local-ascending split", "status": "planned_ablation"},
+    {"id": "T4", "question": "Red Bull Ring then Spa/Nordschleife segments/full lap", "status": "external_assets_required"},
+    {"id": "T5", "question": "tire/friction/mass/delay and backend transfer", "status": "planned"}
+  ],
+  "learning_order": ["A0 AC capability/common schema", "A1 eye/organ stimuli", "A2 fixed-speed BC/iterative DAgger", "A3 reviewed fly visual circuit", "A4 body feedback and speed/braking", "A5 AC data/segments", "A6 actual-circuit full lap", "A7 replication/ablations", "A8 optional runtime/hardware optimization"],
+  "split": {"unit": "course/whole episode group; no adjacent-frame leakage", "train": 0.70, "validation": 0.15, "test": 0.15},
+  "legacy_20261005_screen_budget_per_model_seed": {"train_seeds": [3001,3002,3003], "bc_unique_transitions": 100000, "dagger_rounds": 4, "dagger_transitions_per_round": 50000, "optional_ppo_interactions": 500000, "validation_seeds": {"start": 51001, "count": 20}},
+  "legacy_20261005_final_budget_per_model_seed": {"train_seeds": [4101,4102,4103,4104,4105], "bc_unique_transitions": 500000, "dagger_rounds": 4, "dagger_transitions_per_round": 250000, "optional_ppo_interactions": 2000000, "test_seeds": {"start": 61001, "count": 50}},
+  "statistical_unit": "training seed; paired scenario comparison and hierarchical 95% bootstrap",
+  "legacy_20261005_proposed_gates": ["nominal contact-free completion >=95% and zero hard contact/exit in nominal test", "paired completion difference lower 95% bound >-5 percentage points", "one predeclared OOD/limiter/cost improvement", "no teacher fallback in sensor evaluation", "fault stop scored separately from completion", "total pipeline p95/p99 on target hardware"],
+  "note": "Research registry, not an executable sweep. Active goals, proposed caps and gates live in assetto-fly-roadmap.json; old budgets/gates are preserved for provenance."
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "flybrain.async_frame_persistence_pilot.v1",
+  "role": "calibration",
+  "fit_allowed": false,
+  "student_deployment": false,
+  "profile": {
+    "duration_seconds": 30,
+    "teacher_speed_kmh": 60,
+    "actor_speed_ceiling_kmh": 80,
+    "async_frame_persistence": true,
+    "maximum_pending": 8
+  },
+  "gates": {
+    "camera_max_age_seconds": 0.15,
+    "actor_max_age_seconds": 0.11,
+    "closed_persistence_journal_required": true,
+    "raw_replay_exact_required": true
+  },
+  "source_sha256": {
+    "src/flybrain_drive/ac_csp_vision.py": "057c37a3235ac027d2eb019da297d0b42bf0cf3c744cc638de013d6633662f52",
+    "src/flybrain_drive/immutable_frame_writer.py": "b1dbe6f9819b8e712b97ff6635dff25b35f08bbbda3946c308cf6aa9215090fc",
+    "scripts/record_ac_engine_ai_probe.py": "8f077e75bb9b78db9389f822243bb1b9cee4753286628e5da556216e3cd8c542",
+    "scripts/audit_ac_engine_ai_probe.py": "0e774c32dfb2c08e53032a1c821c60973eadb7001015729840587fbabbe44f32"
+  },
+  "failure_policy": "Preserve all failures; no silent drops, timestamp changes, or freshness relaxation",
+  "required_preflight": "20261029-t1499-async-persistence-preflight",
+  "required_exact_raw_audit": "20261029-t1500-async-persistence-preflight-audit"
+}

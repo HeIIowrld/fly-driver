@@ -1,0 +1,10 @@
+{
+  "seed": 862985,
+  "sources": [
+    {
+      "recording": "runs/ac-ai-lateral-recovery-collection-20261028-t718",
+      "raw_audit": "runs/ac-ai-lateral-recovery-raw-audit-20261028-t719",
+      "targets": "runs/ac-ai-lateral-recovery-receipt-targets-20261028-t720"
+    }
+  ]
+}

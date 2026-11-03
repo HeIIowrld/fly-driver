@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-27",
+  "status": "component_development_pass_not_AC_or_full_fly",
+  "configuration": "configs/sensory-anatomical-eye-pilot.json",
+  "evidence": "docs/anatomical-eye-driving-20261027.md",
+  "collected_root": "runs/anatomical-eye-driving-20261027",
+  "verified_collected_files": 69,
+  "tests_passed": 137,
+  "same_static_body_inputs_and_labels_as_synthetic_reference": true,
+  "observed_axes": {
+    "left": [
+      460,
+      857
+    ],
+    "right": [
+      446,
+      852
+    ]
+  },
+  "evaluations": {
+    "anatomical-ridge-t9": {
+      "completion_rate": 1.0,
+      "cases": 4
+    },
+    "anatomical-routed-normal-t9": {
+      "completion_rate": 1.0,
+      "cases": 4
+    },
+    "anatomical-vision_missing-t9": {
+      "completion_rate": 0.0,
+      "cases": 4
+    },
+    "anatomical-circuit_cut-t9": {
+      "completion_rate": 0.0,
+      "cases": 4
+    }
+  },
+  "new_model_repeated_30_starts": false,
+  "AC_driving": false,
+  "retinal_neuron_registration_count": 0,
+  "checkpoint": {
+    "path": "runs/anatomical-eye-driving-20261027/runs/anatomical-routed-normal-t9/checkpoint.pt",
+    "sha256": "82cd260d175226e974b85c0858a3cc917ba238778b0207536da7ee6438f7687b"
+  },
+  "retinal_readout": {
+    "path": "runs/anatomical-eye-driving-20261027/runs/anatomical-ridge-t9/ridge-model.npz",
+    "sha256": "acc43ac73820d6e476d9da56b13c499b1e0b8466df89e56bdcc25785a1e1d125"
+  }
+}

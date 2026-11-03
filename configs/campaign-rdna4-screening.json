@@ -1,0 +1,371 @@
+{
+  "purpose": "Local RX9070XT factorial diagnostic; supplements the unchanged remote 7-arm campaign",
+  "device": "cuda:0",
+  "seed": 3101,
+  "start_x_range": [
+    3.0,
+    80.0
+  ],
+  "policy": "gru",
+  "num_envs": 4,
+  "torch_threads": 1,
+  "horizon": 256,
+  "updates": 16,
+  "epochs": 4,
+  "checkpoint_interval": 4,
+  "learning_rate": 3e-05,
+  "gamma": 0.998,
+  "gae_lambda": 0.99,
+  "clip": 0.2,
+  "environment": {
+    "mode": "V",
+    "max_steps": 8000,
+    "image_size": 32,
+    "control_dt": 0.01,
+    "physics_dt": 0.001,
+    "camera_hz": 25,
+    "road": {
+      "length": 100.0,
+      "width": 6.0,
+      "grade": 0.02,
+      "hill_amplitude": 0.6,
+      "hill_period": 70.0,
+      "bank_degrees": 6.0,
+      "turn_amplitude": 2.0,
+      "turn_period": 70.0,
+      "bump_height": 0.03,
+      "flattened": false
+    },
+    "visual_schema": "retina_v1",
+    "actuation_mode": "off",
+    "vehicle": {
+      "max_speed": 4.0
+    },
+    "camera": {
+      "forward": 0.95,
+      "near_m": 0.03,
+      "far_m": 250
+    }
+  },
+  "target_kl": 0.01,
+  "campaign": {
+    "seeds": [
+      4101
+    ],
+    "arms": [
+      {
+        "name": "full_mixed",
+        "overrides": {
+          "motion_input": true,
+          "environment": {
+            "actuation_mode": "residual",
+            "camera": {
+              "yaw_degrees": 40.0,
+              "pitch_degrees": -15.0,
+              "fovy": 120.0,
+              "source_size": 96,
+              "sampling": "angular_hex",
+              "angular_width": 110.0,
+              "angular_height": 90.0
+            }
+          },
+          "behavior_cloning": {
+            "dagger_rounds": [
+              {
+                "data_seed": 9201,
+                "teacher_beta": 0.5,
+                "epochs": 16,
+                "episodes": [
+                  {
+                    "start_x": 3,
+                    "steps": 800
+                  },
+                  {
+                    "start_x": 35,
+                    "steps": 800
+                  },
+                  {
+                    "start_x": 65,
+                    "steps": 800
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "no_copy_mixed",
+        "overrides": {
+          "motion_input": true,
+          "environment": {
+            "actuation_mode": "residual",
+            "camera": {
+              "yaw_degrees": 40.0,
+              "pitch_degrees": -15.0,
+              "fovy": 120.0,
+              "source_size": 96,
+              "sampling": "angular_hex",
+              "angular_width": 110.0,
+              "angular_height": 90.0
+            },
+            "sensor_profile": "no_efference_copy"
+          },
+          "behavior_cloning": {
+            "dagger_rounds": [
+              {
+                "data_seed": 9201,
+                "teacher_beta": 0.5,
+                "epochs": 16,
+                "episodes": [
+                  {
+                    "start_x": 3,
+                    "steps": 800
+                  },
+                  {
+                    "start_x": 35,
+                    "steps": 800
+                  },
+                  {
+                    "start_x": 65,
+                    "steps": 800
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "full_student",
+        "overrides": {
+          "motion_input": true,
+          "environment": {
+            "actuation_mode": "residual",
+            "camera": {
+              "yaw_degrees": 40.0,
+              "pitch_degrees": -15.0,
+              "fovy": 120.0,
+              "source_size": 96,
+              "sampling": "angular_hex",
+              "angular_width": 110.0,
+              "angular_height": 90.0
+            }
+          },
+          "behavior_cloning": {
+            "dagger_rounds": [
+              {
+                "data_seed": 9201,
+                "teacher_beta": 0.0,
+                "epochs": 16,
+                "episodes": [
+                  {
+                    "start_x": 3,
+                    "steps": 800
+                  },
+                  {
+                    "start_x": 35,
+                    "steps": 800
+                  },
+                  {
+                    "start_x": 65,
+                    "steps": 800
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "no_copy_student",
+        "overrides": {
+          "motion_input": true,
+          "environment": {
+            "actuation_mode": "residual",
+            "camera": {
+              "yaw_degrees": 40.0,
+              "pitch_degrees": -15.0,
+              "fovy": 120.0,
+              "source_size": 96,
+              "sampling": "angular_hex",
+              "angular_width": 110.0,
+              "angular_height": 90.0
+            },
+            "sensor_profile": "no_efference_copy"
+          },
+          "behavior_cloning": {
+            "dagger_rounds": [
+              {
+                "data_seed": 9201,
+                "teacher_beta": 0.0,
+                "epochs": 16,
+                "episodes": [
+                  {
+                    "start_x": 3,
+                    "steps": 800
+                  },
+                  {
+                    "start_x": 35,
+                    "steps": 800
+                  },
+                  {
+                    "start_x": 65,
+                    "steps": 800
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "record_evaluation": true,
+    "record_every": 16,
+    "evaluation": {
+      "purpose": "Development validation only; original 8001-8007 test suite remains separate",
+      "steps": 5000,
+      "cases": [
+        {
+          "name": "validation_curve",
+          "seed": 8401,
+          "start_x": 12.0
+        },
+        {
+          "name": "validation_crest",
+          "seed": 8402,
+          "start_x": 45.0
+        },
+        {
+          "name": "validation_bank",
+          "seed": 8403,
+          "start_x": 12.0,
+          "road": {
+            "grade": 0.04,
+            "bank_degrees": -8,
+            "hill_amplitude": 0.9
+          }
+        },
+        {
+          "name": "validation_recovery",
+          "seed": 8404,
+          "start_x": 12.0,
+          "lateral_offset": 0.7,
+          "heading_offset_degrees": 5.0
+        }
+      ]
+    }
+  },
+  "collector_restart": false,
+  "value_coefficient": 0.25,
+  "initial_log_std": [
+    -1.7,
+    -2.5,
+    -1.7
+  ],
+  "motion_input": false,
+  "behavior_cloning": {
+    "data_seed": 9101,
+    "target_speed": 2.0,
+    "epochs": 24,
+    "chunk_length": 128,
+    "learning_rate": 0.0005,
+    "episodes": [
+      {
+        "start_x": 3.0,
+        "steps": 800
+      },
+      {
+        "start_x": 35.0,
+        "steps": 800
+      },
+      {
+        "start_x": 65.0,
+        "steps": 800
+      },
+      {
+        "start_x": 3.0,
+        "steps": 400,
+        "lateral_offset": -0.6,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 3.0,
+        "steps": 400,
+        "lateral_offset": 0.6,
+        "heading_offset_degrees": 4
+      },
+      {
+        "start_x": 35.0,
+        "steps": 400,
+        "lateral_offset": -0.6,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 35.0,
+        "steps": 400,
+        "lateral_offset": 0.6,
+        "heading_offset_degrees": 4
+      },
+      {
+        "start_x": 65.0,
+        "steps": 400,
+        "lateral_offset": -0.6,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 65.0,
+        "steps": 400,
+        "lateral_offset": 0.6,
+        "heading_offset_degrees": 4
+      }
+    ],
+    "teacher_actuation_mode": "fixed",
+    "train_yaw_action": false,
+    "batching": "parallel_episodes",
+    "episodes_per_batch": 12,
+    "dagger_rounds": [
+      {
+        "data_seed": 9201,
+        "teacher_beta": 0.5,
+        "epochs": 16,
+        "episodes": [
+          {
+            "start_x": 3,
+            "steps": 800
+          },
+          {
+            "start_x": 35,
+            "steps": 800
+          },
+          {
+            "start_x": 65,
+            "steps": 800
+          }
+        ]
+      }
+    ]
+  },
+  "start_lateral_range": [
+    -0.5,
+    0.5
+  ],
+  "start_heading_range": [
+    -4.0,
+    4.0
+  ],
+  "local_screening": {
+    "role": "complement; do not cancel or shrink existing remote trials",
+    "stage_one_seeds": [
+      4101
+    ],
+    "replication_seed": 4102,
+    "selection_rule": "Candidate must have no extra failures, >=25% mean progress gain versus full_mixed, and improve >=3 of 4 paired development cases. Replicate baseline and candidates at 4102 before remote addition. No passing candidate is an allowed outcome.",
+    "ppo_transitions_per_arm": 16384,
+    "teacher_decisions_per_arm": 4800,
+    "dagger_decisions_per_arm": 2400,
+    "bc_epochs": 24,
+    "dagger_epochs": 16,
+    "resource_policy": "4 CPU physics/render workers, 1 learner CPU thread; GPU CNN/GRU/optimizer; maintain 16384 PPO transitions/arm"
+  }
+}

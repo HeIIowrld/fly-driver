@@ -1,0 +1,21 @@
+{
+  "schema": "flybrain.batched_readback.speed60_calibration.v1",
+  "role": "calibration",
+  "fit_allowed": false,
+  "source_role_unchanged": true,
+  "nominal_speed_kmh": 60,
+  "hard_speed_kmh": 80,
+  "comparison": "Previous sequential60 task failed after19seconds; new batched4copy path only, not matched trajectory/performance certification",
+  "evidence": "t1484 same immutable PNG comparisons40, allzero",
+  "stages": [
+    3,
+    30
+  ],
+  "batched_shared_copy": true,
+  "async_pixel_precompute": true,
+  "actor_camera_max_age_seconds": 0.15,
+  "actor_wait_max_age_seconds": 0.11,
+  "group_poll_timeout_seconds": 0.04,
+  "source_pixels_clocks_gaps_unchanged": true,
+  "student_actor_deployed": false
+}

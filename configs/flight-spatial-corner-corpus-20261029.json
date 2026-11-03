@@ -1,0 +1,63 @@
+{
+  "schema": "flybrain.spatial_teacher_collection.v1",
+  "teacher_speed_kmh": 60,
+  "maximum_leases": 18,
+  "required_histories": {
+    "train": 3,
+    "development": 1
+  },
+  "regions": [
+    {
+      "role": "train",
+      "start": 0.27,
+      "end": 0.63
+    },
+    {
+      "role": "development",
+      "start": 0.67,
+      "end": 0.84
+    }
+  ],
+  "planning_advance_estimate": 0.13,
+  "estimate_is_not_physical_arc_length_bound": true,
+  "role_policy": "Assign entire history before execution. Check every route/cleanup sample; reject whole crossing history, never slice or reassign for fit. Transit never fit.",
+  "minimum_free_local_bytes": 40000000000,
+  "initial_predecessor": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1502-async-persistence-speed60-pilot",
+  "initial_receipt_sha256": "547a7fc835f35226fa6e44513bc7aac67b3357f6b7cc75b1c5b83ad98fa6a7bf",
+  "prerequisite_raw_audit": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1503-async-persistence-speed60-raw-audit",
+  "legacy_route_audit": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1393-v2-route-coverage-audit",
+  "legacy_dev_guard_intervals": [
+    [
+      0.2,
+      0.25
+    ],
+    [
+      0.94,
+      1.0
+    ]
+  ],
+  "legacy_eval_region_not_reused_for_train": [
+    [
+      0.08,
+      0.125
+    ]
+  ],
+  "evaluation_receipts_or_arrays_opened": false,
+  "development_is_known_diagnostic_not_blind": true,
+  "old_role_reassignment": false,
+  "student_deployed": false,
+  "fit_allowed_until_raw_and_labels_verified": false,
+  "source_sha256": {
+    "scripts/collect_spatial_flight_teacher.py": "0b638eff2e663ad7910820b49f988810d641a40d5800eaa2514adc96b1c97572",
+    "scripts/record_ac_engine_ai_probe.py": "8f077e75bb9b78db9389f822243bb1b9cee4753286628e5da556216e3cd8c542",
+    "scripts/control_ac_session.py": "9eac00cbbd5c414cb411aab8cd3864c2134513441c4e6212bafcc1944810da82",
+    "src/flybrain_drive/spatial_teacher_plan.py": "b8940af1d48925bd2e5af7d7182f29cc080ab5869dadc9cef02c5c9621d90a39",
+    "src/flybrain_drive/ac_csp_vision.py": "057c37a3235ac027d2eb019da297d0b42bf0cf3c744cc638de013d6633662f52",
+    "src/flybrain_drive/immutable_frame_writer.py": "b1dbe6f9819b8e712b97ff6635dff25b35f08bbbda3946c308cf6aa9215090fc",
+    "src/flybrain_drive/ac_shared_texture.py": "bed33b2b71ba597597a92867d82832e6d3848466d2ed7dca36958fdc317e6eaa",
+    "src/flybrain_drive/ac_csp_retina.py": "4e557c6b9ecf762c2b3a18727f04b05c09c75232d999e1c14a110fe746d73485",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "6abdc5f974406b72b606f0c066f7491ae885e7090f2889be25fae3fe0ab374ae"
+  },
+  "goal_achieved": false
+}

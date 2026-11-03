@@ -1,0 +1,16 @@
+{
+  "status": "downloaded_and_joined_to_structural_candidate_not_signed_dynamics",
+  "path": "assets/external/malecns-neurotransmitters-20261027/body-neurotransmitters.feather",
+  "sha256": "95c9289220663abeb3409f3ad9e5a7f8a53f8093f5139d15502cd08da8879621",
+  "bytes": 43282834,
+  "gcs_md5_verified": false,
+  "source": "https://storage.googleapis.com/flyem-male-cns/v1.0/connectome-data/flat-connectome/body-neurotransmitters-male-cns-v1.0.feather",
+  "license": "CC-BY-4.0 per https://male-cns.janelia.org/download/",
+  "candidate_nodes": 2626,
+  "matching_records": 2625,
+  "missing": 1,
+  "consensus_differs_from_individual": 33,
+  "individual_confidence_below_0_8": 322,
+  "signed_edges_assigned": false,
+  "evidence": "docs/visual-cx-audit-20261027.md"
+}

@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-27",
+  "report": "docs/ac-teacher-shadow-20261027.md",
+  "shadow_readiness": {
+    "status": "not_ready",
+    "samples": 0,
+    "teacher_inferences": 0,
+    "reason": "SDK privileged_teacher extension not loaded",
+    "actuator_messages_sent": 0,
+    "teacher_driving_verified": false,
+    "goal_achieved": false
+  },
+  "synthetic_wrapper_assembly": {
+    "public_states": 234,
+    "assembled_observations": 231,
+    "warmup_rows_excluded": 3,
+    "max_observation_absolute_error": 7.147060721024445e-16,
+    "track_length_reconstructed_from_public_values_m": 5758.66064453125,
+    "reconstruction_matched": true,
+    "synthetic_transport_and_native_wrappers": true,
+    "actual_sdk_live_verified": false,
+    "actor_observations_created": false,
+    "actuator_messages_sent": 0,
+    "goal_achieved": false
+  },
+  "collector_deployment": {
+    "source_sha256": "7fcd217f85c15b86bf632c825090f31463e6294f8dfdcf41aa62bb5418188330",
+    "deployed_before_sha256": "bf83f33580f76846065e50599ebc8ad5ab5d406465060e701ddc0a8abd5b2770",
+    "deployed_after_sha256": "7fcd217f85c15b86bf632c825090f31463e6294f8dfdcf41aa62bb5418188330",
+    "sdk_steps": [
+      102056,
+      102061
+    ],
+    "native_packet_ids": [
+      705188,
+      705190
+    ],
+    "live_extra_namespace_present": false,
+    "game_restart_performed": false,
+    "ui_actions_sent": 0,
+    "actuator_messages_sent": 0,
+    "goal_achieved": false
+  },
+  "steering_comparison": {
+    "live_sdk_gain": 449.99996185302734,
+    "published_fit_gain": 270.0085494337636,
+    "published_gain270_max_residual": 0.045123644173145294,
+    "raw_sdk_native_hashes_verified": true,
+    "foreground_samples": 0,
+    "calibration_samples": 32,
+    "proposed_steering_lock": 540,
+    "candidate_profile_sha256": "e5a6d19d1d222d8c3026aad9c514a14791e2a534b9d7f39aadee00c62473e519",
+    "candidate_applied": false,
+    "candidate_response_verified": false,
+    "goal_achieved": false
+  },
+  "actual_teacher_driving_verified": false,
+  "goal_achieved": false
+}

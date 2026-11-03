@@ -1,0 +1,56 @@
+{
+  "schema": "flybrain.front_band_preview_learning.v1",
+  "feature_mode": "retinotopic_band",
+  "readout_batch": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1536-intermediate-visual-readout",
+  "preview_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1533-spatial-preview-dataset",
+  "training_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1540-front-band-preview-dataset-b",
+  "scene_spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "conditions": [
+    "full_field_all_views",
+    "front_band_all_views",
+    "front_band_only"
+  ],
+  "seed": 863540,
+  "epochs": 200,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "channel_scale_floor": 1e-05,
+  "feature_scale_floor": 1e-05,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "architecture": "Identical14to8 shared patch,512to64 tanh,64to6 preview readout in both conditions",
+  "objective": "Six equally weighted standardized TRAIN-valid preview MSEs; no target clipping",
+  "normalization": "Per-channel TRAIN moments before tanh/pooling, then TRAIN pooled-feature moments. No development calibration.",
+  "checkpoint": "Fixed last200 each; all conditions reported; candidate fixed before fitting",
+  "actor_input": "Only visual signals; candidate actual L1/L2/Mi1/Tm3/Tm1/Tm9 plus T4/T5, no direct raw-intensity input",
+  "raw_control": "Raw intensity, five constant-zero channels, and same eight T4/T5 channels; identical dimensions and initial weights",
+  "report_periods": [
+    "full",
+    "after3s"
+  ],
+  "roles": "Original8 TRAIN/2 known development unchanged; failed physical episode excluded",
+  "physiological_function_not_asserted": true,
+  "student_deployed": false,
+  "goal_achieved": false,
+  "reference_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1537-retinotopic-preview-dataset",
+  "front_bounds": [
+    0,
+    1,
+    0.4,
+    0.67
+  ],
+  "preregistered_candidate": "front_band_only",
+  "hypothesis": "Engineering front-window readout attention; TRAIN-source image inspection only. No anatomical fovea or semantic road mask claim.",
+  "source_sha256": {
+    "scripts/build_front_band_preview_dataset.py": "b810cc56c4a3e097ec0295f6e5284bdea55a896e3112877745553418c5c45e6c",
+    "scripts/train_spatial_preview_boundary.py": "84ebb226ed1d9be98707df77d6e1c2373301885cf9664df1a24b00102e031bea",
+    "src/flybrain_drive/retinotopic_pooling.py": "1885f7c3bacd32252a5d458affa055c3d1263a874a23269537adae73940ce512",
+    "src/flybrain_drive/visual_preview_learning.py": "6e6cfd9820f97b6e9b4b3a9db02e027e23784602c1def75c16ad7b71a5b0436a"
+  }
+}

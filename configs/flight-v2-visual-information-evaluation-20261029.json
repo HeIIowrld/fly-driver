@@ -1,0 +1,14 @@
+{
+  "schema": "flybrain.flight.visual_information_evaluation.v1",
+  "training": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1361-v2-visual-boundary-training",
+  "source_snapshot": "20261029-t1358",
+  "checkpoint_selection": "Fixed sixth epoch before opening development predictions; no refit or checkpoint choice from these results",
+  "roles": ["development"],
+  "interventions": ["intact", "scene_command", "vision", "all_motion_information", "all_intensity_information", "front_information", "left_information", "right_information", "rear_information"],
+  "information_removal": "Replace selected raw scene feature channels with their frozen TRAIN means before both inherited visual encoder and learned scene-command boundary. Preserve body, goals, original labels/clocks and recurrent state within every history.",
+  "channel_order": "4 views x9 channels(intensity,T4a-d,T5a-d) x16 spatial features",
+  "motion_claim_gate": "Intact full and after3s steering RMSE must beat all-motion-information removal on each development history; report adverse outcomes too",
+  "camera_claim": "Report individual removal effects. Do not claim all4 cameras help, measured higher-brain synapses, live driving or global motion-neuron lesions from these boundary information removals.",
+  "evaluation_fit_or_normalization_permitted": false,
+  "goal_achieved": false
+}

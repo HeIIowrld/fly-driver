@@ -1,0 +1,16 @@
+{
+  "schema": "flybrain.flight.speed_training_plan.v1",
+  "spec": "configs/flight-circuit-speed-goal-v4-20261029.json",
+  "dataset_plan": "configs/flight-speed-episodes-20261029.json",
+  "seed": 863100,
+  "glutamate_sign": -1,
+  "epochs": 6,
+  "chunk_observations": 64,
+  "adapter_learning_rate": 0.0002,
+  "readout_learning_rate": 0.005,
+  "neutral_calibration_steps": 200,
+  "objective": "proper_logistic_loss_for_bounded_tanh_mean; exact endpoints retained",
+  "checkpoint_selection": "last fixed epoch, no development selection",
+  "initialization": "fresh v4 model; do not reuse or reinterpret v3 fixed-intent checkpoints",
+  "scope": "offline initial multi-episode fit; no true braking targets, no physiological balance or course qualification"
+}

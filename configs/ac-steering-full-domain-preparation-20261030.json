@@ -1,0 +1,606 @@
+{
+  "schema": "flybrain.steering.full_domain_transfer_preparation.v1",
+  "role": "engineering_calibration",
+  "executable": false,
+  "live_collector_implemented": false,
+  "driving_fit_allowed": false,
+  "teacher_label_admission": false,
+  "physical_yaw_units_or_moving_response_qualified": false,
+  "prerequisite": "Reviewed new collector and exact fresh registration are required before any acquisition. Existing amplitude-only collector is insufficient for this protocol.",
+  "fresh_registration": {
+    "engine_pid": null,
+    "generation": null,
+    "sdk_producer_session_id": null,
+    "native_gear_raw": null,
+    "baseline_source_and_result_sha256": null,
+    "exact_generation_AIoff_advancing_packet_admission_required": true
+  },
+  "fixed_axis_config": "configs/ac-axis-probe.json",
+  "profile_sha256": "4e2cbe378e4d7d3d032051be9ec5c233f3a5e864aff4cd22c9521aa37a26048b",
+  "dll_sha256": "199316aaefac95118e869c07e7f332ce492dd9a8b6dac5a3ca20b1d5bb5058a1",
+  "throttle": 0.0,
+  "brake": 1.0,
+  "buttons": [],
+  "canonical_request_domain": [
+    -1.0,
+    1.0
+  ],
+  "runs": [
+    {
+      "name": "calibration_knots_whole_history",
+      "schedule": [
+        {
+          "index": 0,
+          "steering": 0.0,
+          "branch": "initial_neutral"
+        },
+        {
+          "index": 1,
+          "steering": 0.05,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 2,
+          "steering": 0.1,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 3,
+          "steering": 0.2,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 4,
+          "steering": 0.3,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 5,
+          "steering": 0.4,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 6,
+          "steering": 0.5,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 7,
+          "steering": 0.6,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 8,
+          "steering": 0.7,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 9,
+          "steering": 0.8,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 10,
+          "steering": 0.9,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 11,
+          "steering": 1.0,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 12,
+          "steering": 0.9,
+          "branch": "positive_return"
+        },
+        {
+          "index": 13,
+          "steering": 0.8,
+          "branch": "positive_return"
+        },
+        {
+          "index": 14,
+          "steering": 0.7,
+          "branch": "positive_return"
+        },
+        {
+          "index": 15,
+          "steering": 0.6,
+          "branch": "positive_return"
+        },
+        {
+          "index": 16,
+          "steering": 0.5,
+          "branch": "positive_return"
+        },
+        {
+          "index": 17,
+          "steering": 0.4,
+          "branch": "positive_return"
+        },
+        {
+          "index": 18,
+          "steering": 0.3,
+          "branch": "positive_return"
+        },
+        {
+          "index": 19,
+          "steering": 0.2,
+          "branch": "positive_return"
+        },
+        {
+          "index": 20,
+          "steering": 0.1,
+          "branch": "positive_return"
+        },
+        {
+          "index": 21,
+          "steering": 0.05,
+          "branch": "positive_return"
+        },
+        {
+          "index": 22,
+          "steering": 0.0,
+          "branch": "positive_return"
+        },
+        {
+          "index": 23,
+          "steering": -0.05,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 24,
+          "steering": -0.1,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 25,
+          "steering": -0.2,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 26,
+          "steering": -0.3,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 27,
+          "steering": -0.4,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 28,
+          "steering": -0.5,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 29,
+          "steering": -0.6,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 30,
+          "steering": -0.7,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 31,
+          "steering": -0.8,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 32,
+          "steering": -0.9,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 33,
+          "steering": -1.0,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 34,
+          "steering": -0.9,
+          "branch": "negative_return"
+        },
+        {
+          "index": 35,
+          "steering": -0.8,
+          "branch": "negative_return"
+        },
+        {
+          "index": 36,
+          "steering": -0.7,
+          "branch": "negative_return"
+        },
+        {
+          "index": 37,
+          "steering": -0.6,
+          "branch": "negative_return"
+        },
+        {
+          "index": 38,
+          "steering": -0.5,
+          "branch": "negative_return"
+        },
+        {
+          "index": 39,
+          "steering": -0.4,
+          "branch": "negative_return"
+        },
+        {
+          "index": 40,
+          "steering": -0.3,
+          "branch": "negative_return"
+        },
+        {
+          "index": 41,
+          "steering": -0.2,
+          "branch": "negative_return"
+        },
+        {
+          "index": 42,
+          "steering": -0.1,
+          "branch": "negative_return"
+        },
+        {
+          "index": 43,
+          "steering": -0.05,
+          "branch": "negative_return"
+        },
+        {
+          "index": 44,
+          "steering": -0.0,
+          "branch": "negative_return"
+        }
+      ]
+    },
+    {
+      "name": "heldout_midpoint_validation_whole_history",
+      "schedule": [
+        {
+          "index": 0,
+          "steering": 0.0,
+          "branch": "initial_neutral"
+        },
+        {
+          "index": 1,
+          "steering": 0.025,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 2,
+          "steering": 0.07500000000000001,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 3,
+          "steering": 0.15000000000000002,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 4,
+          "steering": 0.25,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 5,
+          "steering": 0.35,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 6,
+          "steering": 0.45,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 7,
+          "steering": 0.55,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 8,
+          "steering": 0.6499999999999999,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 9,
+          "steering": 0.75,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 10,
+          "steering": 0.8500000000000001,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 11,
+          "steering": 0.95,
+          "branch": "positive_outward"
+        },
+        {
+          "index": 12,
+          "steering": 0.8500000000000001,
+          "branch": "positive_return"
+        },
+        {
+          "index": 13,
+          "steering": 0.75,
+          "branch": "positive_return"
+        },
+        {
+          "index": 14,
+          "steering": 0.6499999999999999,
+          "branch": "positive_return"
+        },
+        {
+          "index": 15,
+          "steering": 0.55,
+          "branch": "positive_return"
+        },
+        {
+          "index": 16,
+          "steering": 0.45,
+          "branch": "positive_return"
+        },
+        {
+          "index": 17,
+          "steering": 0.35,
+          "branch": "positive_return"
+        },
+        {
+          "index": 18,
+          "steering": 0.25,
+          "branch": "positive_return"
+        },
+        {
+          "index": 19,
+          "steering": 0.15000000000000002,
+          "branch": "positive_return"
+        },
+        {
+          "index": 20,
+          "steering": 0.07500000000000001,
+          "branch": "positive_return"
+        },
+        {
+          "index": 21,
+          "steering": 0.025,
+          "branch": "positive_return"
+        },
+        {
+          "index": 22,
+          "steering": 0.0,
+          "branch": "positive_return"
+        },
+        {
+          "index": 23,
+          "steering": -0.025,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 24,
+          "steering": -0.07500000000000001,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 25,
+          "steering": -0.15000000000000002,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 26,
+          "steering": -0.25,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 27,
+          "steering": -0.35,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 28,
+          "steering": -0.45,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 29,
+          "steering": -0.55,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 30,
+          "steering": -0.6499999999999999,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 31,
+          "steering": -0.75,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 32,
+          "steering": -0.8500000000000001,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 33,
+          "steering": -0.95,
+          "branch": "negative_outward"
+        },
+        {
+          "index": 34,
+          "steering": -0.8500000000000001,
+          "branch": "negative_return"
+        },
+        {
+          "index": 35,
+          "steering": -0.75,
+          "branch": "negative_return"
+        },
+        {
+          "index": 36,
+          "steering": -0.6499999999999999,
+          "branch": "negative_return"
+        },
+        {
+          "index": 37,
+          "steering": -0.55,
+          "branch": "negative_return"
+        },
+        {
+          "index": 38,
+          "steering": -0.45,
+          "branch": "negative_return"
+        },
+        {
+          "index": 39,
+          "steering": -0.35,
+          "branch": "negative_return"
+        },
+        {
+          "index": 40,
+          "steering": -0.25,
+          "branch": "negative_return"
+        },
+        {
+          "index": 41,
+          "steering": -0.15000000000000002,
+          "branch": "negative_return"
+        },
+        {
+          "index": 42,
+          "steering": -0.07500000000000001,
+          "branch": "negative_return"
+        },
+        {
+          "index": 43,
+          "steering": -0.025,
+          "branch": "negative_return"
+        },
+        {
+          "index": 44,
+          "steering": -0.0,
+          "branch": "negative_return"
+        }
+      ]
+    }
+  ],
+  "samples_per_stage": 8,
+  "settling_samples_retained_but_not_plateau_scored": 2,
+  "plateau_samples_required": 6,
+  "intended_sample_period_seconds": 0.05,
+  "max_run_wall_seconds": 30.0,
+  "max_run_observations": 360,
+  "max_run_submissions": 362,
+  "no_run_retry": true,
+  "stop_after_any_failure_or_unknown": true,
+  "no_selected_subset_or_history_stitch": true,
+  "guards": {
+    "native_speed_abs_strictly_less_kmh": 0.1,
+    "gas_strictly_less": 0.02,
+    "brake_strictly_greater": 0.98,
+    "CSP_max_age_seconds": 2.0,
+    "required_native_AI": false,
+    "AI_and_body_must_be_same420_copy": true,
+    "require_live_not_paused": true,
+    "offline": true,
+    "camera_inactive": true,
+    "expert_probe_inactive": true,
+    "background_required": true,
+    "vjoy_FREE_before_acquisition": true,
+    "vjoy_owned_same_process_during": true,
+    "gear_exact_initial_unchanged_no_shift": true,
+    "native_and_graphics_IDs_strictly_advancing": true,
+    "same_generation_profile_SDKproducer_each_observation": true,
+    "maximum_original_native_sample_gap_seconds": 0.08,
+    "no_retimestamps_or_sensor_clock_reset": true
+  },
+  "event_contract": {
+    "pre_request_and_post_request_raw420_and_graphics264": true,
+    "exact_SDK_wire_receipt": true,
+    "request_axis_driver_sequence_receipts": true,
+    "record_all_guard_inputs_and_verdict_before_raise": true,
+    "rejected_post_request_raw_mandatory": true,
+    "all_attempts_retained": true,
+    "original_host_receipt_bounds_not_physical_sample_time": true,
+    "source_ABI_clock_and_mask_provenance": true
+  },
+  "cleanup_contract": {
+    "no_AI_override": true,
+    "no_new_API_or_gear_change": true,
+    "same_owned_fullbrake_center_request_then_native_ACK_and_FREE_required": true,
+    "uncertain_cleanup_not_success": true
+  },
+  "local_measurement_gates": {
+    "native_plateau_range_max": 0.005,
+    "native_neutral_residual_max": 0.005,
+    "native_return_outward_hysteresis_max": 0.005,
+    "heldout_midpoint_native_prediction_abs_error_max": 0.005,
+    "policy": "Local native-signal precision gates only; no existing safety/authority tolerance is changed."
+  },
+  "analysis_contract": {
+    "no_assumed_global_linear_gain": true,
+    "identify_clipping_deadzone_hysteresis_and_latency": true,
+    "piecewise_map_only_after_both_whole_runs_pass": true,
+    "validation_not_used_to_fit_knots": true,
+    "saturation_preimage_is_interval_not_optimal_label": true,
+    "no_target_extrapolation": true,
+    "unreachable_or_ambiguous_supervision_does_not_drop_states": true,
+    "stationary_transfer_does_not_qualify_yaw_stabilization_or_racing": true
+  },
+  "next_distinct_prerequisites": [
+    "Declare physical yaw reference and matched original body/command clocks before motor fitting",
+    "Qualify bounded moving steer-to-yaw response at registered speed/load conditions separately",
+    "Retain full-brake/coactivation limitations and all raw states; no optimal actuator labels fabricated"
+  ],
+  "source_sha256": {
+    "scripts\\prepare_ac_steering_domain.py": "fe28583516c49d8b4df7a2c0a727950025852528b76c9d0f25a2db04681869be",
+    "tests\\test_steering_domain_preparation.py": "475e75fbcd7c06a5e808e489a727d3c57a18aec5ebb8aef8b9433fcac60c9d78",
+    "src\\flybrain_drive\\ac_vjoy.py": "d5d9fb74300bb502bc3faa183f2492ed70977e5802106823a46b91e6f14e7be4",
+    "src\\flybrain_drive\\ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "src\\flybrain_drive\\ac_teacher_physics.py": "bf50f276acc9044ca24bd1090aabf3d6613568e66904e2c4c8b9be88a78deb78",
+    "src\\flybrain_drive\\ac_teacher_status.py": "07668a3fadd1e29734388ea9ea71909c055685d8011b0c9b02ea356e1d414f83",
+    "configs\\ac-axis-probe.json": "1df2d1fc5dfe767c93eacb33b429561641c809821f3eb29d291ea44ac268158c",
+    "assets\\external\\ac-native-memory-20261027\\upstream\\sim_info.py": "57ace39079b4c1edf34fdd5577022f862ffa0ecbdb9e56d53b2963ecd48b14c5"
+  },
+  "evidence_refs": [
+    {
+      "path": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1670-new-engine-steering-calibration\\manifest.json",
+      "sha256": "77881fe7aa3c2b1213b4b1e7d9db1db0562e34064fa91b207348c5b11c7d59b5",
+      "bytes": 83250
+    },
+    {
+      "path": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1670-new-engine-steering-calibration\\result.json",
+      "sha256": "373c77472e541a449be970cddf93274029493091a5731d72de3bcd3d19d17a9e",
+      "bytes": 217
+    },
+    {
+      "path": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1670-new-engine-steering-calibration\\samples.jsonl",
+      "sha256": "ff5a41cae58e9a5bc68dc679166dc22bf8ec998c064c371ed00f97a7638afb7a",
+      "bytes": 77829
+    },
+    {
+      "path": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1753-post-reset-small-steering-calibration\\manifest.json",
+      "sha256": "00e34daf113375cb2685e179aaf2819ccd6bcd8d7415e7f3c1525e856fd9fd77",
+      "bytes": 91241
+    },
+    {
+      "path": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1753-post-reset-small-steering-calibration\\result.json",
+      "sha256": "17e9ba7fbd2b1fdd2ffa9afa64808a2b44eef87c8f2c011621f0d26eb33e81ba",
+      "bytes": 972
+    },
+    {
+      "path": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1753-post-reset-small-steering-calibration\\samples.jsonl",
+      "sha256": "fd4376ff04d51e932f70b5a1ced80391bc1bbcdb7829509cb849d73cdaa62a47",
+      "bytes": 309484
+    },
+    {
+      "path": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1781-same-copy-pace30-independent\\phase-body-supplement.json",
+      "sha256": "675f50d8afc953d90dc8420159d452c4a656bc343fce8bd3d78dbff0274deda9",
+      "bytes": 12581
+    }
+  ],
+  "collector_review_or_execution_authorized": false
+}

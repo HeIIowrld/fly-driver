@@ -1,0 +1,227 @@
+{
+  "reviewed_at": "2026-10-05",
+  "goal_revision_at": "2026-10-27",
+  "primary_target_backend": "assetto-corsa-gym",
+  "capability_probe_status": "raw UDP/TCP readers and read-only TCP app prepared; WSL synthetic UDP/TCP and Windows synthetic TCP verified; actual game runtime still unprobed; Windows UDP timeout unresolved",
+  "sensory_assets": [
+    {
+      "id": "measured-eye-map",
+      "status": "microCT reconstructed axes connected to separate development driver 4/4; partial coverage; acceptance/temporal/neuron registration incomplete",
+      "registry": "configs/eyemap-t4-source.json",
+      "requirements": [
+        "optical axes/acceptance angles/neighbors/side",
+        "calibrated coordinate transforms",
+        "source/version/hash/uncertainty"
+      ]
+    },
+    {
+      "id": "ac-body-channel-map",
+      "status": "probe_required",
+      "requirements": [
+        "available fields",
+        "units/frames/time/age/validity",
+        "declared sensor-model versus simulator-truth classification"
+      ]
+    },
+    {
+      "id": "fly-organ-port-map",
+      "status": "functional_port_hypothesis_coupled; physiology_and_AC_mapping_pending",
+      "requirements": [
+        "FeCO position/directional movement, optional vibration",
+        "rotation surrogate fidelity label",
+        "reviewed local/ascending populations",
+        "learned versus measured edge masks"
+      ],
+      "registry": "configs/local-organ-result.json"
+    }
+  ],
+  "policy": "No source link implies download, training, or redistribution rights. External assets are ignored by Git.",
+  "datasets": [
+    {
+      "id": "malecns-v1.0",
+      "references": [
+        "R02",
+        "R07"
+      ],
+      "source": "https://male-cns.janelia.org/download/",
+      "status": "historical_Traced_graph_and_official_annotations_recovered; functional_ports_pending",
+      "scope": "brain + VNC",
+      "local_source_receipt": "configs/malecns-recovered-source.json",
+      "requirements": [
+        "version/hash/license",
+        "reviewed visual/CX/DN/ascending ports",
+        "ROI extraction and boundary loss",
+        "type/side/retinotopy mapping",
+        "uncertain transmitter and receptor signs"
+      ]
+    },
+    {
+      "id": "flywire-fafb-v783",
+      "references": [
+        "R01",
+        "R09"
+      ],
+      "source": "https://github.com/ben-gitdev/fly-gym",
+      "status": "not_imported",
+      "scope": "FLYNN reference brain graph; not VNC",
+      "requirements": [
+        "pinned graph and synapse threshold",
+        "reference I/O and temporal filters",
+        "license and original task reproduction before transfer claim"
+      ]
+    },
+    {
+      "id": "synthetic-demo",
+      "status": "implemented_code_generated",
+      "scope": "56 synthetic nodes; not a fly connectome",
+      "requirements": [
+        "explicit graph_source=synthetic_demo"
+      ]
+    },
+    {
+      "id": "malecns-neurotransmitters-v1.0",
+      "source": "https://male-cns.janelia.org/download/",
+      "status": "downloaded_hashed_and_candidate_joined; no_receptor_specific_signs",
+      "registry": "configs/malecns-neurotransmitters-source.json"
+    },
+    {
+      "id": "malecns-visual-cx-candidate",
+      "source": "MaleCNS v1.0 Traced graph and exact annotation types",
+      "status": "2626_nodes_local_retinal_and_organ_feedback_base4_of4_stress8_of8_not_AC",
+      "registry": "configs/malecns-visual-cx-candidate.json"
+    }
+  ],
+  "backends": [
+    {
+      "id": "mujoco",
+      "status": "prototype_implemented",
+      "priority": "component_testbed",
+      "source": "https://mujoco.readthedocs.io/en/stable/python.html",
+      "requirements": [
+        "physics extra",
+        "OpenGL for V",
+        "MECar and tire calibration"
+      ]
+    },
+    {
+      "id": "mjx-warp",
+      "status": "adapter_planned",
+      "source": "https://mujoco.readthedocs.io/en/stable/mjx.html",
+      "requirements": [
+        "two-camera batch rendering",
+        "sparse graph cost",
+        "physics/renderer convergence"
+      ]
+    },
+    {
+      "id": "pychrono",
+      "status": "adapter_planned",
+      "source": "https://api.projectchrono.org/manual_vehicle.html",
+      "requirements": [
+        "Python build/environment",
+        "custom independent motor driveline",
+        "tire terrain compatibility",
+        "OpenCRG build support when needed"
+      ]
+    },
+    {
+      "id": "assetto-corsa-gym",
+      "status": "adapter_planned",
+      "priority": "primary_goal_backend",
+      "source": "https://github.com/dasGringuen/assetto_corsa_gym",
+      "requirements": [
+        "installed original Assetto Corsa and verified integration",
+        "separate bridge and learner runtimes",
+        "image/body/applied-action timing",
+        "eye-view or wide-panorama coverage probe",
+        "actor/TrainingOnly separation",
+        "steering/throttle/brake calibration; no assumed independent wheel-torque API"
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "synthetic-hill-bank-bump",
+      "status": "implemented",
+      "provenance": "synthetic",
+      "requirements": [
+        "T0 physics/sensor checks"
+      ]
+    },
+    {
+      "id": "red-bull-ring-ac",
+      "status": "external_setup_required",
+      "role": "provisional first road-circuit candidate after installed-content and bridge checks",
+      "provenance": "game_track",
+      "source": "https://assetto-corsa-gym.github.io/",
+      "requirements": [
+        "base game and Gym setup",
+        "track/reference/boundary config",
+        "car and camera contract"
+      ]
+    },
+    {
+      "id": "spa",
+      "status": "not_acquired",
+      "provenance": "unselected",
+      "source": "https://www.3d-mapping.de/sample-data/",
+      "requirements": [
+        "choose game asset or licensed measured terrain",
+        "XYZ/bank/normals and contact validation",
+        "training and redistribution rights"
+      ]
+    },
+    {
+      "id": "nordschleife-ac",
+      "status": "not_acquired",
+      "role": "stretch target after first circuit completion; not required for first success",
+      "provenance": "licensed_game_track",
+      "source": "https://store.steampowered.com/app/347990/Dream_Pack_1/",
+      "requirements": [
+        "Assetto Corsa base game + Dream Pack 1",
+        "generate Gym track occupancy/boundary/reference",
+        "separate stereo camera support",
+        "not an independent motor benchmark"
+      ]
+    },
+    {
+      "id": "nordschleife-opencrg",
+      "status": "inquiry_required_not_downloaded",
+      "provenance": "measured_data_candidate",
+      "source": "https://www.3d-mapping.de/sample-data/",
+      "requirements": [
+        "demo/full extent and license confirmation",
+        "OpenCRG and compatible backend",
+        "visual/contact alignment"
+      ]
+    },
+    {
+      "id": "tum-racetrack-database",
+      "status": "reference_only_not_imported",
+      "provenance": "XY_centerline_and_width",
+      "source": "https://github.com/TUMFTM/racetrack-database",
+      "limitations": [
+        "no Z/bank from XY alone",
+        "Nuerburgring DTM is not Nordschleife"
+      ]
+    }
+  ],
+  "terrain_contract": [
+    "coordinate frame and units",
+    "centerline_xyz",
+    "boundary_xyz_left/right",
+    "3D arc length",
+    "surface normals",
+    "grade ratio",
+    "bank radians",
+    "vertical curvature",
+    "roughness",
+    "friction provenance",
+    "visual/contact registration",
+    "source hash/license/extent",
+    "multi-level contact handling"
+  ],
+  "latest_AC_install_probe": "runs/ac-install-probe-20261027-t12/capabilities.json",
+  "AC_capture_registry": "configs/ac-capture-result.json",
+  "AC_installation_prerequisite": "configs/ac-installation-prerequisite.json"
+}

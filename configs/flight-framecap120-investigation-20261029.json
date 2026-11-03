@@ -1,0 +1,32 @@
+{
+  "schema": "flybrain.framecap120.investigation.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "actual_video_path": "C:\\Users\\jeff4\\OneDrive - 엔시스코리아\\문서\\Assetto Corsa\\cfg\\video.ini",
+  "expected_actual_video_sha256": "197d447a1f72353191fba500c610fafe48ba318efb62edd24f28fbe5fd2a2d6f",
+  "prepared_video": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1572-exterior-stall-and-framecap-profile\\proposed-video.ini",
+  "prepared_video_sha256": "a7c8b16c459355f4f713785ac7196f33d1c538a10c58d64b643949b3ec01448d",
+  "fps": 120,
+  "fps_cap_ms": 8.333333,
+  "setting_source": "Installed primary launcher ui.js maps FPS_CAP_MS=(1000/fps).toFixed(6)",
+  "existing_window_settings_preserved": [
+    "FULLSCREEN=0",
+    "WIDTH=640",
+    "HEIGHT=360",
+    "VSYNC=0"
+  ],
+  "current_native_ai_flag_is_not_verified_off": true,
+  "required_before_engine_restart": "Refresh/review native AI flag through verified session lifecycle and pass existing independent AI-off/brake/idle/released-vJoy guards. Never bypass native ownership checks.",
+  "restart_method": "Existing bounded CSP restart-engine request and original process handle receipt; no desktop actions",
+  "failure_policy": "Unknown engine restart outcome: observe same original handle; never resend intent",
+  "requalification": [
+    "native controller ownership",
+    "new generation and file-source SHA",
+    "paused8 raw slots/pixels/geometry",
+    "primed3s all raw arrays and80ms gap0",
+    "primed30s all raw arrays and80ms gap0"
+  ],
+  "old_calibration_and_failed_train_not_promoted_to_fit": true,
+  "actual_video_changed": false,
+  "goal_achieved": false
+}

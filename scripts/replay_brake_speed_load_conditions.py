@@ -1,0 +1,204 @@
+"""Diagnostic actual body history with a fixed task and a load-only intervention."""
+
+import argparse
+import base64
+import hashlib
+import json
+from pathlib import Path
+
+import numpy as np
+import torch
+
+from flybrain_drive.ac_native_physics import decode_physics_prefix
+from flybrain_drive.evidence import begin_run, write_json
+from flybrain_drive.flight_body_feedback_adapter import VehicleBodyFeedbackAdapter
+from flybrain_drive.flight_embodied_navigation import modulate_current
+from flybrain_drive.graph import sha256
+from flybrain_drive.virtual_navigation_body import (
+    NavigationBodyEncoder,
+    decode_navigation_body_prefix,
+)
+from scripts.train_pedal_b2 import OriginalGraphAdapter
+
+
+def read(path):
+    return json.loads(Path(path).read_text(encoding="utf8"))
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ("audit", "candidate", "fit-plan", "fit-result", "pedal-checkpoint", "output"):
+        parser.add_argument("--" + name, required=True)
+    args = parser.parse_args()
+    audit, candidate = Path(args.audit), Path(args.candidate)
+    proof, config = read(audit / "result.json"), read(audit / "manifest.json")["config"]
+    if (
+        proof["status"] != "completed_independent_native_brake_response_audit"
+        or proof["fit_allowed"] is not False
+    ):
+        raise ValueError("Original diagnostic only brake audit required")
+    samples_path = Path(config["arguments"]["recording"]) / "control/native-motion-samples.json"
+    if sha256(samples_path) != config["native_samples_sha256"]:
+        raise ValueError("Original sample hash differs")
+    fit, plan, pedal = read(args.fit_result), read(args.fit_plan), read(args.pedal_checkpoint)
+    candidate_result = read(candidate / "result.json")
+    ckpt = candidate / "body-feedback-adapter.pt"
+    if (
+        fit["status"] != "completed_one_pass_pedal_component_fit"
+        or candidate_result["status"] != "completed_brake_steering_anchored_body_fit"
+        or sha256(ckpt) != candidate_result["checkpoint_sha256"]
+        or pedal["bindings"] != fit["bindings"]
+    ):
+        raise ValueError("Exact original fit and candidate required")
+    payload = torch.load(ckpt, map_location="cpu", weights_only=True)
+    if payload["source_pedal_checkpoint_sha256"] != sha256(args.pedal_checkpoint):
+        raise ValueError("Adapter and pedal candidate binding differs")
+    encoder = NavigationBodyEncoder(
+        "configs/ac-virtual-navigation-body-v2.json",
+        native_identity=read("configs/ac-virtual-body-v1.json")["native_identity"],
+    )
+    low, high = proof["pulse_host_receipt_bounds"]
+    rows, seen = [], set()
+    for row in read(samples_path):
+        raw = base64.b64decode(row["prefix_base64"], validate=True)
+        if hashlib.sha256(raw).hexdigest() != row["prefix_sha256"]:
+            raise ValueError("Native source prefix changed")
+        time = row["received_monotonic_seconds"]
+        native = decode_physics_prefix(raw, time)
+        if native.packet_id != row["packet_id"]:
+            raise ValueError("Original packet differs")
+        if native.packet_id in seen:
+            continue
+        seen.add(native.packet_id)
+        body = encoder.encode(
+            decode_navigation_body_prefix(raw, time),
+            episode_id="brake-diagnostic",
+            decision_monotonic_seconds=time,
+        )
+        if low - 0.5 <= time <= low + 1.5:
+            rows.append((time, native.fields, body))
+    before = [x[2].values[8:12] for x in rows if x[0] < low]
+    if (
+        not before
+        or len(rows) < 2
+        or not all(x[2].valid[[4, 8, 9, 10, 11, 16]].all() for x in rows)
+    ):
+        raise ValueError("Valid original body samples and pre-pulse reference required")
+    times = np.array([r[0] for r in rows])
+    if np.any(np.diff(times) <= 0) or np.any(np.diff(times) > 0.08):
+        raise ValueError("Original causal interval must be positive and at most 80ms")
+    reference = np.mean(before, axis=0)
+    body = np.stack([x[2].values for x in rows]).astype(np.float32)
+    valid = np.stack([x[2].valid for x in rows])
+    changed = body.copy()
+    changed[:, 8:12] = reference
+    base = OriginalGraphAdapter(plan, lambda: None)
+    with torch.no_grad():
+        for name, parameter in base.parameters().items():
+            parameter.copy_(torch.tensor(pedal["values"][name], device=parameter.device))
+        quiet = base.initialize()
+    if base.fixed_fingerprint() != fit["fit"]["final_fixed_rollout"]["fixed_fingerprint"]:
+        raise ValueError("Original graph/readout fingerprint differs")
+    base.model.eval().requires_grad_(False)
+    adapter = VehicleBodyFeedbackAdapter(len(base.model.backbone.body_ports)).to("cuda")
+    adapter.load_state_dict(payload["model"], strict=True)
+    adapter.eval().requires_grad_(False)
+    b = torch.tensor(body, device="cuda")
+    v = torch.tensor(valid, device="cuda")
+    alternate = torch.tensor(changed, device="cuda")
+    speeds_kmh = (30.0, 15.0, 0.0)
+    goals = torch.tensor([[0.0, 1.0]], device="cuda").expand(len(rows), -1)
+    with torch.no_grad():
+        ports = base.model.backbone.body_ports
+        drives = []
+        for speed in speeds_kmh:
+            command = torch.tensor([[0.0, speed / 3.6]], device="cuda").expand(len(rows), -1)
+            fixed_drive = base.model.drive(command, b, v, goals, **base.kwargs)
+            actual, counterfactual = fixed_drive.clone(), fixed_drive.clone()
+            actual[:, ports] = modulate_current(fixed_drive[:, ports], adapter(b, v))
+            counterfactual[:, ports] = modulate_current(
+                fixed_drive[:, ports], adapter(alternate, v)
+            )
+            drives.extend((actual, counterfactual))
+        state = quiet.expand(len(drives), -1).clone()
+        outputs = []
+        for index in range(len(rows)):
+            if index:
+                drive = torch.stack([x[index - 1] for x in drives])
+                elapsed = float(times[index] - times[index - 1])
+                dt = base.model.backbone.spec["dynamics"]["dt"]
+                count = int(np.floor(elapsed / dt))
+                for _ in range(count):
+                    state = base.model.backbone._advance_elapsed_tensor(drive, state, dt)
+                tail = elapsed - count * dt
+                if tail > 1e-12:
+                    state = base.model.backbone._advance_elapsed_tensor(drive, state, tail)
+            outputs.append(base.predict(state)["canonical"].cpu().numpy())
+    outputs = np.stack(outputs)
+    selection = np.array(
+        [t >= high and fields["brake"] > 0.5 and fields["speedKmh"] > 1 for t, fields, _ in rows]
+    )
+    if not selection.any() or not np.isfinite(outputs).all():
+        raise ValueError("Finite braking outputs required")
+    previous = Path(args.audit).parent / "20261030-brake-load-flight-graph-replay/outputs.npz"
+    with np.load(previous, allow_pickle=False) as prior:
+        prior_error = float(np.max(np.abs(prior["outputs"] - outputs[:, :2])))
+        prior_matches = bool(
+            np.array_equal(prior["times"], times)
+            and np.array_equal(prior["braking"], selection)
+            and prior_error <= 1e-6
+        )
+    if not prior_matches:
+        raise ValueError("Original 30km/h replay differs")
+    conditions = []
+    for i, speed in enumerate(speeds_kmh):
+        pair = outputs[selection, 2 * i : 2 * i + 2]
+        delta = pair[:, 0] - pair[:, 1]
+        conditions.append(
+            {
+                "desired_speed_kmh": speed,
+                "actual_load_mean_outputs": pair[:, 0].mean(axis=0).tolist(),
+                "mean_abs_load_intervention_delta": np.abs(delta).mean(axis=0).tolist(),
+                "max_abs_load_intervention_delta": np.abs(delta).max(axis=0).tolist(),
+            }
+        )
+    run = begin_run(
+        args.output,
+        {
+            "program_sha256": sha256(__file__),
+            "native_samples_sha256": sha256(samples_path),
+            "source_audit_sha256": sha256(audit / "result.json"),
+            "fit_plan_sha256": sha256(args.fit_plan),
+            "fit_result_sha256": sha256(args.fit_result),
+            "pedal_checkpoint_sha256": sha256(args.pedal_checkpoint),
+            "adapter_sha256": sha256(ckpt),
+            "role": "diagnostic only, no fit, zero yaw and 30/15/0kmh fixed speed goals",
+            "no_visual_input": True,
+            "counterfactual": "adapter load channels only",
+            "prior_outputs_sha256": sha256(previous),
+        },
+    )
+    (run / "executed-program.py").write_bytes(Path(__file__).read_bytes())
+    np.savez_compressed(run / "outputs.npz", times=times, outputs=outputs, braking=selection)
+    out = {
+        "status": "completed_diagnostic_brake_speed_load_conditions",
+        "frames": len(rows),
+        "moving_braking_frames": int(selection.sum()),
+        "max_interval_seconds": float(np.diff(times).max()),
+        "output_columns": ["steering", "gas", "brake"],
+        "conditions": conditions,
+        "prior_30kmh_max_abs_difference": prior_error,
+        "outputs_sha256": sha256(run / "outputs.npz"),
+        "optimizer_updates": 0,
+        "no_visual_input": True,
+        "host_receipt_not_physics_time": True,
+        "adapter_only_intervention": True,
+        "actor_deployed": False,
+        "goal_achieved": False,
+    }
+    write_json(run / "result.json", out)
+    print(json.dumps(out), flush=True)
+
+
+if __name__ == "__main__":
+    main()

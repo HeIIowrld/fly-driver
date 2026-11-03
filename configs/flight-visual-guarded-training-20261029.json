@@ -1,0 +1,20 @@
+{
+  "schema": "flybrain.flight.visual_guarded_training.v1",
+  "spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "source": "runs/flight-separated-command-probe-20261029-t1081",
+  "data": "runs/flight-speed-episode-data-20261029-t1070",
+  "seed": 863153,
+  "epochs": 6,
+  "chunk_observations": 64,
+  "learning_rate": 0.003,
+  "normalization_std_floor": 0.005,
+  "maximum_line_search_trials": 8,
+  "line_search_contraction": 0.5,
+  "armijo": 0.0001,
+  "training_objective": "label-count-weighted left-turn logistic mean over all complete training histories",
+  "gradient": "64-observation truncated derivatives, fixed parameters throughout each entire training pass; detach preserves numerical state",
+  "update": "one Adam proposal per epoch, accepted only by full original-history train objective; restore parameters and Adam state on rejection",
+  "checkpoint_selection": "last fixed epoch; development arrays never opened",
+  "source_recordings_aid_absence_verified": false,
+  "scope": "optimizer diagnosis on legacy records of unverified aid eligibility, not actor qualification"
+}

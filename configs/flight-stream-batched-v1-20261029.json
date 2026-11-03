@@ -1,0 +1,22 @@
+{
+  "schema": "flybrain.flight_stream.v1",
+  "training": "runs/flight-visual-balanced-training-20261029-t1121",
+  "checkpoint_sha256": "fa7563407040e56d41a68f635529a9422bd1a6e0b5a4ecaa0c3b0bea0946c8da",
+  "author_model_dir": "assets/external/flyvis-pretrained-20261029/unpacked/results/flow/0000/000",
+  "author_weights_sha256": "d8a57a022aa18ca338599be713af9db29b89cde4b00098ffe42b78f0d583e46a",
+  "cache_root": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-data-windows-v1",
+  "camera_config": "configs/ac-csp-yaw-retina.json",
+  "body_contract": "configs/ac-virtual-body-v1.json",
+  "retina_registration": "runs/flight-aid-free-expert30-vision-20261029-t1112/retina-registration.npz",
+  "task_speed_kmh": 30,
+  "maximum_interval_seconds": 0.08,
+  "maximum_camera_age_seconds": 0.15,
+  "motion_six_policy": "unregistered and explicitly all masked; retain full spatial intensity/T4/T5",
+  "scope": "read-only coupled inference; no actuator interface, physiology or actor qualification",
+  "author_meta_sha256": "2aa8a9505324c82bbb4011ee2f7c375b5f8b1bddde1a5281e038baecf91fc5dd",
+  "camera_config_sha256": "59ebeeae29971fe3bf2429c9c8866d9650618ed155cc2d9d4a33372905493ca5",
+  "body_contract_sha256": "03f2f7e329aae578603725dfc20428b2a138223eee2f8b1f709cde1f202b2d6e",
+  "retina_registration_sha256": "f9d546ac4d87c5d2f14ac869a39b276f1ad0af38bf46a52f26f730ec04b22e13",
+  "visual_integration": "held_input_batch",
+  "batching_scope": "Equal-dt neural integration of the previous known retina; not additional camera frames, no skipped time or changed neural dt."
+}

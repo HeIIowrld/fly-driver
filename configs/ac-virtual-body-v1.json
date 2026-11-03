@@ -1,0 +1,38 @@
+{
+  "schema": "flybrain.virtual_body.contract.v1",
+  "geometry_review": "runs/ac-virtual-body-geometry-20261029-t1026/result.json",
+  "geometry_review_sha256": "a21b4544dc20a797646c396e8e145e6198601c0bd2f43275657ff03d749e27b3",
+  "tilt_signs": [
+    1,
+    -1
+  ],
+  "tilt_valid": [
+    true,
+    true
+  ],
+  "angular_native_indices": [
+    2,
+    0,
+    1
+  ],
+  "angular_valid": [
+    false,
+    false,
+    true
+  ],
+  "acceleration_body_registered": false,
+  "maximum_host_age_seconds": 0.05,
+  "body_axes": "X forward, Y left, Z up; right handed angular vector, positive pitch rate is nose down",
+  "tilt_convention": "pitch positive nose up; roll positive left side up; radians with observed renderer consistency; no fitted camera offset removed",
+  "auxiliary_units": {
+    "wheel_load_fraction": "dimensionless native-index ratios; no total-force unit claim",
+    "tyre_core_temperature": "native game units; no optimal temperature assumption"
+  },
+  "source_clock": "host receipt only, simulation exposure alignment unverified",
+  "scope": "offline versioned body feedback; no haltere receptor or vehicle integration claim",
+  "native_identity": {
+    "car_model": "bmw_z4_gt3",
+    "shared_memory_version": "1.7",
+    "ac_version": "1.16.4"
+  }
+}

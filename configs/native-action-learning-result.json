@@ -1,0 +1,189 @@
+{
+  "date": "2026-10-27",
+  "run": "runs/native-action-reachability-20261027-t34",
+  "result": {
+    "status": "completed",
+    "checkpoint_sha256": "14c8b79ac124ddfe9b704480aae8c6501e8e70d4315437bd0cfe707da7235f87",
+    "replay_episode": "source-0-train-a",
+    "replay_decisions": 64,
+    "scope": "MuJoCo sensory replay; derivatives only, not pedal labels or native training",
+    "action_profile": "mujoco_curvature_proxy_only",
+    "output_min": [
+      -0.10976724326610565,
+      2.3559305617482096e-09,
+      4.839539879952781e-10
+    ],
+    "output_max": [
+      -0.002608072943985462,
+      6.650734718505191e-08,
+      3.060477382632598e-08
+    ],
+    "mean_action_parameter_gradient_max_abs": {
+      "steering": {
+        "visual": 3.526616334915161,
+        "organs": 16.45131492614746,
+        "readout": 2.7034647587242944e-07
+      },
+      "throttle": {
+        "visual": 6.806201326980954e-07,
+        "organs": 3.4374020287941676e-06,
+        "readout": 3.087528810397089e-08
+      },
+      "brake": {
+        "visual": 5.526546260625764e-07,
+        "organs": 6.754655623808503e-05,
+        "readout": 1.1328201487970091e-08
+      }
+    },
+    "pedal_positive_gains": [
+      1.0,
+      1.0
+    ],
+    "independent_pedal_upper_bounds": [
+      0.6321205496788025,
+      0.6321205496788025
+    ],
+    "bound_assumption": "every corresponding output neuron at maximum activity 1; throttle bound additionally assumes zero brake",
+    "optimizer_updates": 0,
+    "structural_weights_changed": false,
+    "native_AC_training_verified": false,
+    "native_pedals_trained": false,
+    "actuator_messages_sent": 0,
+    "goal_achieved": false
+  },
+  "training_groups_implemented": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "checkpoint_selection": "mean MSE across supervised action heads",
+  "native_three_action_training_completed": false,
+  "native_action_calibration_completed": false,
+  "report": "docs/native-action-learning-20261027.md",
+  "goal_achieved": false,
+  "pedal_codec_audit": {
+    "run": "runs/ac-pedal-codec-audit-20261027-t35b",
+    "result": {
+      "status": "completed",
+      "requests": 231,
+      "normalized_min": [
+        -0.28052695095539093,
+        0.0,
+        0.0
+      ],
+      "normalized_max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "throttle_brake_sum_max": 1.915735349059105,
+      "requests_outside_legacy_attenuated_domain": 94,
+      "legacy_coupling_best_possible_per_pedal_rmse_lower_bound": 0.128373091715885,
+      "requests_above_gain_one_independent_caps": [
+        84,
+        60
+      ],
+      "normalized_requests_sha256": "a020e6dd6df00a6d78df20910458751574edfa8c6b36352506af31ca5cd87dfd",
+      "source": "pinned car_control.py maps each pedal with (request+1)/2 independently",
+      "source_registry": "assets/external/ac-control-codec-20261027/source.json",
+      "scope": "offline teacher suggested requests, not actual game-applied values",
+      "vision_paired": false,
+      "model_training_updates": 0,
+      "actuator_messages_sent": 0,
+      "goal_achieved": false
+    }
+  },
+  "pedal_output_conditioning": {
+    "run": "runs/pedal-conditioning-20261027-t35",
+    "result": {
+      "status": "completed",
+      "checkpoint_sha256": "14c8b79ac124ddfe9b704480aae8c6501e8e70d4315437bd0cfe707da7235f87",
+      "replay_episode": "source-0-train-a",
+      "replay_decisions": 64,
+      "scope": "MuJoCo sensory replay; derivatives only, not pedal labels or native training",
+      "action_profile": "mujoco_curvature_proxy_only",
+      "output_min": [
+        -0.10976724326610565,
+        2.3559305617482096e-09,
+        4.839539879952781e-10
+      ],
+      "output_max": [
+        -0.002608072943985462,
+        6.650734718505191e-08,
+        3.060477382632598e-08
+      ],
+      "mean_action_parameter_gradient_max_abs": {
+        "steering": {
+          "visual": 3.526616334915161,
+          "organs": 16.45131492614746,
+          "readout": 2.7034647587242944e-07
+        },
+        "throttle": {
+          "visual": 6.806201326980954e-07,
+          "organs": 3.4374020287941676e-06,
+          "readout": 3.087528810397089e-08
+        },
+        "brake": {
+          "visual": 5.526546260625764e-07,
+          "organs": 6.754655623808503e-05,
+          "readout": 1.1328201487970091e-08
+        }
+      },
+      "pedal_positive_gains": [
+        1.0,
+        1.0
+      ],
+      "pedal_mode": "independent",
+      "pedal_conditioning": {
+        "source": "declared training sensory output activity only",
+        "teacher_labels_used": false,
+        "target_rms": [
+          0.15,
+          0.15
+        ],
+        "achieved_rms": [
+          0.15,
+          0.15
+        ],
+        "gain_before": [
+          1.0,
+          1.0
+        ],
+        "gain_after": [
+          3700388.7355000125,
+          8430381.399156246
+        ],
+        "max_gain": 100000000.0,
+        "interpretation": "engineering output conditioning, not physiological tuning or pedal learning"
+      },
+      "after_conditioning_min": [
+        -0.10976724326610565,
+        0.008679969236254692,
+        0.004071604926139116
+      ],
+      "after_conditioning_max": [
+        -0.002608072943985462,
+        0.21815833449363708,
+        0.2274124175310135
+      ],
+      "after_conditioning_rms": [
+        0.06496397405862808,
+        0.15000000596046448,
+        0.14999999105930328
+      ],
+      "source_checkpoint_unchanged": true,
+      "independent_pedal_upper_bounds": [
+        0.6321205496788025,
+        0.6321205496788025
+      ],
+      "bound_assumption": "every corresponding output neuron at maximum activity 1; throttle bound additionally assumes zero brake in legacy mode",
+      "optimizer_updates": 0,
+      "structural_weights_changed": false,
+      "native_AC_training_verified": false,
+      "native_pedals_trained": false,
+      "actuator_messages_sent": 0,
+      "goal_achieved": false
+    }
+  },
+  "native_pedals_driving_trained": false
+}

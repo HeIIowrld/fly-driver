@@ -1,0 +1,40 @@
+{
+  "schema": "flybrain.visual_body_preview_comparison.v1",
+  "visual_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1537-retinotopic-preview-dataset",
+  "original_body_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1434-body21-flight-cache",
+  "new_body_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1544-spatial-navigation-body",
+  "body_contract": "configs/ac-virtual-navigation-body-v2.json",
+  "conditions": [
+    "vision_only",
+    "body_only",
+    "vision_body"
+  ],
+  "preregistered_candidate": "vision_body",
+  "epochs": 200,
+  "seed": 863545,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "architecture": "All three use same shared14to8 patch,42to16 body branch,528to64 hidden,64to6 output; unused branch input zero",
+  "normalization": "TRAIN-only valid body mean/std; invalid values zero after normalization, masks appended; TRAIN-only pooled visual normalization; fixed last200",
+  "actor_input": "Original visual896, calibrated body21 and validity21 only; no speed goal, pose, map, world heading, teacher control or clock input",
+  "auxiliary_target": "Privileged 5/10/20m bearing and chord curvature; not steering action or optimal racing line",
+  "known_development": "Original2 only for terminal reports; no independent final evaluation",
+  "feature_interventions": "Zero normalized visual or full42 body branch, not physical neuronal lesions",
+  "source_sha256": {
+    "scripts/train_visual_body_preview.py": "bbacc9f88681e94a70c29a58dbbf69aa8bc21e2a488bd85ebc79d27e985f0eac",
+    "scripts/train_column_preview_comparison.py": "abe68e9dda496f7953cec71f54d47f3660715a02c159ccef9d3f3ecccbc63038",
+    "scripts/build_retinotopic_preview_dataset.py": "1d314d111754039c640eacad9c140c14d3d2ae0195c9f7dd8825c5d20dd886c3",
+    "scripts/replay_virtual_body.py": "26d7c5e9db77fecca50653943105b9939010390e81fc8b10f9db1dda588aeff6",
+    "src/flybrain_drive/virtual_navigation_body.py": "e3bff2c8b0c3ebec3ffaf9a0bc25aa6bc626acb018b47411767f91fd1397e00e"
+  },
+  "student_deployed": false,
+  "goal_achieved": false
+}

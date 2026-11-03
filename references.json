@@ -1,0 +1,617 @@
+{
+  "reviewed_at": "2026-10-05",
+  "goal_revision_20261027": {
+    "reviewed_at": "2026-10-27",
+    "scope": "Scoped checks for fly-organ vision driving; does not revalidate every historical reference",
+    "sources": [
+      {
+        "id": "AC-GYM",
+        "url": "https://github.com/dasGringuen/assetto_corsa_gym",
+        "kind": "official_software",
+        "checked": "screen capture and track setup documented; synchronized wide eye views not established",
+        "application": "candidate AC bridge, own capability probe required"
+      },
+      {
+        "id": "AC-INSTALL",
+        "url": "https://github.com/dasGringuen/assetto_corsa_gym/blob/main/INSTALL.md",
+        "kind": "official_documentation",
+        "checked": "Windows game/plugin/control setup",
+        "application": "separate integration runtime; installation not performed"
+      },
+      {
+        "id": "MALECNS",
+        "url": "https://male-cns.janelia.org/download/",
+        "kind": "official_dataset",
+        "checked": "v1.0 annotations/connectivity access documented",
+        "application": "recovered Traced graph and official annotations; new visual/CX structural audit in docs/visual-cx-audit-20261027.md"
+      },
+      {
+        "id": "FECO",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/30293823/",
+        "kind": "primary_publication",
+        "checked": "position, directional motion and bidirectional motion/vibration distinctions",
+        "application": "vehicle-to-organ functional hypothesis, not biological homology"
+      },
+      {
+        "id": "BODY-PATHWAYS",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12048489/",
+        "kind": "primary_publication",
+        "checked": "local proprioceptive versus ascending vibration pathways",
+        "application": "local/ascending architecture comparison"
+      },
+      {
+        "id": "HALTERE",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7307274/",
+        "kind": "primary_publication",
+        "checked": "active oscillating organ and visual/motor feedback",
+        "application": "rotation-feedback surrogate initially; not full mechanical organ"
+      },
+      {
+        "id": "CX-STEERING",
+        "url": "https://www.nature.com/articles/s41586-024-07039-2",
+        "kind": "primary_publication",
+        "checked": "heading-to-goal steering transform",
+        "application": "review populations and vehicle sign mapping; no route truth in actor"
+      },
+      {
+        "id": "BANC",
+        "url": "https://www.nature.com/articles/s41586-026-10735-w",
+        "kind": "primary_publication",
+        "checked": "brain-and-cord distributed control study",
+        "application": "additional circuit-selection evidence with explicit dataset mapping"
+      },
+      {
+        "id": "FLYVIS",
+        "url": "https://github.com/TuragaLab/flyvis",
+        "kind": "official_software",
+        "checked": "connectome-constrained visual model",
+        "application": "future visual-model comparison/integration, not current dependency"
+      },
+      {
+        "id": "FLYNN-V2",
+        "url": "https://arxiv.org/abs/2607.00025v2",
+        "kind": "version_pinned_preprint",
+        "checked": "fly-topology MuJoCo navigation preprint",
+        "application": "reference reproduction, not evidence of circuit-lap completion"
+      },
+      {
+        "id": "FLYGYM",
+        "url": "https://github.com/NeLy-EPFL/flygym",
+        "kind": "official_software",
+        "checked": "embodied fly sensorimotor simulation project",
+        "application": "component/reference resource for confirmed vehicle-feedback design"
+      },
+      {
+        "id": "EYE-MAP-CANDIDATE",
+        "url": "https://www.nature.com/articles/s41586-025-09276-5",
+        "kind": "peer_reviewed_with_authors_data_checked",
+        "checked": "authors repository pinned at 99d2a43123db636cedb55af9ff31a59657e7d17e; processed microCT axes imported with hashes; publisher full-text access remains restricted",
+        "application": "configs/eyemap-t4-source.json; separate fitted development driver 4/4; acceptance and neural registration pending"
+      },
+      {
+        "id": "CX-VISUAL-AVP",
+        "url": "https://doi.org/10.1038/s41586-024-07967-z",
+        "kind": "primary_publication",
+        "checked": "MeTu TuBu ER and EPG anterior visual pathway",
+        "application": "exact-type structural candidate; no cross-individual retinal registration inferred"
+      },
+      {
+        "id": "CX-GOAL",
+        "url": "https://doi.org/10.1038/s41586-023-07006-3",
+        "kind": "primary_publication",
+        "checked": "distinct heading and goal signals, FC2 and PFL3 comparison",
+        "application": "goal boundary review; not evidence that current MaleCNS FC2 candidate implements this computation"
+      },
+      {
+        "id": "MALECNS-NT",
+        "url": "https://male-cns.janelia.org/download/",
+        "kind": "official_dataset",
+        "checked": "body-neurotransmitters v1.0 downloaded with SHA256; 2625/2626 candidate IDs matched",
+        "application": "configs/malecns-neurotransmitters-source.json; neurotransmitter evidence without receptor-specific sign assignment"
+      }
+    ]
+  },
+  "scope": "primary publications, version-pinned preprints, official data/software, labeled technical claims",
+  "core": [
+    {
+      "id": "R01",
+      "evidence": "[Dorkenwald 등, FlyWire, Nature 2024](https://www.nature.com/articles/s41586-024-07558-y): 성체 뇌와 시각엽 연결 지도",
+      "sources": [
+        {
+          "title": "Dorkenwald 등, FlyWire, Nature 2024",
+          "url": "https://www.nature.com/articles/s41586-024-07558-y"
+        }
+      ],
+      "application": "C4의 FAFB v783 그래프, 뉴런 유형·좌우·시각 위치 명세",
+      "limits": "뇌 지도이며 VNC 전체를 포함하지 않는다. 개별 시냅스 수와 집계 연결 수를 구분한다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R02",
+      "evidence": "[MaleCNS v1.0 공식 데이터](https://male-cns.janelia.org/download/): 뇌·VNC 연결, 유형·좌우 주석, 전달물질 예측",
+      "sources": [
+        {
+          "title": "MaleCNS v1.0 공식 데이터",
+          "url": "https://male-cns.janelia.org/download/"
+        }
+      ],
+      "application": "C3/C5의 기능 부분 그래프와 전신 감각 피드백 후보",
+      "limits": "파일럿의 추적된 부분집합을 전체 공개 데이터의 뉴런 수와 혼동하지 않는다.",
+      "kind": "official_dataset"
+    },
+    {
+      "id": "R03",
+      "evidence": "[Shiu 등, Nature 2024](https://pmc.ncbi.nlm.nih.gov/articles/PMC11446845/): 전뇌 LIF 모델의 먹이·그루밍 회로 예측",
+      "sources": [
+        {
+          "title": "Shiu 등, Nature 2024",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11446845/"
+        }
+      ],
+      "application": "E9의 국소 회로 자극과 rate/LIF 비교",
+      "limits": "주행 성능의 증거가 아니다. 신경조절·비발화 뉴런 등 생략을 기록한다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R04",
+      "evidence": "[Lappalainen 등, Nature 2024](https://www.nature.com/articles/s41586-024-07939-3), [flyvis](https://github.com/TuragaLab/flyvis): 연결 제약 시각 모델과 운동 시각 학습",
+      "sources": [
+        {
+          "title": "Lappalainen 등, Nature 2024",
+          "url": "https://www.nature.com/articles/s41586-024-07939-3"
+        },
+        {
+          "title": "flyvis",
+          "url": "https://github.com/TuragaLab/flyvis"
+        }
+      ],
+      "application": "E3의 망막 위치 대응, 유형별 파라미터 공유, 시각 사전학습",
+      "limits": "flyvis의 뉴런 인덱스를 MaleCNS ID로 그대로 복사하지 않는다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R05",
+      "evidence": "[목표 방향에서 조향으로 이어지는 CX 회로, Nature 2024](https://www.nature.com/articles/s41586-024-07039-2): PFL 계열과 DNa02 조향 경로",
+      "sources": [
+        {
+          "title": "목표 방향에서 조향으로 이어지는 CX 회로, Nature 2024",
+          "url": "https://www.nature.com/articles/s41586-024-07039-2"
+        }
+      ],
+      "application": "C3의 CX→DN 선택, E9의 방향 신호 개입",
+      "limits": "논문 좌우 정의를 MECar의 좌회전 양의 부호로 변환·검증한다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R06",
+      "evidence": "[Neural circuit mechanisms for steering control in walking Drosophila, eLife](https://elifesciences.org/articles/102230): 좌우 하행 활동과 회전 관계",
+      "sources": [
+        {
+          "title": "Neural circuit mechanisms for steering control in walking Drosophila, eLife",
+          "url": "https://elifesciences.org/articles/102230"
+        }
+      ],
+      "application": "좌우 DN 활동의 합·차를 읽는 해석 가능한 출력 대조군",
+      "limits": "특정 뉴런의 회전 관계가 차량 토크의 물리 단위를 정하지는 않는다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R07",
+      "evidence": "[상행·하행 뉴런 비교 연결 연구, Nature 2025](https://www.nature.com/articles/s41586-025-08925-z)",
+      "sources": [
+        {
+          "title": "상행·하행 뉴런 비교 연결 연구, Nature 2025",
+          "url": "https://www.nature.com/articles/s41586-025-08925-z"
+        }
+      ],
+      "application": "뇌↔VNC 연결 주석, 피드백 포트 선정·좌우 점검",
+      "limits": "서로 다른 개체·데이터셋은 유형 대응표로 연결한다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R08",
+      "evidence": "[Eon의 embodied fly 기술 설명, 2026](https://eon.systems/updates/embodied-brain-emulation), [후속 설명](https://eon.systems/updates/more-flies-are-getting-uploaded)",
+      "sources": [
+        {
+          "title": "Eon의 embodied fly 기술 설명, 2026",
+          "url": "https://eon.systems/updates/embodied-brain-emulation"
+        },
+        {
+          "title": "후속 설명",
+          "url": "https://eon.systems/updates/more-flies-are-getting-uploaded"
+        }
+      ],
+      "application": "DN 의도 출력→별도 신체 제어기→감각 피드백의 통합 방식",
+      "limits": "초기 설명은 시각의 행동 영향이 제한적이고 별도 운동 제어기를 쓴다. 시각 자율주행의 검증 결과로 사용하지 않는다.",
+      "kind": "company_technical_note"
+    },
+    {
+      "id": "R09",
+      "evidence": "[FLYNN, arXiv:2607.00025v2](https://arxiv.org/html/2607.00025v2), [코드](https://github.com/ben-gitdev/fly-gym)",
+      "sources": [
+        {
+          "title": "FLYNN, arXiv:2607.00025v2",
+          "url": "https://arxiv.org/html/2607.00025v2"
+        },
+        {
+          "title": "코드",
+          "url": "https://github.com/ben-gitdev/fly-gym"
+        }
+      ],
+      "application": "상태 유지형 커넥톰 RNN, 시각 입력·DN 출력, DAgger, OOD 비교",
+      "limits": "MuJoCo 차동구동 탐색 과제다. 목표 방위·접촉 입력이 남는 시각 소실 결과를 무접촉 차량 주행으로 해석하지 않는다.",
+      "kind": "preprint"
+    },
+    {
+      "id": "R10",
+      "evidence": "[FlyGM, arXiv:2602.17997v3](https://arxiv.org/html/2602.17997v3), [프로젝트](https://lnsgroup.cc/research/FlyGM/)",
+      "sources": [
+        {
+          "title": "FlyGM, arXiv:2602.17997v3",
+          "url": "https://arxiv.org/html/2602.17997v3"
+        },
+        {
+          "title": "프로젝트",
+          "url": "https://lnsgroup.cc/research/FlyGM/"
+        }
+      ],
+      "application": "C6의 고정 그래프 연산자+공유 노드 갱신기, 모방 후 RL 후보",
+      "limits": "가상 초파리 운동 과제다. 공식 프로젝트의 코드는 확인 시점에 Coming soon이므로 구현 확보를 전제하지 않는다.",
+      "kind": "preprint"
+    },
+    {
+      "id": "R11",
+      "evidence": "[FlyCNS, arXiv:2609.28816v1](https://arxiv.org/html/2609.28816v1)",
+      "sources": [
+        {
+          "title": "FlyCNS, arXiv:2609.28816v1",
+          "url": "https://arxiv.org/html/2609.28816v1"
+        }
+      ],
+      "application": "E9의 전역 의도와 국소 구동 피드백 사이 통신량 대조",
+      "limits": "구조 통계를 쓴 통신 조직화 연구다. 전체 뉴런 이식이나 필수 CAN 보호 신호의 학습식 차단을 뜻하지 않는다.",
+      "kind": "preprint"
+    },
+    {
+      "id": "R12",
+      "evidence": "[NeuroMechFly v2, Nature Methods 2024](https://www.nature.com/articles/s41592-024-02497-y), [flygym](https://github.com/NeLy-EPFL/flygym)",
+      "sources": [
+        {
+          "title": "NeuroMechFly v2, Nature Methods 2024",
+          "url": "https://www.nature.com/articles/s41592-024-02497-y"
+        },
+        {
+          "title": "flygym",
+          "url": "https://github.com/NeLy-EPFL/flygym"
+        }
+      ],
+      "application": "시각·신체·접촉을 같은 시간축으로 묶는 폐루프 검증",
+      "limits": "초파리 몸체 모델은 MECar 차량 모델을 대체하지 않는다. R09의 fly-gym 저장소와 다르다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R13",
+      "evidence": "[Neural Circuit Policies, Nature Machine Intelligence 2020](https://www.nature.com/articles/s42256-020-00237-3), [ncps](https://github.com/mlech26l/ncps)",
+      "sources": [
+        {
+          "title": "Neural Circuit Policies, Nature Machine Intelligence 2020",
+          "url": "https://www.nature.com/articles/s42256-020-00237-3"
+        },
+        {
+          "title": "ncps",
+          "url": "https://github.com/mlech26l/ncps"
+        }
+      ],
+      "application": "C2의 작은 LTC 제어기, 시간·메모리 비교 기준",
+      "limits": "C. elegans에서 착안한 회로다. 작은 제어 뉴런 수에 외부 영상 인코더 비용을 포함해 비교한다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R14",
+      "evidence": "[Fine-grained descending control of steering, Cell 2024](https://pubmed.ncbi.nlm.nih.gov/39293446/)",
+      "sources": [
+        {
+          "title": "Fine-grained descending control of steering, Cell 2024",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/39293446/"
+        }
+      ],
+      "application": "속도 성분과 좌우 비대칭 성분을 분리하는 출력 가설",
+      "limits": "다리의 보행 위상과 차량 바퀴 회전을 동일한 운동으로 가정하지 않는다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R15",
+      "evidence": "[Stone 등, 곤충 CX 경로 적분, Current Biology 2017](https://pmc.ncbi.nlm.nih.gov/articles/PMC6196076/), [코드](https://github.com/InsectRobotics/path-integration)",
+      "sources": [
+        {
+          "title": "Stone 등, 곤충 CX 경로 적분, Current Biology 2017",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6196076/"
+        },
+        {
+          "title": "코드",
+          "url": "https://github.com/InsectRobotics/path-integration"
+        }
+      ],
+      "application": "E9의 방위·자기운동 기억 대조군, IMU/휠 피드백",
+      "limits": "종을 넘는 기능 추상화다. 초파리 측정 뉴런 ID의 직접 대응은 아니다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R16",
+      "evidence": "[BeeNav, Nature 2026](https://www.nature.com/articles/s41586-026-10461-3), [열람본](https://pmc.ncbi.nlm.nih.gov/articles/PMC13216067/), [코드](https://github.com/tudelft/Bee-Nav)",
+      "sources": [
+        {
+          "title": "BeeNav, Nature 2026",
+          "url": "https://www.nature.com/articles/s41586-026-10461-3"
+        },
+        {
+          "title": "열람본",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13216067/"
+        },
+        {
+          "title": "코드",
+          "url": "https://github.com/tudelft/Bee-Nav"
+        }
+      ],
+      "application": "E9의 반복 코스 시각 기억, E10의 실제 계산 비용 기록",
+      "limits": "실제 드론의 시각 귀소 연구다. 익숙한 코스 기억과 처음 보는 코스 일반화를 따로 평가한다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R17",
+      "evidence": "[LGMD 기반 로봇 충돌 회피, Frontiers 2021](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2021.529872/full)",
+      "sources": [
+        {
+          "title": "LGMD 기반 로봇 충돌 회피, Frontiers 2021",
+          "url": "https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2021.529872/full"
+        }
+      ],
+      "application": "E9의 looming 위험도→감속 요청 보조 가지",
+      "limits": "위험 추정의 기여를 검증한다. 같은 카메라를 쓰므로 센서 소실에 독립적인 보호 장치로 계산하지 않는다.",
+      "kind": "peer_reviewed"
+    },
+    {
+      "id": "R18",
+      "evidence": "[CurvACE, PNAS 2013](https://pmc.ncbi.nlm.nih.gov/articles/PMC3677439/)",
+      "sources": [
+        {
+          "title": "CurvACE, PNAS 2013",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3677439/"
+        }
+      ],
+      "application": "E3/E8의 시야각·시간 해상도·밝기 적응 비교",
+      "limits": "겹눈형 하드웨어의 설계 원리를 참고한다. 전용 센서 구매를 전제하지 않는다.",
+      "kind": "peer_reviewed"
+    }
+  ],
+  "additional": [
+    {
+      "id": "A01",
+      "title": "Assetto Corsa Gym",
+      "url": "https://github.com/dasGringuen/assetto_corsa_gym",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A02",
+      "title": "NeurIPS 2024 연구",
+      "url": "https://assetto-corsa-gym.github.io/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A03",
+      "title": "PyChrono/Chrono::Vehicle",
+      "url": "https://api.projectchrono.org/manual_vehicle.html",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A04",
+      "title": "Python 예제",
+      "url": "https://api.projectchrono.org/development/tutorial_table_of_content_pychrono.html",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A05",
+      "title": "MuJoCo/MJX",
+      "url": "https://mujoco.readthedocs.io/en/stable/mjx.html",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A06",
+      "title": "공식 Dream Pack 1",
+      "url": "https://store.steampowered.com/app/347990/Dream_Pack_1/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A07",
+      "title": "Nordschleife 안내",
+      "url": "https://www.nuerburgring.de/info/nuerburgring/race-tracks/nordschleife?locale=en",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A08",
+      "title": "3D Mapping Solutions",
+      "url": "https://www.3d-mapping.de/sample-data/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A09",
+      "title": "TUM racetrack-database",
+      "url": "https://github.com/TUMFTM/racetrack-database",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A10",
+      "title": "OpenDRIVE",
+      "url": "https://www.asam.net/standards/detail/opendrive/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A11",
+      "title": "OpenCRG",
+      "url": "https://www.asam.net/standards/detail/opencrg/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A12",
+      "title": "지형 계약",
+      "url": "https://api.projectchrono.org/vehicle_terrain.html",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A13",
+      "title": "일반 mesh 충돌",
+      "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#asset-mesh",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A14",
+      "title": "FeCO, Mamiya 등, Neuron 2018",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6481666/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A15",
+      "title": "Lee 등, Nature Communications 2025",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/40316553/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A16",
+      "title": "Campaniform 감각기의 역학 모델, 2025",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12056673/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A17",
+      "title": "Halteres, Dickerson 등, Current Biology 2019",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7307274/",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A18",
+      "title": "Johnston 기관의 중력 감각, Nature 2009",
+      "url": "https://courses.washington.edu/danielab/labwiki/images/9/90/Kamikouchi_et_al_droso_gravity_2009.pdf",
+      "application": "3D backend / road assets / body sensing; see research-plan.md",
+      "kind": "primary_publication_or_official_documentation"
+    },
+    {
+      "id": "A19",
+      "title": "Gymnasium environment API",
+      "url": "https://gymnasium.farama.org/api/env/",
+      "kind": "official_documentation",
+      "application": "runtime contracts, not a claim of using that implementation"
+    },
+    {
+      "id": "A20",
+      "title": "MuJoCo Python API",
+      "url": "https://mujoco.readthedocs.io/en/stable/python.html",
+      "kind": "official_documentation",
+      "application": "runtime contracts, not a claim of using that implementation"
+    },
+    {
+      "id": "A21",
+      "title": "PyChrono installation",
+      "url": "https://api.projectchrono.org/pychrono_installation.html",
+      "kind": "official_documentation",
+      "application": "runtime contracts, not a claim of using that implementation"
+    },
+    {
+      "id": "A22",
+      "title": "PPO reference API",
+      "url": "https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html",
+      "kind": "official_documentation",
+      "application": "runtime contracts, not a claim of using that implementation"
+    },
+    {
+      "id": "A23",
+      "title": "Independently Controlled Wing Stroke Patterns in the Fruit Fly, 2015",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4339832/",
+      "kind": "peer_reviewed",
+      "application": "Bilateral common/difference motor readouts; vision-wing-followup.md",
+      "limits": "Wing stroke asymmetry is a functional analogy; not a wheel-torque conversion."
+    },
+    {
+      "id": "A24",
+      "title": "Schnell et al., A descending neuron correlated with rapid steering, 2017",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6309624/",
+      "kind": "peer_reviewed",
+      "application": "Lateralized descending output and temporal steering response",
+      "limits": "Flight control does not establish the sign of a vehicle actuator mapping."
+    },
+    {
+      "id": "A25",
+      "title": "Zhao et al., Eye structure shapes neuron function in Drosophila motion vision, 2025",
+      "url": "https://www.nature.com/articles/s41586-025-09276-5",
+      "kind": "peer_reviewed",
+      "application": "Nonuniform eye-direction sampling and motion preferred directions",
+      "limits": "Authors reconstructed axes imported separately; current driver still uses synthetic grid. Acceptance and MaleCNS retinal neuron registration are not established.",
+      "code_url": "https://github.com/reiserlab/eyemap_T4/tree/99d2a43123db636cedb55af9ff31a59657e7d17e",
+      "local_registry": "configs/eyemap-t4-source.json"
+    },
+    {
+      "id": "A26",
+      "title": "Bates et al., Distributed control circuits across a brain-and-cord connectome, 2026",
+      "url": "https://www.nature.com/articles/s41586-026-10735-w",
+      "kind": "peer_reviewed",
+      "application": "BANC brain/VNC, wing power/steering and local sensorimotor feedback candidates",
+      "limits": "Dataset and reviewed actuator ports have not been imported."
+    },
+    {
+      "id": "A27",
+      "title": "Official BANC paper analysis repository",
+      "url": "https://github.com/htem/BANC-project",
+      "kind": "official_software",
+      "application": "Reproducible annotations/analyses for future circuit selection",
+      "limits": "Referenced, not a runtime dependency or a downloaded connectome."
+    },
+    {
+      "id": "A28",
+      "title": "Taherian et al., Self-adaptive Torque Vectoring Controller Using RL, arXiv v1 2021",
+      "url": "https://arxiv.org/abs/2103.14892v1",
+      "kind": "version_pinned_preprint",
+      "application": "Hierarchical torque-vectoring adaptation control baseline",
+      "limits": "Vehicle simulation; not evidence of fly-connectome or MECar performance."
+    },
+    {
+      "id": "A29",
+      "title": "Coulter, Implementation of the Pure Pursuit Path Tracking Algorithm, CMU-RI-TR-92-01, 1992",
+      "url": "https://publications.ri.cmu.edu/implementation-of-the-pure-pursuit-path-tracking-algorithm",
+      "kind": "primary_technical_report",
+      "application": "Privileged route/pose geometric teacher in imitation.py",
+      "limits": "Our lookahead/speed and actuator adapter are prototype choices, not a reproduced vehicle benchmark."
+    },
+    {
+      "id": "A30",
+      "title": "Ross, Gordon and Bagnell, A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning, AISTATS 2011",
+      "url": "https://proceedings.mlr.press/v15/ross11a.html",
+      "kind": "primary_publication",
+      "application": "Mixed expert/student state collection, expert relabelling and aggregated recurrent supervised learning",
+      "limits": "One bounded DAgger round is implemented; no convergence guarantee for this neural optimizer or vehicle."
+    },
+    {
+      "id": "A31",
+      "title": "MuJoCo XML reference: visual/map clipping distances",
+      "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#visual-map",
+      "kind": "official_documentation",
+      "application": "Extent-scaled znear/zfar converted from explicit CameraConfig near_m/far_m",
+      "limits": "Verified renderer contract, not an anatomical eye map or calibrated optical lens."
+    }
+  ]
+}

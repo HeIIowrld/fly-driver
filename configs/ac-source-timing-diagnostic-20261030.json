@@ -1,0 +1,134 @@
+{
+  "schema": "flybrain.source_timing_diagnostic.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "source_timing_v1": true,
+  "duration_seconds": 3,
+  "speed_hint_kmh": 60,
+  "hard_speed_kmh": 80,
+  "hard_displacement_m": 80,
+  "expected_engine_pid": 45604,
+  "expected_generation": "37294426ULL:0.0013415",
+  "input_sha256": {
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "b6d87d2708a13b37e858bf6cfe87f362540bf645514223e18e2c870fbd66e1f7",
+    "src/flybrain_drive/ac_csp_vision.py": "7a10bc801e0aea492254476308459f532c900f50f50bb41b46f1f393dbfe13b9",
+    "scripts/record_ac_engine_ai_probe.py": "3f327e62788ff05e1dd893cc8c53c4b33d84c48b11cbc05725c95cec36ec656c",
+    "scripts/control_ac_session.py": "2f83c118b6d48144fe6a8848f68e81f17f45806c1473394c5300d9d980027580",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1737-source-timing-review/result.json": "f2d0e7440af3918576283a426182dcdc56005709857c58d2e0240457d03db10f",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1738-source-timing-deployment/result.json": "699f2e0b062f9265464ad0926c3b4398ad74372a04a0d9a204aafd019912fbbf"
+  },
+  "preactivation_paused_baseline": {
+    "session": {
+      "script_clock": 137.819222,
+      "is_online": false,
+      "in_menu": false,
+      "paused": true,
+      "live": false,
+      "speed_kmh": 0.0022997835185379,
+      "car_id": "bmw_z4_gt3",
+      "camera_active": false,
+      "generation": "37294426ULL:0.0013415",
+      "ai_controlled": false,
+      "ideal_line_shown": false,
+      "gas": 0,
+      "brake": 1,
+      "brake_settle_active": false,
+      "api_types": {
+        "restart": "cdata",
+        "pause": "function",
+        "start": "function",
+        "restart_engine": "function"
+      },
+      "track_id": "monza",
+      "receipt_protocol": "accepted_plus_immutable_terminal_v2",
+      "capabilities": {
+        "expert_pace60_100_stop30": true,
+        "expert_brake_pulse30": true,
+        "expert_speed_recovery15": true,
+        "expert_speed20_recovery15": true,
+        "expert_lateral_recovery15": true,
+        "expert_moving_handoff3": true,
+        "expert_moving_handoff30": true,
+        "brake_settle_after_teacher": true,
+        "pause": true,
+        "start": true,
+        "disable_ideal_line": true,
+        "restart_engine": true,
+        "restart": true,
+        "expert_probe": true,
+        "expert_motion_probe": true,
+        "expert_collect30": true,
+        "expert_motion_speed30": true,
+        "expert_collect30_speed30": true,
+        "expert_motion_speed60": true,
+        "expert_collect30_speed60": true
+      },
+      "expert_probe_active": false,
+      "heartbeat_write_failures": 0,
+      "renderer_origin_shift_diagnostic": [
+        -1024,
+        0,
+        1280
+      ],
+      "physics_api_allowed": true,
+      "schema": "flybrain.csp.session.status.v1",
+      "epoch": 0,
+      "window_handle": "37294426ULL"
+    },
+    "native": {
+      "gas": 0.0,
+      "brake": 1.0,
+      "steerAngle": 0.0,
+      "speedKmh": 0.002299783518537879,
+      "accG": [
+        -0.00016202341066673398,
+        -0.0032880567014217377,
+        0.0046016136184334755
+      ],
+      "wheelLoad": [
+        3200.77099609375,
+        3511.5302734375,
+        3160.1689453125,
+        3230.6552734375
+      ],
+      "wheelsPressure": [
+        19.44637680053711,
+        19.738370895385742,
+        18.571773529052734,
+        18.619932174682617
+      ],
+      "wheelAngularSpeed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "tyreCoreTemperature": [
+        47.539852142333984,
+        49.36481857299805,
+        42.07358932495117,
+        42.37457275390625
+      ],
+      "suspensionTravel": [
+        0.01819145679473877,
+        0.019275188446044922,
+        0.0660162940621376,
+        0.06637383997440338
+      ],
+      "localAngularVel": [
+        0.0003544286882970482,
+        -0.00013439216127153486,
+        -0.00030617916490882635
+      ]
+    },
+    "engine_pid": 45604,
+    "student_owner_qualification": false
+  },
+  "free_bytes": 81288957952,
+  "other_owned_gpu_jobs": 0,
+  "independent_cpu_graph_qualifier_terminal": true,
+  "no_tolerance_changes": true,
+  "ui_actions_sent": 0,
+  "optimizer_updates": 0
+}

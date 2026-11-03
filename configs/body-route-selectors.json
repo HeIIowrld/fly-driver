@@ -1,0 +1,70 @@
+{
+  "haltere_L": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "haltere",
+    "rootSide": "L"
+  },
+  "haltere_R": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "haltere",
+    "rootSide": "R"
+  },
+  "chordotonal_ProLN_L": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "chordotonal organ",
+    "entryNerve": "ProLN",
+    "rootSide": "L"
+  },
+  "chordotonal_ProLN_R": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "chordotonal organ",
+    "entryNerve": "ProLN",
+    "rootSide": "R"
+  },
+  "chordotonal_ProCN_L": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "chordotonal organ",
+    "entryNerve": "ProCN",
+    "rootSide": "L"
+  },
+  "chordotonal_ProCN_R": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "chordotonal organ",
+    "entryNerve": "ProCN",
+    "rootSide": "R"
+  },
+  "chordotonal_MesoLN_L": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "chordotonal organ",
+    "entryNerve": "MesoLN",
+    "rootSide": "L"
+  },
+  "chordotonal_MesoLN_R": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "chordotonal organ",
+    "entryNerve": "MesoLN",
+    "rootSide": "R"
+  },
+  "chordotonal_MetaLN_L": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "chordotonal organ",
+    "entryNerve": "MetaLN",
+    "rootSide": "L"
+  },
+  "chordotonal_MetaLN_R": {
+    "status": "Traced",
+    "class": "mechanosensory_proprioceptive",
+    "subclass": "chordotonal organ",
+    "entryNerve": "MetaLN",
+    "rootSide": "R"
+  }
+}

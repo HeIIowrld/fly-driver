@@ -1,0 +1,21 @@
+{
+  "purpose": "optimizer and recurrent rollout smoke; not a benchmark",
+  "seed": 1,
+  "policy": "gru",
+  "torch_threads": 1,
+  "horizon": 64,
+  "updates": 2,
+  "epochs": 2,
+  "learning_rate": 0.0003,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "clip": 0.2,
+  "environment": {
+    "mode": "O",
+    "max_steps": 128,
+    "image_size": 32,
+    "control_dt": 0.01,
+    "physics_dt": 0.001,
+    "camera_hz": 30
+  }
+}

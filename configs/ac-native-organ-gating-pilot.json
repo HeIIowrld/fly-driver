@@ -1,0 +1,35 @@
+{
+  "source_checkpoint": "runs\\ac-native-pixel-teacher-20261028-t60\\native-initialized.pt",
+  "source_checkpoint_sha256": "6b6ac07f28d47010dd84ab6b830f0ae5203c82ee3cc5132f3ee420cd9972ead0",
+  "seed": 861301,
+  "action_profile": "normalized_ac_absolute",
+  "epochs": 12,
+  "chunk_length": 16,
+  "learning_rate": 0.0001,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "pedal_mode": "independent",
+  "pedal_conditioning": {
+    "target_rms": [
+      0.2,
+      0.2
+    ],
+    "max_gain": 10000000000.0
+  },
+  "condition_steering_gain": false,
+  "photometric_normalization": {
+    "rgb_floor": 0.03,
+    "contrast_floor": 0.1
+  },
+  "native_steering_conditioning": {
+    "target_rms": 0.15,
+    "max_gain": 10000000000.0
+  },
+  "organ_validity_mode": "gate_only",
+  "experiment": "Remove learned validity-flag drive; same original 50 training labels; recurrent graph unchanged"
+}

@@ -1,0 +1,17 @@
+{
+  "role": "calibration",
+  "fit_allowed": false,
+  "nominal_speed_kmh": 60,
+  "hard_speed_kmh": 80,
+  "stages": [
+    3,
+    30
+  ],
+  "batched_shared_copy": true,
+  "journal_schema": "flybrain.shared_copy.journal.v2",
+  "journal_policy": "Bounded memory during capture, serialize after loop",
+  "source_sha256": "94a7ff251508a41220f8c2399f9ed6b8323aebcd4e81158591759a9a44b4dea7",
+  "original_freshness_limits_unchanged": true,
+  "reason": "Batch v1 still failed29.39sec despite GPU copies <=5.36ms; measure host scheduling and move diagnostic I/O off hot path",
+  "causal_fix_not_claimed": true
+}

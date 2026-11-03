@@ -1,0 +1,52 @@
+{
+  "schema": "flybrain.paired_spatial_preview_learning.v1",
+  "base_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1434-body21-flight-cache",
+  "base_preview": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1443-visual-preview-information",
+  "spatial_audit": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1527-spatial-mmf-completed-history-audit",
+  "visual_replay": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1531-spatial-visual-replay",
+  "scene_spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "pool_reproduction_tolerance": 2e-06,
+  "conditions": [
+    "original_only",
+    "extended_train"
+  ],
+  "seed": 863534,
+  "epochs": 200,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "feature_scale_floor": 1e-05,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "architecture": "Shared9to8 retinotopic patch,512to64 tanh,64to6 linear preview outputs",
+  "objective": "Six equally weighted standardized target MSEs; valid TRAIN endpoints only; no target clipping",
+  "checkpoint": "Fixed last200, no development selection",
+  "actor_inputs": "scene576 only; no body, position, clock, goal, trajectory or controls",
+  "targets": "5/10/20m future-path bearing and chord-curvature; privileged labels only",
+  "roles": "Original6 TRAIN/2 known development unchanged; both new complete original TRAIN histories added; failed partial history excluded",
+  "interventions": [
+    "vision_train_mean",
+    "motion_train_mean",
+    "intensity_train_mean"
+  ],
+  "report_periods": [
+    "full",
+    "after3s"
+  ],
+  "qualification": "Auxiliary visual representation only. Report every known-development head against TRAIN mean, zero and full vision replacement; no driving or motor-transfer claim",
+  "author_and_motor_weights_unchanged": true,
+  "legacy_actor_goals_reinterpreted": false,
+  "source_sha256": {
+    "scripts/build_spatial_preview_dataset.py": "9e5f6e6a668606f95ff58fa466c1085bff6216d199e564df841311d34af10e60",
+    "scripts/train_spatial_preview_boundary.py": "6c63c0bdce5589b4ba91011547c30da1bc4b150676820690381e1314bebd7218",
+    "src/flybrain_drive/visual_preview_learning.py": "c6db9f8c4b22a67f28f7e573d22b585a6acaed6c8dbb8feb4a7021bbb894e491",
+    "src/flybrain_drive/teacher_path_preview.py": "8bd6a95396430f87c6a58318e6b7500dcf66e94bd972d09d78113ed58c5ec878",
+    "src/flybrain_drive/flight_circuit.py": "ea8c6ce537c3ea41f23ce192a932ea081572eeb181f368acb9e83fd92f715eca"
+  },
+  "goal_achieved": false
+}

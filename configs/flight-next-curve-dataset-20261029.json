@@ -1,0 +1,11 @@
+{
+  "seed": 863090,
+  "sources": [
+    {
+      "recording": "runs/flight-next-curve-recording-20261029-t1058",
+      "targets": "runs/flight-next-curve-targets-20261029-t1064",
+      "raw_audit": "runs/flight-next-curve-raw-audit-20261029-t1060"
+    }
+  ],
+  "scope": "Whole original30kmh background teacher lease; no reset/slicing at transfer, no race-optimality claim"
+}
