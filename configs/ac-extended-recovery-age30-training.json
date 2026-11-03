@@ -1,0 +1,74 @@
+{
+  "source_checkpoint": "runs/ac-road-recovery-base-training-20261028-t499/checkpoint.pt",
+  "source_checkpoint_sha256": "212c00d1859a539c9a483d2fe0e564e98887be5c838c2b983ccb5c63e2d6f83d",
+  "seed": 862953,
+  "epochs": 32,
+  "chunk_length": 64,
+  "learning_rate": 0.0001,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "action_profile": "normalized_ac_absolute",
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "organ_validity_mode": "gate_only",
+  "pedal_mode": "independent",
+  "episodes_per_batch": null,
+  "readout_gain_parameterization": "log",
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "teacher_label_contract": {
+    "kind": "geometric_recovery_fixed_task",
+    "maximum_speed_kmh": 30.0,
+    "reference_sha256": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4",
+    "track_sha256": "adfbf94c3625c872507b406d02b6e375274901427db77555f7899121a2d1c414",
+    "kinematic_calibration_sha256": "449293c71a648b31bf7ca71841ef95a9014d7b6655aa16af3a464a0a50bbeecd",
+    "teacher_implementation_sha256": "9d0fc7ea310214209d17a23df9682b497924def6548e8a7226ef1ed1d0cda421",
+    "interpretation": "teacher-only geometric desired canonical control at recorded state; execution status recorded separately"
+  },
+  "brake_positive_weight": 1.0,
+  "brake_label_threshold": 0.05,
+  "optimizer_update_scope": "epoch",
+  "evaluation_exclusion": {
+    "directory": "runs\\ac-bundled-yaw-teacher-sealed-20261028-t347\\dataset",
+    "manifest_sha256": "067215f1e72480e6d37f1a48aded0513f329b0dd21ea2c87257ca67e94da71c0",
+    "role": "next recorded track section reserved from gradient updates; not a final circuit test"
+  },
+  "device": "cuda",
+  "training_sparse_backend": "cached_csr_gpu",
+  "deployment_sparse_backend": "cached_csr_cpu",
+  "chunk_validated_training": true,
+  "data_addition": {
+    "dataset": "runs/ac-extended-recovery-training-data-20261028-t535",
+    "decisions": 8117,
+    "original_episodes": 15,
+    "brake_positive_samples": 1254,
+    "new_continuation_decisions": 816,
+    "stationary_launch_decisions": 1196,
+    "success240_decisions": 984,
+    "camera_abort_decisions": 744,
+    "original_actor_arrays_masks_clocks_unchanged": true,
+    "expert_labels_executed": false
+  },
+  "resource_experiment": {
+    "scope": "Same source499, exact15-episode dataset, source499 anchor3, brake weight1, seed and32epochs; only visual-age confidence scale differs. Original150ms freshness and masks remain unchanged.",
+    "workers": 2,
+    "reason": "Larger dataset and episode batch; two useful GPU jobs limit simultaneous memory while comparing the declared sensor-confidence change."
+  },
+  "readout_gain_learning_rate": 0.03,
+  "policy_anchor": {
+    "checkpoint_sha256": "212c00d1859a539c9a483d2fe0e564e98887be5c838c2b983ccb5c63e2d6f83d",
+    "episode_sha256": [
+      "6dbb42860d1aabed11ebe59356170a99d7da3414fa903049795b62a02aff7a05",
+      "7f3721d58a173abb2b0da148b11c936aa624c4e1e7e513bb847355330b4a5099"
+    ],
+    "coefficient": 3.0,
+    "source_success_evidence": "runs/ac-wait40-student-audit-20261028-t525",
+    "target_semantics": "Frozen source499 requests on exact actor arrays: actual successful984 episode plus replay on historical528 success observations; not original414 action targets or expert labels"
+  },
+  "visual_age_confidence": {
+    "scale_seconds": 0.3
+  }
+}

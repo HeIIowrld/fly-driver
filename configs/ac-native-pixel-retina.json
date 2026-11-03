@@ -1,0 +1,33 @@
+{
+  "schema": "flybrain.ac.pixel_retina.v1",
+  "clock_domain": "host_monotonic_receipt",
+  "scope": "Engineering pixel-space retina registration; no calibrated AC mirror or body rays",
+  "image_shape": [784, 1284],
+  "receptors_per_view": 1709,
+  "columns": 42,
+  "acceptance_sigma_pixels": 1.5,
+  "max_view_age": 0.15,
+  "contrast_scale": 10,
+  "regions": {
+    "front": [410, 200, 1120, 510],
+    "mirror_left": null,
+    "mirror_right": null,
+    "mirror_rear": null
+  },
+  "region_review_source": "runs/ac-sac-teacher-first-segment-20261028-t59b/view-inspection-1.png",
+  "missing_view_policy": "all-zero values and validity0; never invent views or camera geometry",
+  "local_neighborhood_coordinate_meaning": "unit embedding of a staggered pixel lattice, not body-frame rays",
+  "native_unit_conversions": "declared engineering models; independent physical calibration pending",
+  "unavailable_organ_groups": ["roadwheel steering angle", "body-axis angular velocity"],
+  "scalar_organs": [
+    {"native_field": "suspensionTravel", "feature_offset": 18, "minimum": -0.07,
+     "maximum": 0.07, "width": 0.02, "change_scale": 1, "offset": 0,
+     "meaning": "declared native travel population; host-receipt rate, not calibrated leg physiology"},
+    {"native_field": "tyreCoreTemperature", "feature_offset": 54, "minimum": 273.15,
+     "maximum": 433.15, "width": 15, "change_scale": 10, "offset": 273.15,
+     "meaning": "declared Celsius-to-Kelvin conversion; host-receipt temperature change"},
+    {"native_field": "wheelLoad", "feature_offset": 90, "minimum": 0,
+     "maximum": 10000, "width": 1000, "change_scale": 10000, "offset": 0,
+     "meaning": "declared native wheel load N; host-receipt change"}
+  ]
+}

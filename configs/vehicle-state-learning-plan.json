@@ -1,0 +1,65 @@
+{
+  "updated_at": "2026-10-27",
+  "kind": "design_registry_not_executable_training_config",
+  "user_requirements": [
+    "joint steering, acceleration and braking",
+    "load transfer awareness",
+    "tyre temperature and grip assessment",
+    "setup detection and driving adaptation"
+  ],
+  "implemented_and_validated": false,
+  "source_pretraining_requires_AC_installation": false,
+  "current_source_physics": {
+    "chassis_and_suspension": "25 synthetic mechanical sanity checks passed; AC-equivalent load-transfer accuracy unvalidated",
+    "contact_friction": "constant coefficients in src/flybrain_drive/env.py",
+    "tyre_temperature_pressure_wear": "not implemented",
+    "vehicle_parameters": "illustrative_unvalidated in src/flybrain_drive/control.py",
+    "current_fly_candidate": "fixed-forward steering only; not trained for this scope"
+  },
+  "planned_state": {
+    "fast": [
+      "sensory and circuit state",
+      "joint steering, throttle and brake intent"
+    ],
+    "slower": [
+      "front/rear grip and response balance with uncertainty",
+      "tyre condition belief with uncertainty",
+      "steering and suspension response adaptation"
+    ],
+    "rates": "to be measured and validated; not assigned physiological time constants"
+  },
+  "information_contract": {
+    "main_actor": "eye responses, declared body sensors including game-provided tyre core temperature and four wheel loads, and applied-action history",
+    "teacher_and_diagnostic_only_initially": [
+      "route/pose/progress truth",
+      "future curvature and reference path",
+      "friction-model parameters and setup file values"
+    ],
+    "direct_instrumented_temperature_mode": "primary actor mode per explicit user correction",
+    "setup_identification": "infer useful response characteristics; exact parameters may not be identifiable",
+    "automatic_garage_setup_optimization": "separate future task",
+    "telemetry_implementation": "SDK CurrentTyresCoreTemp and Load added to raw app; Kelvin affine conversion and 4-wheel Newton sensor contracts added; native calibration and neural-port integration pending"
+  },
+  "next_work_order": [
+    "prioritize existing AC teacher and suitable data reuse; full tyre-engine recreation is not required before distillation",
+    "validate longitudinal/lateral load-transfer response and force/moment conventions",
+    "define and validate load-sensitive combined-slip tyre surrogate and thermal/pressure/wear effects without contact-force double counting",
+    "implement reviewed propulsion/braking output paths and common actuator permissions",
+    "collect episode-separated source teacher sequences with hidden varied conditions",
+    "offline recurrent BC plus source DAgger and modality/state ablations",
+    "evaluate held-out setup and tyre-state combinations",
+    "short AC calibration and offline target adaptation, then actual driving evaluation"
+  ],
+  "validation_tasks": [
+    "straight acceleration and braking",
+    "left/right steady circle",
+    "braking into a turn and accelerating out",
+    "cold, warm and overheated tyre response and recovery",
+    "unseen setup combinations and adaptation time",
+    "state-estimator removal with the same driving task"
+  ],
+  "initial_AC_online_RL_steps": 0,
+  "jobs_submitted": false,
+  "report": "docs/research-plan.md",
+  "transfer_reuse_plan": "configs/ac-autonomy-transfer-plan.json"
+}

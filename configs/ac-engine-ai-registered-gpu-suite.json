@@ -1,0 +1,12 @@
+{
+  "seed": 862963,
+  "workers": 1,
+  "dataset": "runs/ac-engine-ai-registered-receipt-dataset-20261028-t647",
+  "experiments": [
+    {
+      "name": "engine-ai-registered",
+      "config": "configs/ac-engine-ai-registered-receipt-training.json",
+      "output": "runs/ac-engine-ai-registered-receipt-training-20261028-t650"
+    }
+  ]
+}

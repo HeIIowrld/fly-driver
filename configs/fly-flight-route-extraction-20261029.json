@@ -1,0 +1,17 @@
+{
+  "schema": "flybrain.flight_structural_routes.v1",
+  "graph_registry": "configs/malecns-recovered-source.json",
+  "inventory": "runs/fly-flight-source-audit-20261029-t1007/result.json",
+  "max_hops": 4,
+  "max_nodes": 20000,
+  "paths": [
+    {"source_groups": ["HS", "VS"], "target_groups": ["DNg02"]},
+    {"source_groups": ["DNg02"], "target_groups": ["wing_motor_annotation_candidates"]},
+    {"source_groups": ["haltere_annotation_candidates"], "target_groups": ["wing_motor_annotation_candidates"]}
+  ],
+  "selection": "union of every equally shortest directed route within four edges, plus all declared endpoints; preserve all original induced edges",
+  "edge_semantics": "unsigned measured synapse counts; no neurotransmitter or functional sign inferred",
+  "unreachable_policy": "report every absent pair; never silently discard an endpoint or invent an edge",
+  "side_policy": "report somaSide and rootSide independently; haltere afferent side uses annotated rootSide, not an invented soma side",
+  "scope": "structural candidate only, no physiological motor mapping or vehicle control"
+}

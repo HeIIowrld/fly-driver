@@ -1,0 +1,278 @@
+{
+  "date": "2026-10-27",
+  "report": "docs/ac-axis-response-20261027.md",
+  "remaining_required_native_steps": [
+    "resume response after user Esc",
+    "hold neutral and apply/reload reviewed controller profile",
+    "run stationary axis experiment and audit native response",
+    "calibrate sensor/view/time/action domains and collect teacher driving sequences",
+    "train/evaluate vision+body student without fallback and verify a full actual AC circuit lap"
+  ],
+  "goal_achieved": false,
+  "historical_preflight": {
+    "run": "runs/ac-axis-preflight-20261027-t36",
+    "result": {
+      "status": "preflight_only",
+      "ready": false,
+      "reasons": [
+        "active controls.ini differs from the reviewed vJoy candidate"
+      ],
+      "device_acquisitions": 0,
+      "actuator_messages_sent": 0,
+      "axis_response_verified": false,
+      "goal_achieved": false
+    }
+  },
+  "stationary_axis_response_verified": true,
+  "actual_axis_runs": [
+    {
+      "run": "runs/ac-axis-session-20261027-t39",
+      "stages": {
+        "neutral_baseline": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.0012295171036385
+          },
+          "max_speed_kmh": 0.003258285578340292
+        },
+        "steer_positive": {
+          "median": {
+            "steer_raw": 0.1406249850988388,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.00265571940690279
+          },
+          "max_speed_kmh": 0.013493350706994534
+        },
+        "steer_negative": {
+          "median": {
+            "steer_raw": -0.1406249850988388,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.007010197499766946
+          },
+          "max_speed_kmh": 0.03670539706945419
+        },
+        "neutral_after_steer": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.0022636880166828632
+          },
+          "max_speed_kmh": 0.01575440913438797
+        },
+        "brake_half": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 0.5,
+            "speed_kmh": 0.001824603124987334
+          },
+          "max_speed_kmh": 0.0037804206367582083
+        },
+        "brake_released": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 0.0,
+            "speed_kmh": 0.0031110134441405535
+          },
+          "max_speed_kmh": 0.005155189428478479
+        },
+        "throttle_small_brake_held": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.10000002384185791,
+            "brake": 1.0,
+            "speed_kmh": 0.0038650556234642863
+          },
+          "max_speed_kmh": 0.005156676284968853
+        },
+        "neutral_final": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.0021811434999108315
+          },
+          "max_speed_kmh": 0.004837131593376398
+        }
+      },
+      "raw_prefixes_verified": 128,
+      "driver_accepted_requests": 1785,
+      "axis_response_verified": true,
+      "scope": "stationary, steer request +/-0.1, gas0/0.1, brake0/0.5/1; not moving vehicle control",
+      "steering_raw_gain_observed": 1.40625,
+      "steering_unit_and_motion_sign_verified": false,
+      "autonomous_driving_verified": false,
+      "goal_achieved": false
+    },
+    {
+      "run": "runs/ac-axis-session-20261027-t40b",
+      "stages": {
+        "neutral_baseline": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.002438192372210324
+          },
+          "max_speed_kmh": 0.003949752543121576
+        },
+        "steer_positive": {
+          "median": {
+            "steer_raw": 0.1406249850988388,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.004799149231985211
+          },
+          "max_speed_kmh": 0.015500524081289768
+        },
+        "steer_negative": {
+          "median": {
+            "steer_raw": -0.1406249850988388,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.00900796428322792
+          },
+          "max_speed_kmh": 0.037131164222955704
+        },
+        "neutral_after_steer": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.0014108104223851115
+          },
+          "max_speed_kmh": 0.016117388382554054
+        },
+        "brake_half": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 0.5,
+            "speed_kmh": 0.002189427614212036
+          },
+          "max_speed_kmh": 0.004206201992928982
+        },
+        "brake_released": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 0.0,
+            "speed_kmh": 0.0026746669318526983
+          },
+          "max_speed_kmh": 0.005007028579711914
+        },
+        "throttle_small_brake_held": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.10000002384185791,
+            "brake": 1.0,
+            "speed_kmh": 0.0021467868355102837
+          },
+          "max_speed_kmh": 0.005851734895259142
+        },
+        "neutral_final": {
+          "median": {
+            "steer_raw": 0.0,
+            "gas": 0.0,
+            "brake": 1.0,
+            "speed_kmh": 0.0025812193052843213
+          },
+          "max_speed_kmh": 0.004195183981209993
+        }
+      },
+      "raw_prefixes_verified": 128,
+      "driver_accepted_requests": 1363,
+      "axis_response_verified": true,
+      "scope": "stationary, steer request +/-0.1, gas0/0.1, brake0/0.5/1; not moving vehicle control",
+      "steering_raw_gain_observed": 1.40625,
+      "steering_unit_and_motion_sign_verified": false,
+      "autonomous_driving_verified": false,
+      "goal_achieved": false
+    }
+  ],
+  "live_verification": {
+    "native_engine_windows": 1,
+    "native_packet_ids": [
+      29648,
+      29650
+    ],
+    "file_steps": [
+      4306,
+      4318
+    ],
+    "file_publisher_errors": 6,
+    "recorded_samples": 200,
+    "recorded_raw_hashes_verified": true,
+    "producer_session_id": "ac-file-3400-1793096043147992"
+  },
+  "background_response": {
+    "run": "runs/ac-background-axis-20261027-t41",
+    "audit": {
+      "background_stationary_axis_response_verified": true,
+      "foreground_records": 0,
+      "total_records": 66,
+      "axis_samples": 64,
+      "raw_prefixes_verified": 128,
+      "stage_medians": {
+        "neutral_baseline": {
+          "steerAngle": 0.0,
+          "gas": 0.0,
+          "brake": 1.0,
+          "speedKmh": 0.0018749807495623827
+        },
+        "steer_positive": {
+          "steerAngle": 0.1406249850988388,
+          "gas": 0.0,
+          "brake": 1.0,
+          "speedKmh": 0.0034178276546299458
+        },
+        "steer_negative": {
+          "steerAngle": -0.1406249850988388,
+          "gas": 0.0,
+          "brake": 1.0,
+          "speedKmh": 0.0074591669254004955
+        },
+        "neutral_after_steer": {
+          "steerAngle": 0.0,
+          "gas": 0.0,
+          "brake": 1.0,
+          "speedKmh": 0.003916264395229518
+        },
+        "brake_half": {
+          "steerAngle": 0.0,
+          "gas": 0.0,
+          "brake": 0.5,
+          "speedKmh": 0.0020927718724124134
+        },
+        "brake_released": {
+          "steerAngle": 0.0,
+          "gas": 0.0,
+          "brake": 0.0,
+          "speedKmh": 0.0036194913554936647
+        },
+        "throttle_small_brake_held": {
+          "steerAngle": 0.0,
+          "gas": 0.10000002384185791,
+          "brake": 1.0,
+          "speedKmh": 0.0038689112989231944
+        },
+        "neutral_final": {
+          "steerAngle": 0.0,
+          "gas": 0.0,
+          "brake": 1.0,
+          "speedKmh": 0.003384331474080682
+        }
+      },
+      "minimized_window_verified": false,
+      "moving_driving_verified": false,
+      "student_policy_executed": false,
+      "goal_achieved": false
+    }
+  }
+}

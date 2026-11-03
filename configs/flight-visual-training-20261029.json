@@ -1,0 +1,18 @@
+{
+  "schema": "flybrain.flight.visual_training.v1",
+  "spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "source": "runs/flight-separated-command-probe-20261029-t1081",
+  "data": "runs/flight-speed-episode-data-20261029-t1070",
+  "seed": 863150,
+  "epochs": 6,
+  "chunk_observations": 64,
+  "learning_rate": 0.003,
+  "normalization_std_floor": 0.005,
+  "feature_clip": 5,
+  "training_objective": "proper bounded-mean logistic loss, left-turn head only; longitudinal remains generated but not supervised in this isolated experiment",
+  "checkpoint_selection": "last fixed epoch, no development selection",
+  "late_driving_minimum_elapsed_seconds": 3.0,
+  "baseline_current": 0.003,
+  "baseline_basis": "engineering constant above model gate-probe levels; not measured tonic fly drive",
+  "scope": "isolated higher-visual engineering adapter experiment; no useful vision or driving qualification assumed"
+}

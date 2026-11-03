@@ -1,0 +1,13 @@
+{
+  "schema": "flybrain.virtual_navigation_body.contract.v2",
+  "legacy_contract": "configs/ac-virtual-body-v1.json",
+  "legacy_contract_sha256": "03f2f7e329aae578603725dfc20428b2a138223eee2f8b1f709cde1f202b2d6e",
+  "legacy_feature_count": 16,
+  "feature_count": 21,
+  "speed_source": "native speedKmh / 3.6, unsigned magnitude m/s",
+  "wheel_source": "native wheelAngularSpeed, four native-index rad/s values",
+  "claim": "Additional vehicle virtual-body proprioceptive surrogates, not measured fly sensory organs or physiological registration",
+  "forbidden_inputs": ["world position", "absolute heading", "route", "teacher action"],
+  "age_policy": "Original native receipt retained on repeated packets; same50ms legacy age bound; no fabricated samples or acceleration registration",
+  "checkpoint_compatibility": "Explicit new21-feature contract; legacy16-feature models and masks unchanged"
+}

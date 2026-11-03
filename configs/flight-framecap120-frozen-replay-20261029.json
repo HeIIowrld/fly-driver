@@ -1,0 +1,27 @@
+{
+  "schema": "flybrain.framecap120.frozen_visual_replay.v1",
+  "role": "calibration",
+  "fit_allowed": false,
+  "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1587-framecap120-calibration30",
+  "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1591-framecap120-body21",
+  "camera_config": "configs/ac-csp-exterior-front-v3-retina.json",
+  "raw_audit_sha256": "e653c4d554f986f0358310b9ce6978028ab34eefec5c0973dda26536e408a521",
+  "additional_types": [
+    "L1",
+    "L2",
+    "Mi1",
+    "Tm3",
+    "Tm1",
+    "Tm9"
+  ],
+  "source_sha256": {
+    "scripts/replay_flyvis_cameras.py": "855a17565d43cb11f9e8b824e47d4a210dffb72886abc0b5720a18571c07a6aa",
+    "src/flybrain_drive/flyvis_camera.py": "6c26afb43f07dc45860d7f1b8d630e53cdce80ca1220079e674ae2427be6a0c2",
+    "src/flybrain_drive/ac_camera_mount.py": "cb20bd6054473faedd6dc3a36e29f855c1161abedc0cfdb6ffad0f85ccced417"
+  },
+  "author_weights_frozen": true,
+  "optimizer_updates": 0,
+  "student_deployed": false,
+  "goal_achieved": false,
+  "configured_fps": 120
+}

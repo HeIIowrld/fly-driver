@@ -1,0 +1,96 @@
+{
+  "schema": "flybrain.spatial_teacher_collection.v4",
+  "teacher_speed_kmh": 60,
+  "maximum_leases": 18,
+  "required_histories": {
+    "train": 3,
+    "development": 1
+  },
+  "regions": [
+    {
+      "role": "train",
+      "start": 0.27,
+      "end": 0.63
+    },
+    {
+      "role": "development",
+      "start": 0.67,
+      "end": 0.84
+    }
+  ],
+  "planning_advance_estimate": 0.13,
+  "estimate_is_not_physical_arc_length_bound": true,
+  "role_policy": "Assign entire history before execution. Check every route/cleanup sample; reject whole crossing history, never slice or reassign for fit. Transit never fit.",
+  "minimum_free_local_bytes": 40000000000,
+  "initial_predecessor": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1619-publisher-async-calibration30",
+  "initial_receipt_sha256": "5ec7a49df44b1d2ae6b79a50214c0d4ab5140c62174ce55c01562faec9d8586e",
+  "prerequisite_raw_audit": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1620-publisher-async-calibration30-audit",
+  "legacy_route_audit": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1393-v2-route-coverage-audit",
+  "legacy_dev_guard_intervals": [
+    [
+      0.2,
+      0.25
+    ],
+    [
+      0.94,
+      1.0
+    ]
+  ],
+  "legacy_eval_region_not_reused_for_train": [
+    [
+      0.08,
+      0.125
+    ]
+  ],
+  "evaluation_receipts_or_arrays_opened": false,
+  "development_is_known_diagnostic_not_blind": true,
+  "old_role_reassignment": false,
+  "student_deployed": false,
+  "fit_allowed_until_raw_and_labels_verified": false,
+  "source_sha256": {
+    "scripts/collect_spatial_flight_teacher.py": "21b77ab0d2577b879ed70e430ee844ffdd0c35628e42314c680ee6931070a76b",
+    "scripts/record_ac_engine_ai_probe.py": "9dd662917610b7eef65ea575b71b5728c9e02ee0ed4b003d3792a37959380ad8",
+    "scripts/control_ac_session.py": "9eac00cbbd5c414cb411aab8cd3864c2134513441c4e6212bafcc1944810da82",
+    "src/flybrain_drive/spatial_teacher_plan.py": "bb46d5b0459372920e2b7126d71b376b33e2e9819cbd87c2654c248c9bd9ad14",
+    "src/flybrain_drive/ac_csp_vision.py": "4eb5d96dd62a3fa76327aa0e249d919264cd3a2a85439a51ba943bff74cdbfd9",
+    "src/flybrain_drive/immutable_frame_writer.py": "6e61bc194f53b08a7da4321b1e8935f58f43bcad4570e59587fa249b934ac04b",
+    "src/flybrain_drive/ac_shared_texture.py": "bed33b2b71ba597597a92867d82832e6d3848466d2ed7dca36958fdc317e6eaa",
+    "src/flybrain_drive/ac_csp_retina.py": "a69fa20b57d66f00536d7ae20bd508871efc8e9f8a380abbdcbf1d3b3ccb6bb7",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "7902ec4756a1b3e2d64e96440010ea8b7cc1716cf123f2b9ffb44bd4a6be52b2",
+    "src/flybrain_drive/ac_metadata_mmf.py": "1df14bb6fb391a1bfdffc2f2e531364c9aa40b89a6b3432618e1bbc5f9f9f731",
+    "src/flybrain_drive/ac_camera_archive.py": "e527162935ccead14627dbefe1e10992bf324250969bedb69fb41e5fd2a6387e",
+    "src/flybrain_drive/ac_camera_mount.py": "cb20bd6054473faedd6dc3a36e29f855c1161abedc0cfdb6ffad0f85ccced417",
+    "scripts/audit_ac_engine_ai_probe.py": "b1c540beea198a771fb840d9a21c48db4d302f40c1063d455d4aeaf432c91fba",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+    "C:\\Users\\jeff4\\OneDrive - 엔시스코리아\\문서\\Assetto Corsa\\cfg\\video.ini": "a7c8b16c459355f4f713785ac7196f33d1c538a10c58d64b643949b3ec01448d",
+    "integrations/ac/flybrain_telemetry/flybrain_telemetry.py": "b7c6f3ee24dc251fdfea4895dea593ab4cb15f56b2b4d4ac43df1d41bffcaa7a",
+    "C:/Program Files (x86)/Steam/steamapps/common/assettocorsa/apps/python/flybrain_telemetry/flybrain_telemetry.py": "b7c6f3ee24dc251fdfea4895dea593ab4cb15f56b2b4d4ac43df1d41bffcaa7a"
+  },
+  "goal_achieved": false,
+  "mmf_metadata": true,
+  "previous_failed_batch": "20261029-t1593-spatial-framecap120-corpus",
+  "previous_failed_batch_restarted": false,
+  "prerequisite_raw_audit_sha256": "04eeb0aff4212ecce322dd85c81fd15a2070e55a9d3e1a3de9dd8a3c2e1d1231",
+  "prerequisite_visual_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1624-publisher-async-frozen-visual-replay",
+  "prerequisite_visual_replay_sha256": "cfd53dc61a72371babb738ac2671717f860427ec0506e82abb203ff8625a53c1",
+  "camera_configuration": "configs/ac-csp-exterior-front-v3-retina.json",
+  "camera_configuration_sha256": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+  "calibration_histories_not_fit": true,
+  "each_history_independent_raw_audit_required": true,
+  "new_mount_data_not_old_cache_reinterpretation": true,
+  "configured_framecap_fps": 120,
+  "engine_pid": 43716,
+  "generation": "602292ULL:0.0003732",
+  "changed_condition": "Explicit composite completion task: retain EVERY complete preassigned TRAIN from failed t1625 after independent whole audit, preserve failed source/transit status, collect missing DEVELOPMENT only under original region/continuous raw thresholds. Narrow-region approach now uses3s whenever a30s planning step could skip its full admissible start window.",
+  "runtime_video_path": "C:\\Users\\jeff4\\OneDrive - 엔시스코리아\\문서\\Assetto Corsa\\cfg\\video.ini",
+  "runtime_video_sha256": "a7c8b16c459355f4f713785ac7196f33d1c538a10c58d64b643949b3ec01448d",
+  "publisher_delivery": "bounded_latest_worker_v1",
+  "recovery_collection": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1625-spatial-publisher-async-corpus",
+  "recovery_audit": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1627-spatial-publisher-async-partial-audit",
+  "recovery_predecessor": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1625-spatial-publisher-async-corpus\\episode-07-transit",
+  "recovery_collection_sha256": "d6dfb5ea972ace1ceb49ed2918cf0f83fdac48f497f6edfae0d35310b195bd51",
+  "recovery_audit_sha256": "e39a69c1bbaf06818bd5d4b4733fdc13cc4df52db5b2a774b92497063def4df9",
+  "recovery_predecessor_sha256": "8f4a1a1db574868161517cd80be17bdd023e003def4defd4444b47990c9fe95a",
+  "recovery_role_policy": "No source role changes, temporal slicing, failed-tail fitting, best-source selection or repeated successful training histories. Original failed batch remains failed. New completion result identifies imported whole histories and supplementary leases separately."
+}

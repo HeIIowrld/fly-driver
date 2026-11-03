@@ -1,0 +1,62 @@
+{
+  "source_checkpoint": "runs/ac-shared-fullbatch-training-20261029-t915/checkpoint.pt",
+  "source_checkpoint_sha256": "2bcac98cb962f90e66516e62e5dda87db4c3bee39c9a923ce82362ed1dda0bb8",
+  "seed": 863006,
+  "epochs": 16,
+  "chunk_length": 128,
+  "learning_rate": 2e-05,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "action_profile": "normalized_ac_absolute",
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "organ_validity_mode": "gate_only",
+  "pedal_mode": "independent",
+  "episodes_per_batch": null,
+  "readout_gain_parameterization": "log",
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "teacher_label_contract": {
+    "kind": "engine_ai_future_applied_control_receipt_v1",
+    "actor_steering_device_scale": 0.6,
+    "ai_steer_multiplier": 0.9,
+    "ai_speed_hint_kmh": 15,
+    "target_receipt_horizon_seconds": 0.04,
+    "maximum_target_lateness_seconds": 0.025,
+    "clock": "host_monotonic_QPC_time.perf_counter",
+    "physical_command_time_verified": false,
+    "interpretation": "Executed applied native-control receipt surrogate, not internal AI request. Inverse stationary codec; moving control lag remains an engineering approximation."
+  },
+  "brake_positive_weight": 1.0,
+  "brake_label_threshold": 0.05,
+  "optimizer_update_scope": "epoch",
+  "evaluation_exclusion": {
+    "directory": "runs\\ac-bundled-yaw-teacher-sealed-20261028-t347\\dataset",
+    "manifest_sha256": "067215f1e72480e6d37f1a48aded0513f329b0dd21ea2c87257ca67e94da71c0",
+    "role": "Original t347 archive excluded by content hash only; new captures can overlap its track section. Not an independent spatial holdout or final circuit test."
+  },
+  "device": "cuda",
+  "training_sparse_backend": "cached_csr_gpu",
+  "deployment_sparse_backend": "cached_csr_cpu",
+  "chunk_validated_training": true,
+  "readout_gain_learning_rate": 0.005,
+  "resource_experiment": {
+    "scope": "Declared16epoch recovery continuation; graph and sensory calibration fixed; offline and actual repeat validation required, no automatic promotion.",
+    "workers": 1,
+    "training_dataset": "runs\\ac-shared-lateral-recovery-merged-20261029-t946",
+    "training_dataset_manifest_sha256": "814e6ed967507aeee93a21aecccea0b6da3cb8e91279a672a20080335cb0af0e",
+    "new_shared_dataset": "runs/ac-shared-lateral-recovery-sealed-20261029-t942",
+    "episodes_per_batch": null,
+    "chunk_length": 128,
+    "live_capture_and_training_scheduled_separately": true,
+    "source_graph_trainable": false,
+    "candidate_automatically_promoted": false,
+    "closed_loop_repeats_required": true,
+    "source_success_regression_evaluation_required": true
+  },
+  "throttle_coast_weight": 100.0,
+  "throttle_coast_threshold": 0.005
+}

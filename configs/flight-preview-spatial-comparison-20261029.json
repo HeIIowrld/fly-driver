@@ -1,0 +1,13 @@
+{
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1434-body21-flight-cache",
+  "preview": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1443-visual-preview-information",
+  "variants": ["existing_all_scene_576", "front_joint_pool4", "front_intensity_pool8", "front_intensity_raw", "front_motion_pool8", "front_joint_pool8"],
+  "pool4": {"columns": 4, "rows": 4, "sigma_image_uv": 0.18},
+  "pool8": {"columns": 8, "rows": 8, "sigma_image_uv": 0.09},
+  "normalization_floor": 0.00001,
+  "feature_clip": 5,
+  "ridge_mean_loss_penalty": 1.0,
+  "cache_reproduction_tolerance": 0.000001,
+  "fit_policy": "TRAIN-only moments and regression; no development parameter selection. Same preview labels and original roles; full and after3s both reported.",
+  "claim": "Engineering information diagnosis, not a measured fly readout, trained driving actor or information impossibility proof. Existing development results already known."
+}

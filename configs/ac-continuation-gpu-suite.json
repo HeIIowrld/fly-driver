@@ -1,0 +1,22 @@
+{
+  "seed": 862953,
+  "workers": 3,
+  "dataset": "runs/ac-continuation-training-data-20261028-t444",
+  "experiments": [
+    {
+      "name": "joint",
+      "config": "configs/ac-continuation-joint-training.json",
+      "output": "runs/ac-continuation-joint-training-20261028-t447"
+    },
+    {
+      "name": "fixed-codec",
+      "config": "configs/ac-continuation-fixed-codec-training.json",
+      "output": "runs/ac-continuation-fixed-codec-training-20261028-t448"
+    },
+    {
+      "name": "organs",
+      "config": "configs/ac-continuation-organs-training.json",
+      "output": "runs/ac-continuation-organs-training-20261028-t449"
+    }
+  ]
+}

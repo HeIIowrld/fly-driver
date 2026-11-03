@@ -1,0 +1,200 @@
+{
+  "updated_utc": "2026-10-27T05:09:22.188811+00:00",
+  "status": "development visual-control improvement verified; AC sensing pending",
+  "scope": "fixed-speed MuJoCo curvature proxy; two development cases; no lap or native AC control",
+  "training": {
+    "status": "completed",
+    "before": {
+      "rmse": [
+        0.15918357839246344,
+        null,
+        null
+      ],
+      "output_rms": [
+        7.13580076858773e-07,
+        3.807944484619688e-08,
+        1.0251875271927915e-08
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "original_before_photometric_calibration": {
+      "rmse": [
+        0.15918371771028333,
+        null,
+        null
+      ],
+      "output_rms": [
+        2.582718977063421e-06,
+        1.3657033921006107e-07,
+        6.290888727671884e-09
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "conditioned": {
+      "rmse": [
+        0.225032373361872,
+        null,
+        null
+      ],
+      "output_rms": [
+        0.1464986261746958,
+        3.807944484619688e-08,
+        1.0251875271927915e-08
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "after": {
+      "rmse": [
+        0.09267029832723746,
+        null,
+        null
+      ],
+      "output_rms": [
+        0.11997384414434709,
+        7.983022534139792e-08,
+        1.8489315066949192e-08
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "last_epoch": {
+      "rmse": [
+        0.09267029832723746,
+        null,
+        null
+      ],
+      "output_rms": [
+        0.11997384414434709,
+        7.983022534139792e-08,
+        1.8489315066949192e-08
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "selected_epoch": 8,
+    "optimizer_updates": 32,
+    "action_profile": "mujoco_curvature_proxy_only",
+    "checkpoint_sha256": "a9baddb6413c77948f292a2882ff5ad098fb3990aa606b36165b9259f3aa2262",
+    "training_rmse_improved_from_conditioned": true,
+    "training_rmse_improved_from_untrained": true,
+    "closed_loop_evaluated": false,
+    "AC_ready": false,
+    "goal_achieved": false
+  },
+  "comparison": {
+    "cases": [
+      {
+        "case": "dev-a",
+        "matched_decisions": 600,
+        "matched_seconds": 24.0,
+        "previous_normal": {
+          "common_horizon_lateral_rms_m": 0.3356393803873711,
+          "recorded_decisions": 600,
+          "termination": "time_limit",
+          "full_budget_without_exit": true,
+          "progress_delta_m": 34.04581554078004
+        },
+        "previous_vision_missing": {
+          "common_horizon_lateral_rms_m": 0.8499074466325077,
+          "recorded_decisions": 600,
+          "termination": "time_limit",
+          "full_budget_without_exit": true,
+          "progress_delta_m": 34.18623878018729
+        },
+        "current_normal": {
+          "common_horizon_lateral_rms_m": 0.15092564732631647,
+          "recorded_decisions": 600,
+          "termination": "time_limit",
+          "full_budget_without_exit": true,
+          "progress_delta_m": 33.99512451984425
+        },
+        "current_vision_missing": {
+          "common_horizon_lateral_rms_m": 0.8498809632733372,
+          "recorded_decisions": 600,
+          "termination": "time_limit",
+          "full_budget_without_exit": true,
+          "progress_delta_m": 34.18666198298262
+        }
+      },
+      {
+        "case": "dev-b",
+        "matched_decisions": 600,
+        "matched_seconds": 24.0,
+        "previous_normal": {
+          "common_horizon_lateral_rms_m": 1.5955913938391437,
+          "recorded_decisions": 600,
+          "termination": "time_limit",
+          "full_budget_without_exit": true,
+          "progress_delta_m": 34.25644912870253
+        },
+        "previous_vision_missing": {
+          "common_horizon_lateral_rms_m": 1.0700490037253267,
+          "recorded_decisions": 600,
+          "termination": "time_limit",
+          "full_budget_without_exit": true,
+          "progress_delta_m": 34.21883404026626
+        },
+        "current_normal": {
+          "common_horizon_lateral_rms_m": 0.20661254108313556,
+          "recorded_decisions": 600,
+          "termination": "time_limit",
+          "full_budget_without_exit": true,
+          "progress_delta_m": 33.97522987113386
+        },
+        "current_vision_missing": {
+          "common_horizon_lateral_rms_m": 1.0699022694361489,
+          "recorded_decisions": 600,
+          "termination": "time_limit",
+          "full_budget_without_exit": true,
+          "progress_delta_m": 34.22067668113512
+        }
+      }
+    ],
+    "pooled_common_horizon_lateral_rms_m": {
+      "previous_normal": 1.1529452913647635,
+      "previous_vision_missing": 0.9662679592677575,
+      "current_normal": 0.18092442227861064,
+      "current_vision_missing": 0.9661750664033504
+    },
+    "current_visual_error_lower_than_missing": true,
+    "current_error_lower_than_previous": true,
+    "complete_lap_verified": false,
+    "multi_view_efficiency_advantage_verified": false,
+    "AC_ready": false,
+    "goal_achieved": false
+  },
+  "verified_collected_files": 274,
+  "model_tests_passed": 29,
+  "comparison_tests_passed": 1,
+  "report": "docs/multiview-photometry-20261027.md",
+  "checkpoint": "runs/multiview-photometry-20261027-t27/runs/training/checkpoint.pt",
+  "actual_AC_engine_started": true,
+  "actual_AC_sensor_samples": 0,
+  "actual_AC_sensor_app_repair_deployed": true,
+  "actual_AC_sensor_app_reload_required": true,
+  "Windows_security_prompt_requires_user_action": true,
+  "goal_achieved": false
+}

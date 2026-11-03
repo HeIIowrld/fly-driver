@@ -1,0 +1,53 @@
+{
+  "schema": "flybrain.publisher_timing.reset_only_recovery.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "actual_video_path": "C:\\Users\\jeff4\\OneDrive - 엔시스코리아\\문서\\Assetto Corsa\\cfg\\video.ini",
+  "expected_actual_video_sha256": "a7c8b16c459355f4f713785ac7196f33d1c538a10c58d64b643949b3ec01448d",
+  "prepared_video": "C:\\Users\\jeff4\\OneDrive - 엔시스코리아\\문서\\Assetto Corsa\\cfg\\video.ini",
+  "prepared_video_sha256": "a7c8b16c459355f4f713785ac7196f33d1c538a10c58d64b643949b3ec01448d",
+  "fps": 120,
+  "fps_cap_ms": 8.333333,
+  "setting_source": "Installed primary launcher ui.js maps FPS_CAP_MS=(1000/fps).toFixed(6)",
+  "existing_window_settings_preserved": [
+    "FULLSCREEN=0",
+    "WIDTH=640",
+    "HEIGHT=360",
+    "VSYNC=0"
+  ],
+  "current_native_ai_flag_is_not_verified_off": true,
+  "required_before_engine_restart": "Reset-only paused guard replaces ambiguous AI-off requirement only for this process reinitialization. Original engine-publisher restart preflight and all driving/native ownership checks remain unchanged.",
+  "restart_method": "Existing bounded CSP restart-engine request and original process handle receipt; no desktop actions",
+  "failure_policy": "Unknown engine restart outcome: observe same original handle; never resend intent",
+  "requalification": [
+    "native controller ownership",
+    "new generation and file-source SHA",
+    "paused8 raw slots/pixels/geometry",
+    "primed3s all raw arrays and80ms gap0",
+    "primed30s all raw arrays and80ms gap0"
+  ],
+  "old_calibration_and_failed_train_not_promoted_to_fit": true,
+  "actual_video_changed": false,
+  "goal_achieved": false,
+  "recovery_only": true,
+  "normal_driving_ownership_guard_unchanged": true,
+  "native_ai_off_not_claimed_before_reset": true,
+  "recovery_preflight": "Two fresh native graphics packets must advance while status3/paused, same frozen physics prefix and nativeAI=true, fresh CSPpaused/AIoff/idle/offline, zero speed/full brake, released vJoy, background original engine. Reset only; no driving or actuator transfer.",
+  "post_restart": "Observe original process handle termination plus new exact engine/CSP generation. Then independently qualify native AI-off, actual FPS, camera/clock/pixel/3s/30s again.",
+  "source_sha256": {
+    "scripts/reset_ac_engine_framecap.py": "ff84c802a3b2eebdc50a6f7e1eebf2aae447e155fb9981d8c38d926ca19d17c0",
+    "src/flybrain_drive/ac_teacher_status.py": "07668a3fadd1e29734388ea9ea71909c055685d8011b0c9b02ea356e1d414f83",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "src/flybrain_drive/win_process_receipt.py": "8b200e2667b48ee4cb43f83875d8f0824951bf48d14056103d43bc8d58987622",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "7902ec4756a1b3e2d64e96440010ea8b7cc1716cf123f2b9ffb44bd4a6be52b2",
+    "integrations/ac/flybrain_telemetry/flybrain_telemetry.py": "b7c6f3ee24dc251fdfea4895dea593ab4cb15f56b2b4d4ac43df1d41bffcaa7a"
+  },
+  "publisher_deployment": {
+    "source": "integrations/ac/flybrain_telemetry/flybrain_telemetry.py",
+    "source_sha256": "b7c6f3ee24dc251fdfea4895dea593ab4cb15f56b2b4d4ac43df1d41bffcaa7a",
+    "target": "C:/Program Files (x86)/Steam/steamapps/common/assettocorsa/apps/python/flybrain_telemetry/flybrain_telemetry.py",
+    "expected_installed_sha256": "c4236e49d72560acd84b6690e221b4d0b037328bd908bcf705253cc96e61517c"
+  },
+  "purpose": "Offload measured synchronous disk stalls from game callbacks; one pending immutable measurement, explicit dropped sequences and worker errors, original timestamps. No driving ownership.",
+  "expected_publisher_delivery": "bounded_latest_worker_v1"
+}

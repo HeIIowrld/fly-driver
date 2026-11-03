@@ -1,0 +1,17 @@
+{
+  "seed": 862953,
+  "workers": 2,
+  "dataset": "runs/ac-extended-recovery-training-data-20261028-t535",
+  "experiments": [
+    {
+      "name": "baseline",
+      "config": "configs/ac-extended-recovery-baseline-training.json",
+      "output": "runs/ac-extended-recovery-baseline-training-20261028-t538"
+    },
+    {
+      "name": "age30",
+      "config": "configs/ac-extended-recovery-age30-training.json",
+      "output": "runs/ac-extended-recovery-age30-training-20261028-t539"
+    }
+  ]
+}

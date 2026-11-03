@@ -1,0 +1,1706 @@
+{
+  "schema": "flybrain.embodiment_timing.explicit_evidence_archive.v1",
+  "runtime_entries": [
+    {
+      "source": "20261030-t1733-continuation-paused-revalidation/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1733-continuation-paused-revalidation/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "98197e1ad848b0de119aad377bb53c225f9b3a5019ffc6884bd4db279ea0c65d"
+    },
+    {
+      "source": "20261030-t1733-continuation-paused-revalidation/manifest.json",
+      "destination": "runtime-metadata/20261030-t1733-continuation-paused-revalidation/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "2301db8566c89cf2edea2e7237e244a5652daaa148ff037a6aab0f6a41189669"
+    },
+    {
+      "source": "20261030-t1733-continuation-paused-revalidation/result.json",
+      "destination": "runtime-metadata/20261030-t1733-continuation-paused-revalidation/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "cd02b1b941d6146e80853082dd99cef0be997b0bfd1633222897e2f4400f9c4f"
+    },
+    {
+      "source": "20261030-t1734-cpu-mn-anchor-qualification/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1734-cpu-mn-anchor-qualification/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "a8a38bf0e5b8335d1e1d36bf736b478ab1c2172fd49f376988722986845d82e3"
+    },
+    {
+      "source": "20261030-t1734-cpu-mn-anchor-qualification/manifest.json",
+      "destination": "runtime-metadata/20261030-t1734-cpu-mn-anchor-qualification/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "ebac003f7174fa2f2f90a874c58207d5880d8f36326db92b949a0f85b36afe3c"
+    },
+    {
+      "source": "20261030-t1734-cpu-mn-anchor-qualification/reference.json",
+      "destination": "runtime-metadata/20261030-t1734-cpu-mn-anchor-qualification/reference.json",
+      "kind": "runtime_metadata",
+      "sha256": "97fc57dff725808150972f4555a2b83d33a2fd096b90c30427cb668f89130175"
+    },
+    {
+      "source": "20261030-t1734-cpu-mn-anchor-qualification/registration-before-trajectory.json",
+      "destination": "runtime-metadata/20261030-t1734-cpu-mn-anchor-qualification/registration-before-trajectory.json",
+      "kind": "runtime_metadata",
+      "sha256": "0cf4d37b0951b2818b3e105943da49eb92e4f6017d378abee2024f79178a3eb7"
+    },
+    {
+      "source": "20261030-t1734-cpu-mn-anchor-qualification/result.json",
+      "destination": "runtime-metadata/20261030-t1734-cpu-mn-anchor-qualification/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "1757b5e7427a37e7d0056f68af69b1d5c889887d014cb04346221eb9c741f650"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/anchor-review-contract.json",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/anchor-review-contract.json",
+      "kind": "runtime_metadata",
+      "sha256": "a897f49ba8af680feb14e17bbbb9bc45a64cad46f0fefb80cad0cde534aaf300"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/build-contract.py",
+      "destination": "executed-snapshots/20261030-t1735-neural-anchor-review/build-contract.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "184c21cf1ebf2c3a1e4b32b1c9186dbadf3b83b6728bf57863f1bb6f408e9dd6"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/component-integration.json",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/component-integration.json",
+      "kind": "runtime_metadata",
+      "sha256": "a75aaee8fc3b44c9aa20f350a5765b45134b243b45a5ef0612af39e1a4a63d73"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/COMPONENT-INTEGRATION.md",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/COMPONENT-INTEGRATION.md",
+      "kind": "runtime_metadata",
+      "sha256": "5a117c1b154b49d22dcc7f75545ab58179f41afef75827dcfcea904279b5c13a"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/decoder-review.json",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/decoder-review.json",
+      "kind": "runtime_metadata",
+      "sha256": "5aba6277723ceb7befa2d13a3cb8fb993d50db9879a938ace29568bc833a9c81"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/DECODER-REVIEW.md",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/DECODER-REVIEW.md",
+      "kind": "runtime_metadata",
+      "sha256": "78a7a76589215913a746ec5573f33b1ad0a420571af1196234c17358411bbc60"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/PROPOSAL.md",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/PROPOSAL.md",
+      "kind": "runtime_metadata",
+      "sha256": "b9694439aa5949bf94e5334b0edf9422e726653c4d9066615c7aadddff4ff219"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/receipt-component-integration.json",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/receipt-component-integration.json",
+      "kind": "runtime_metadata",
+      "sha256": "7e3d810d6c34fc17cb5461f3182b60526fdf6db4fad3b3e0450fc8302bc71eae"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/receipt-decoder-review.json",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/receipt-decoder-review.json",
+      "kind": "runtime_metadata",
+      "sha256": "d834e96338c59bccddd92e53cbbb413adbdde475e0b68ec31176f6b5613904d3"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/receipt-predeclared.json",
+      "destination": "runtime-metadata/20261030-t1735-neural-anchor-review/receipt-predeclared.json",
+      "kind": "runtime_metadata",
+      "sha256": "32f34f2925bec5e0204295d1224230312d47ac9308a8a6762f19e6a363033b7c"
+    },
+    {
+      "source": "20261030-t1735-neural-anchor-review/review.py",
+      "destination": "executed-snapshots/20261030-t1735-neural-anchor-review/review.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "55dca57acc3c2f756ab309189121bbe8a0967d30ca2f107e3443c4a080522263"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/cpu-memory.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/cpu-memory.json",
+      "kind": "runtime_metadata",
+      "sha256": "adba2873cd81e853ceb42c56ea9e6b8bb10f8ebd4423f154fbc3b061c685a2f3"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/original-and-prepared-sources.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/original-and-prepared-sources.json",
+      "kind": "runtime_metadata",
+      "sha256": "32d4d7ba1e44b258595c8b8af58ea34bf34dcecfe452c43f442f2b61504b6ae8"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/receipt.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "3e36315a087ebaafb4dc29aed4f8709281e5e4dbef1d19237d8b53456810aa30"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "0e05d1319edef8093422abae568e0830852e0bf3a8f5ee239f504731d137251a"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/result.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "da3c1ce59767cf110da92e15fff56e687ec31a2fc268f7bf0db60517bcf66609"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/sdk-api-proof.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/sdk-api-proof.json",
+      "kind": "runtime_metadata",
+      "sha256": "b79ca8366808865ca4fc48c2ff43bf3ccf44d27d1fc0bcc127dae8172986e08c"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/SDK-API.md",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/SDK-API.md",
+      "kind": "runtime_metadata",
+      "sha256": "4868b2e7be0c7eaceb35528b824b01e770c9cfeba8f969a6065302af0b8954e2"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/session-status-consumers.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/session-status-consumers.json",
+      "kind": "runtime_metadata",
+      "sha256": "d51226694682a6bc4045cda0b5cdabeebb274123443e8a4b6529a433937b21d7"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/source-sha256-final.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/source-sha256-final.json",
+      "kind": "runtime_metadata",
+      "sha256": "d11ab312c15d5ac296f23e94e13c32b79c64cd467121471f750dba4f52b1a704"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/source-sha256.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/source-sha256.json",
+      "kind": "runtime_metadata",
+      "sha256": "78b19954fb227bd8e4dfc8fce385e0afb1154ce461a8e7e3d98cee36eb5ffde1"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/validation-final.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/validation-final.json",
+      "kind": "runtime_metadata",
+      "sha256": "33171d1ce4c29a0e6a4e0a885581c334a82eb0dd5da98c9819a53ad4fad1b41c"
+    },
+    {
+      "source": "20261030-t1736-source-timing-preparation/validation.json",
+      "destination": "runtime-metadata/20261030-t1736-source-timing-preparation/validation.json",
+      "kind": "runtime_metadata",
+      "sha256": "cfd334e0fea38ee9050f695b63c6f5749d2757fe6161f7f56f5772eb4712516f"
+    },
+    {
+      "source": "20261030-t1737-source-timing-review/receipt.json",
+      "destination": "runtime-metadata/20261030-t1737-source-timing-review/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "b438c8930f14d2ea51761fce298c6a2cfd926c18357b0f9f721396a7c23d8271"
+    },
+    {
+      "source": "20261030-t1737-source-timing-review/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1737-source-timing-review/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "d1b104f196d3be690e6f600d2cda3fed5dd21fc0c9488fd7877ebe4cb4f47085"
+    },
+    {
+      "source": "20261030-t1737-source-timing-review/result.json",
+      "destination": "runtime-metadata/20261030-t1737-source-timing-review/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "f2d0e7440af3918576283a426182dcdc56005709857c58d2e0240457d03db10f"
+    },
+    {
+      "source": "20261030-t1737-source-timing-review/review.py",
+      "destination": "executed-snapshots/20261030-t1737-source-timing-review/review.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "2bbb109ec1176f49ddbac66302e24847acc2355af3cd1d1204de388d65cf5524"
+    },
+    {
+      "source": "20261030-t1738-source-timing-deployment/after.json",
+      "destination": "runtime-metadata/20261030-t1738-source-timing-deployment/after.json",
+      "kind": "runtime_metadata",
+      "sha256": "ed7ad5b0041c6b095c5ebb0a2ab6f65ad77d14ae80542cbb914581f33b6e5ba7"
+    },
+    {
+      "source": "20261030-t1738-source-timing-deployment/before.json",
+      "destination": "runtime-metadata/20261030-t1738-source-timing-deployment/before.json",
+      "kind": "runtime_metadata",
+      "sha256": "4fe3f4ddb4a3f404d64251e9c1425d7f5dbe38749a88989e6d73dff1c4d5b8bb"
+    },
+    {
+      "source": "20261030-t1738-source-timing-deployment/installed-before.lua",
+      "destination": "executed-snapshots/20261030-t1738-source-timing-deployment/installed-before.lua",
+      "kind": "executed_source_snapshot",
+      "sha256": "c984364d016d2d7018285e083f93b35bf0e0751d2b81de6e1a2e77912d2be777"
+    },
+    {
+      "source": "20261030-t1738-source-timing-deployment/manifest.json",
+      "destination": "runtime-metadata/20261030-t1738-source-timing-deployment/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "9263fdbee68eb45e885c688dc62f37c8aea13f0c39ba6716c7fa8f5a3c71b03e"
+    },
+    {
+      "source": "20261030-t1738-source-timing-deployment/result.json",
+      "destination": "runtime-metadata/20261030-t1738-source-timing-deployment/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "699f2e0b062f9265464ad0926c3b4398ad74372a04a0d9a204aafd019912fbbf"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/camera-gaps.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/camera-gaps.json",
+      "kind": "runtime_metadata",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/control/after.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/control/after.json",
+      "kind": "runtime_metadata",
+      "sha256": "24781243332d03ec7d154da0dc50d10581ac3d54a9de5a08a8cf56aac2bb03d1"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/control/api-receipt.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/control/api-receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "69fcadf2a623b253652cfec55601b24685689a936ae6e1985999da9b11b37ccd"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/control/before.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/control/before.json",
+      "kind": "runtime_metadata",
+      "sha256": "c82c004a8eacdac410dcc962e06949597adc54ddf17e01210a70f217de747da2"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/control/manifest.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/control/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "39c9ee62eab6f91e0c2ceb0b836ae50e30ecd788009985dd9017747336067616"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/control/publication-before.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/control/publication-before.json",
+      "kind": "runtime_metadata",
+      "sha256": "c82c004a8eacdac410dcc962e06949597adc54ddf17e01210a70f217de747da2"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/control/request.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/control/request.json",
+      "kind": "runtime_metadata",
+      "sha256": "03e1241f117c1a890bdec3c8756ccb0a9e20741993566caeb0b0a9c7bc6d6a10"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/control/result.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/control/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "8b336b538d544ec685d8703be5c30d7ab19915e9e947ed209bcf0a05ed845cc1"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/identity.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/identity.json",
+      "kind": "runtime_metadata",
+      "sha256": "8a7d0718f0ce89d69ee630f72535b54456920baed22585adfa86d7ca6ec54ff2"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/manifest.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "17e50f7654be481d23c70fbca4a29deb5bc19f1a7bce5748d6009c43027258d7"
+    },
+    {
+      "source": "20261030-t1739-source-timed-camera3/result.json",
+      "destination": "runtime-metadata/20261030-t1739-source-timed-camera3/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "1deacc591a2546fa2d67c4ecf63ef3cbd5c9611777a2dbe6212e90942210966c"
+    },
+    {
+      "source": "20261030-t1740-cpu-anchor-result-audit/audit-development-notes.json",
+      "destination": "runtime-metadata/20261030-t1740-cpu-anchor-result-audit/audit-development-notes.json",
+      "kind": "runtime_metadata",
+      "sha256": "23a0d88aee9f8bb9f20efe90bceedde7ae7cfee1af6d14622d79cd398dfa7b94"
+    },
+    {
+      "source": "20261030-t1740-cpu-anchor-result-audit/audit.py",
+      "destination": "executed-snapshots/20261030-t1740-cpu-anchor-result-audit/audit.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "f1237bc5de9091dd885cd05e08c50cb99a8c434b8d4462be94fc003a62485098"
+    },
+    {
+      "source": "20261030-t1740-cpu-anchor-result-audit/receipt.json",
+      "destination": "runtime-metadata/20261030-t1740-cpu-anchor-result-audit/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "1addc6cad50bc9420eed79227ef0ce580bc0e89fe856788366162501bb4d23d7"
+    },
+    {
+      "source": "20261030-t1740-cpu-anchor-result-audit/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1740-cpu-anchor-result-audit/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "5f94f9e364add2bddb488eb292e6e514e88bd3e4cbcee47cb6bd968492756577"
+    },
+    {
+      "source": "20261030-t1740-cpu-anchor-result-audit/result.json",
+      "destination": "runtime-metadata/20261030-t1740-cpu-anchor-result-audit/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "952ed387087318fbe9538a4ff72ada47b1ac726039ef9cdd2eb7d4670e5a2e1c"
+    },
+    {
+      "source": "20261030-t1741-matched-gpu-mn-qualification/cpu-readout-state.json",
+      "destination": "runtime-metadata/20261030-t1741-matched-gpu-mn-qualification/cpu-readout-state.json",
+      "kind": "runtime_metadata",
+      "sha256": "1647d180c7e66b1f98ac6902b729342cbacf5f598cf98580d71d192ae88dd032"
+    },
+    {
+      "source": "20261030-t1741-matched-gpu-mn-qualification/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1741-matched-gpu-mn-qualification/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "22d7016fa2e1bc7e151aabb89d4e53a1767d601ad431a815422db0dfe4bc12f6"
+    },
+    {
+      "source": "20261030-t1741-matched-gpu-mn-qualification/frozen-model-digests.json",
+      "destination": "runtime-metadata/20261030-t1741-matched-gpu-mn-qualification/frozen-model-digests.json",
+      "kind": "runtime_metadata",
+      "sha256": "7e8d2d99beb1a0cec236053c9d8ba1c7610691ba85fb2fafd2675fd2adeb7d0c"
+    },
+    {
+      "source": "20261030-t1741-matched-gpu-mn-qualification/manifest.json",
+      "destination": "runtime-metadata/20261030-t1741-matched-gpu-mn-qualification/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "67540a1f1960bab16b97ea98f7a1f04f25a18025e17e4f5d0197fb94fe862bff"
+    },
+    {
+      "source": "20261030-t1741-matched-gpu-mn-qualification/matched-reference.json",
+      "destination": "runtime-metadata/20261030-t1741-matched-gpu-mn-qualification/matched-reference.json",
+      "kind": "runtime_metadata",
+      "sha256": "4b95753a56444b44246fa320a8750215f4e11befb8cbe636748479bd6d5557d0"
+    },
+    {
+      "source": "20261030-t1741-matched-gpu-mn-qualification/numerical-comparison.json",
+      "destination": "runtime-metadata/20261030-t1741-matched-gpu-mn-qualification/numerical-comparison.json",
+      "kind": "runtime_metadata",
+      "sha256": "de03dc974b166aab56b6efed8697e6053a986e5535618bba098db7771a01906a"
+    },
+    {
+      "source": "20261030-t1741-matched-gpu-mn-qualification/registration.json",
+      "destination": "runtime-metadata/20261030-t1741-matched-gpu-mn-qualification/registration.json",
+      "kind": "runtime_metadata",
+      "sha256": "ab27b171d43e841af297aabb54f062ca348e755672fe49c365cdf6cc33a723f2"
+    },
+    {
+      "source": "20261030-t1741-matched-gpu-mn-qualification/result.json",
+      "destination": "runtime-metadata/20261030-t1741-matched-gpu-mn-qualification/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "dbd21224f167915614c4317b196972d48aaa046dfc9ec8a139a764fd8a153800"
+    },
+    {
+      "source": "20261030-t1742-matched-gpu-anchor-audit/audit.py",
+      "destination": "executed-snapshots/20261030-t1742-matched-gpu-anchor-audit/audit.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "9237deb484e1091718a935711d350d84732dbceb19a38003e31dbe5d7f1d5939"
+    },
+    {
+      "source": "20261030-t1742-matched-gpu-anchor-audit/cleanup-source-note.py",
+      "destination": "executed-snapshots/20261030-t1742-matched-gpu-anchor-audit/cleanup-source-note.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "067f5aad3bb0eaff7a15ba6a60d86a94a11e550b155f927d89268a4cd74138d1"
+    },
+    {
+      "source": "20261030-t1742-matched-gpu-anchor-audit/cleanup-source-scope.json",
+      "destination": "runtime-metadata/20261030-t1742-matched-gpu-anchor-audit/cleanup-source-scope.json",
+      "kind": "runtime_metadata",
+      "sha256": "10d7b98f5007ee6060f65b2fb97a293e373ee61de4f7bc633994c1f774d48842"
+    },
+    {
+      "source": "20261030-t1742-matched-gpu-anchor-audit/receipt.json",
+      "destination": "runtime-metadata/20261030-t1742-matched-gpu-anchor-audit/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "ef7de3ca87164b179807d35b13a0c38f37f5ed5da7a219f60cca28fbfd6c6868"
+    },
+    {
+      "source": "20261030-t1742-matched-gpu-anchor-audit/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1742-matched-gpu-anchor-audit/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "1c61e53a2e12b190084d392c0ebff073b1c151363458dc1d69cf45138c59adf5"
+    },
+    {
+      "source": "20261030-t1742-matched-gpu-anchor-audit/result.json",
+      "destination": "runtime-metadata/20261030-t1742-matched-gpu-anchor-audit/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "6e791573fbcb4e323420c1e96b37371b0a787723005f9075a8914570e40767a7"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/camera-gaps.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/camera-gaps.json",
+      "kind": "runtime_metadata",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/control/after.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/control/after.json",
+      "kind": "runtime_metadata",
+      "sha256": "eb292bfbaec176d8abeea726e82f43e4fab3e46004b618fa7fd8b627ea8295b6"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/control/api-receipt.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/control/api-receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "733d48fa611cf82a67ceff302ae5736639d1b5ca3db8b0a8fa9bc8ea246c1be9"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/control/before.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/control/before.json",
+      "kind": "runtime_metadata",
+      "sha256": "4af72f3a266524515b1c3a66941cb5fbf40f0df5871a51af455d091869e1d588"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/control/manifest.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/control/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "bf8a5150d3e315c64a28ba4950dc865e02a579a8832de15df54de64d7a25fb43"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/control/publication-before.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/control/publication-before.json",
+      "kind": "runtime_metadata",
+      "sha256": "af1a7f1666cf1a5689f9b51a408944bf8110999b9a9c347a22ceeea9b569a7d6"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/control/request.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/control/request.json",
+      "kind": "runtime_metadata",
+      "sha256": "d0e65bc52996152e902aca9671db916106daf681030ce8c7b74adeb34ff93665"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/control/result.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/control/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "cdef99d4191d0cbd650deb68773a497d0111506334713f7403b4abd135f11800"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/identity.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/identity.json",
+      "kind": "runtime_metadata",
+      "sha256": "8a7d0718f0ce89d69ee630f72535b54456920baed22585adfa86d7ca6ec54ff2"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/manifest.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "115b8671b54f6323b609e7c16078ba1c2780ad21815a5d5ea092d6eb315cded7"
+    },
+    {
+      "source": "20261030-t1743-source-timed-pace30/result.json",
+      "destination": "runtime-metadata/20261030-t1743-source-timed-pace30/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "90a54ac17987afee81965515e4e2fe35418e022b2ca123b3d4cc021fab25c98e"
+    },
+    {
+      "source": "20261030-t1744-timed-raw-audits/camera3/manifest.json",
+      "destination": "runtime-metadata/20261030-t1744-timed-raw-audits/camera3/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "10023184c5ab7385b31e05aecde70afd6f76ccc177f1e594f886b9cc1c6a12e2"
+    },
+    {
+      "source": "20261030-t1744-timed-raw-audits/camera3/result.json",
+      "destination": "runtime-metadata/20261030-t1744-timed-raw-audits/camera3/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "a8ada948d1c2512ff0c0aaebb6fdece4b156cc6e7f8e37d35a86151899a18c21"
+    },
+    {
+      "source": "20261030-t1744-timed-raw-audits/pace30/manifest.json",
+      "destination": "runtime-metadata/20261030-t1744-timed-raw-audits/pace30/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "91f58a6cc5f37ad3bb891315406a2cc6d536107245cc95091a10d96b995349ae"
+    },
+    {
+      "source": "20261030-t1744-timed-raw-audits/pace30/result.json",
+      "destination": "runtime-metadata/20261030-t1744-timed-raw-audits/pace30/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "3e62cea577a4385257e3227b83665f74f2cde882302a0c861354083016389b76"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/consumer-inventory.json",
+      "destination": "runtime-metadata/20261030-t1745-async-heartbeat-design/consumer-inventory.json",
+      "kind": "runtime_metadata",
+      "sha256": "40828da26bcef649793a689b5296dfb0b5e0a769c8c0fb495e95e4c32320bdeb"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/deployed-source-unchanged.json",
+      "destination": "runtime-metadata/20261030-t1745-async-heartbeat-design/deployed-source-unchanged.json",
+      "kind": "runtime_metadata",
+      "sha256": "2db689885d27ee9f9015f77c44904d7009f7054370eac5c07bd5d8075101feb7"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/freshness-fixture-result.json",
+      "destination": "runtime-metadata/20261030-t1745-async-heartbeat-design/freshness-fixture-result.json",
+      "kind": "runtime_metadata",
+      "sha256": "1cfe294658a2a3b3ddaf319c063b9537665971953c3f25ae743bef48ea2d3c62"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/isolated-freshness-prototype.py",
+      "destination": "executed-snapshots/20261030-t1745-async-heartbeat-design/isolated-freshness-prototype.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "ebd47aba7762a8a2d341354549bb5b50ba48ca4053be904173675b231b0bf99d"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/receipt.json",
+      "destination": "runtime-metadata/20261030-t1745-async-heartbeat-design/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "02fed27e893449fe9c863707ec215913e61a489e3bc28ef2535bba06b8cb9111"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/references.json",
+      "destination": "runtime-metadata/20261030-t1745-async-heartbeat-design/references.json",
+      "kind": "runtime_metadata",
+      "sha256": "cfebd15ff0bb4131431c0bde73c88a7a2b034024ee3e0280cda7d7a2b1782ffb"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1745-async-heartbeat-design/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "f7447964dae76d8d47689a1c3c5287388ca41b927bbe25c78fc365e2b80f055d"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/result.json",
+      "destination": "runtime-metadata/20261030-t1745-async-heartbeat-design/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "0360adc26a4b455cb2887c5c2a520a061dd9ec966cab3f24b6fccdcad4f4378a"
+    },
+    {
+      "source": "20261030-t1745-async-heartbeat-design/sdk-api-evidence.json",
+      "destination": "runtime-metadata/20261030-t1745-async-heartbeat-design/sdk-api-evidence.json",
+      "kind": "runtime_metadata",
+      "sha256": "f7474a79f232771391f409b9bdb57e1d5598933f5e4f599214ce6fc2a9754014"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/camera3/checks.json",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/camera3/checks.json",
+      "kind": "runtime_metadata",
+      "sha256": "b3e6668301123ddd4a5dd4e77980dd4b1e80edde775cce69d0107204784f3152"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/camera3/receipt.json",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/camera3/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "ecdde3c53339cafb1045c37de5762f3bc184010848d3ce279fbed20adb694ab9"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/camera3/references.json",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/camera3/references.json",
+      "kind": "runtime_metadata",
+      "sha256": "3bf88d205ea92e7a6c968a74103118a6a68d23fd0b5ad28b16f49c3525449e95"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/camera3/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/camera3/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "bf046992c2c2fc5dc369b16beda922c12cb7b59d2a80e343dbee201421062df5"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/camera3/result.json",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/camera3/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "f1130c5ab9ec4e67f07994bdd170cf38c8096c0f73b790d2ed305786a046f905"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/pace30/checks.json",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/pace30/checks.json",
+      "kind": "runtime_metadata",
+      "sha256": "0ce2cc486d61549bc3e58c4cf4c7cdca24c300e078ddf5df7ee7fc483f33858f"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/pace30/receipt.json",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/pace30/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "1c2b37e687de1caf91c205f14a14c387a7588200fd2fa2b2951c804cb528a635"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/pace30/references.json",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/pace30/references.json",
+      "kind": "runtime_metadata",
+      "sha256": "273d70220ba2d7d1ae8fdf65a685af463d9f21236aff5573a2602d8a68dde22f"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/pace30/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/pace30/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "6923bc01b14717643d31bf5a9ddd491b4a80bea357bd44f053812e51f5881a41"
+    },
+    {
+      "source": "20261030-t1746-source-timing-analysis/pace30/result.json",
+      "destination": "runtime-metadata/20261030-t1746-source-timing-analysis/pace30/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "f232f3110ef8e849071f1e377236f626a7ef9f221dca0a84cce8347917326e98"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/deployed-source-unchanged.json",
+      "destination": "runtime-metadata/20261030-t1747-heartbeat-candidate-preparation/deployed-source-unchanged.json",
+      "kind": "runtime_metadata",
+      "sha256": "2db689885d27ee9f9015f77c44904d7009f7054370eac5c07bd5d8075101feb7"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/executed-interoperability.py",
+      "destination": "executed-snapshots/20261030-t1747-heartbeat-candidate-preparation/executed-interoperability.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "59c59386759dd62ab038850f660c520a2eccdaa024d01d494272644187a039b2"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/interoperability-result.json",
+      "destination": "runtime-metadata/20261030-t1747-heartbeat-candidate-preparation/interoperability-result.json",
+      "kind": "runtime_metadata",
+      "sha256": "329ec63cf0cd5d8e91ede7d0c0f769f68b38d39d6e45aa79e689133cb08e1e60"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/receipt.json",
+      "destination": "runtime-metadata/20261030-t1747-heartbeat-candidate-preparation/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "40b431eeb7b7b6d36326fdabecef18c11e9ce5c4588486fc037872a5fbdc385c"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/references.json",
+      "destination": "runtime-metadata/20261030-t1747-heartbeat-candidate-preparation/references.json",
+      "kind": "runtime_metadata",
+      "sha256": "d417af318268b03f4ff207c7d3290edcf6bed085629cd2dc79a74846994ee3fe"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1747-heartbeat-candidate-preparation/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "38f58408614025c6d175f9c88c9be3414b4196f0207395652f8a8e7856a58593"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/result.json",
+      "destination": "runtime-metadata/20261030-t1747-heartbeat-candidate-preparation/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "97aea4c25c2236815468730a955dffc702ca6a6bba66be803815f7d697b8c710"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/source-sha256.json",
+      "destination": "runtime-metadata/20261030-t1747-heartbeat-candidate-preparation/source-sha256.json",
+      "kind": "runtime_metadata",
+      "sha256": "2c361eed27b87d273bf8d4492be38c4f6630bd341652a7cec35a2e09cc64ac4d"
+    },
+    {
+      "source": "20261030-t1747-heartbeat-candidate-preparation/validation.json",
+      "destination": "runtime-metadata/20261030-t1747-heartbeat-candidate-preparation/validation.json",
+      "kind": "runtime_metadata",
+      "sha256": "54aaccaf605aa415126f4695eb3c88a37b16e2450ae062ee614094e38d2bb99c"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/fresh-admission/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1748-v2-native-preflight/fresh-admission/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "4bc6eaa28d356981cb0f36e9933ae1685103f7337f24550bff16822c93a9679b"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/fresh-admission/manifest.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/fresh-admission/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "4a2168777c9be7f82c0b30417fa95816e2786f52500e6e49ab09d71a46f1edb2"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/fresh-admission/result.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/fresh-admission/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "cececf332c953e65b93188013a70cf7b918d201c67c39bb9d5baff22d61ca781"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/pause-after/after.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/pause-after/after.json",
+      "kind": "runtime_metadata",
+      "sha256": "ddf4019f6c8f51b8c4e83c31e5860c9f581392663c6e6d1547c799c452a62b82"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/pause-after/api-receipt.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/pause-after/api-receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "30fd3cf617a9963f26989e0dcce63e44652ace24bd8d401af646c7a932b8c24e"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/pause-after/before.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/pause-after/before.json",
+      "kind": "runtime_metadata",
+      "sha256": "e26ee63b028691fb00a0922b107ddca844a88c9b6c49368d0c715198415516d0"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/pause-after/manifest.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/pause-after/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "55932102fe2699cb9636af852fa9b0e10957a7ccd88dada830e1c5201bfad85e"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/pause-after/publication-before.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/pause-after/publication-before.json",
+      "kind": "runtime_metadata",
+      "sha256": "e26ee63b028691fb00a0922b107ddca844a88c9b6c49368d0c715198415516d0"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/pause-after/request.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/pause-after/request.json",
+      "kind": "runtime_metadata",
+      "sha256": "7db09329844dfedf16e15ff099852f57214d5734347870fdcf7687fb41808a54"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/pause-after/result.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/pause-after/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "dc1c1005c63714278cf4a58cb9bafdd9eff51180bf4e822b7d787ca08d11c574"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/paused-before/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1748-v2-native-preflight/paused-before/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "98197e1ad848b0de119aad377bb53c225f9b3a5019ffc6884bd4db279ea0c65d"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/paused-before/manifest.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/paused-before/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "64bc64d9f73b0912abb0d1c6d56b06c94366372e76353ef5408226f675f3e6a5"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/paused-before/result.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/paused-before/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "34997764799b60e221dbbc7c58d3e5ec8b9b6591377d1cb708dae7fc8605cad1"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/result.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "68d38d4458e98a5c52d85a506bf2ce52d9e5c068d4bb62aedf2097742931de8e"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/resume/after.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/resume/after.json",
+      "kind": "runtime_metadata",
+      "sha256": "b767ef65ef70fbe064e7cafaa3fc235dcdf5bdbcc9424bc75612f05b3ecfa0c4"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/resume/api-receipt.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/resume/api-receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "93b09a4f0fae8a574143f13bce9e7af8254c7edc1584079c9f330d49ffbcc678"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/resume/before.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/resume/before.json",
+      "kind": "runtime_metadata",
+      "sha256": "7e4ffa481f0923d933fd812702e48f94274dfa83e3eb13575b90d6d32ed5a433"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/resume/manifest.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/resume/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "b723417feb541de2aa4c5e2fb97906f6c3242c2a1a0fcaa264d4ab1873494c0b"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/resume/publication-before.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/resume/publication-before.json",
+      "kind": "runtime_metadata",
+      "sha256": "7e4ffa481f0923d933fd812702e48f94274dfa83e3eb13575b90d6d32ed5a433"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/resume/request.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/resume/request.json",
+      "kind": "runtime_metadata",
+      "sha256": "a4eb5302449e8e8bd5cba0063253551ee1fcc14075b6fb9b182a57a55e83a595"
+    },
+    {
+      "source": "20261030-t1748-v2-native-preflight/resume/result.json",
+      "destination": "runtime-metadata/20261030-t1748-v2-native-preflight/resume/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "3fec227dcd5862e391d4fbff28407e2ae963be44c2451c79ad57aa706b07199e"
+    },
+    {
+      "source": "20261030-t1749-native-preflight-audit/audit.py",
+      "destination": "executed-snapshots/20261030-t1749-native-preflight-audit/audit.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "b731210414384139aabed0a14c5bc851725e716da2350c3ae94cacbdaacd7132"
+    },
+    {
+      "source": "20261030-t1749-native-preflight-audit/receipt.json",
+      "destination": "runtime-metadata/20261030-t1749-native-preflight-audit/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "506677e493906dff3e0d483f67372ccfb40a6ddc9f2cbfc8a57ff48a58c32ad8"
+    },
+    {
+      "source": "20261030-t1749-native-preflight-audit/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1749-native-preflight-audit/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "22c04c535ddb7c639974e8f0302587ab3d05b9fbe05501237b5030159d5733b1"
+    },
+    {
+      "source": "20261030-t1749-native-preflight-audit/result.json",
+      "destination": "runtime-metadata/20261030-t1749-native-preflight-audit/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "94124bfb5b8094d0643cd1df623210a6a86ef40f8c603946c0e128e84f9e5265"
+    },
+    {
+      "source": "20261030-t1750-native-ownership-engine-reset/after.json",
+      "destination": "runtime-metadata/20261030-t1750-native-ownership-engine-reset/after.json",
+      "kind": "runtime_metadata",
+      "sha256": "09dbb306c838639f7da28c22fa8eb70bf21aa119276a689292c627a8bad60dd6"
+    },
+    {
+      "source": "20261030-t1750-native-ownership-engine-reset/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1750-native-ownership-engine-reset/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "ff84c802a3b2eebdc50a6f7e1eebf2aae447e155fb9981d8c38d926ca19d17c0"
+    },
+    {
+      "source": "20261030-t1750-native-ownership-engine-reset/manifest.json",
+      "destination": "runtime-metadata/20261030-t1750-native-ownership-engine-reset/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "380e16535aa1d606fe9d5230407834751f26ec510b2bb8a6434db7631e499484"
+    },
+    {
+      "source": "20261030-t1750-native-ownership-engine-reset/request.json",
+      "destination": "runtime-metadata/20261030-t1750-native-ownership-engine-reset/request.json",
+      "kind": "runtime_metadata",
+      "sha256": "aab74ffee53736ead4ae5facc5eb0c9dbbea9d36d1850ac1505deee209a7d61e"
+    },
+    {
+      "source": "20261030-t1750-native-ownership-engine-reset/restart-intent.json",
+      "destination": "runtime-metadata/20261030-t1750-native-ownership-engine-reset/restart-intent.json",
+      "kind": "runtime_metadata",
+      "sha256": "0e5096c3663ccc57ad5f6526a8d06a2c3eb7df12e2cfe45d20343f4e28f8ffd0"
+    },
+    {
+      "source": "20261030-t1750-native-ownership-engine-reset/result.json",
+      "destination": "runtime-metadata/20261030-t1750-native-ownership-engine-reset/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "8952cca0ed44f3f3cecc860a34f68e6dc6ff4764f8316df2b4f6f042c8f8dd12"
+    },
+    {
+      "source": "20261030-t1750-native-ownership-engine-reset/video-before.ini",
+      "destination": "runtime-metadata/20261030-t1750-native-ownership-engine-reset/video-before.ini",
+      "kind": "runtime_metadata",
+      "sha256": "a7c8b16c459355f4f713785ac7196f33d1c538a10c58d64b643949b3ec01448d"
+    },
+    {
+      "source": "20261030-t1751-post-reset-start/after.json",
+      "destination": "runtime-metadata/20261030-t1751-post-reset-start/after.json",
+      "kind": "runtime_metadata",
+      "sha256": "1839d1371f423a737d2a5babfeb7a0b31c77b69471bf978fd824791e17df7c52"
+    },
+    {
+      "source": "20261030-t1751-post-reset-start/api-receipt.json",
+      "destination": "runtime-metadata/20261030-t1751-post-reset-start/api-receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "70d466b048221a53c3719ddf314a46a870659b3b9a9ef40ebabd58f05681f96c"
+    },
+    {
+      "source": "20261030-t1751-post-reset-start/before.json",
+      "destination": "runtime-metadata/20261030-t1751-post-reset-start/before.json",
+      "kind": "runtime_metadata",
+      "sha256": "89668c53bb37bb790883e55375d672ef3e43cd07338662677b13dc7b3c769e4d"
+    },
+    {
+      "source": "20261030-t1751-post-reset-start/manifest.json",
+      "destination": "runtime-metadata/20261030-t1751-post-reset-start/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "130cd12a2b0add6dbd1885ea3cce66f5e4ee8b9d46b9b5580e3309b8c0ec4d18"
+    },
+    {
+      "source": "20261030-t1751-post-reset-start/publication-before.json",
+      "destination": "runtime-metadata/20261030-t1751-post-reset-start/publication-before.json",
+      "kind": "runtime_metadata",
+      "sha256": "89668c53bb37bb790883e55375d672ef3e43cd07338662677b13dc7b3c769e4d"
+    },
+    {
+      "source": "20261030-t1751-post-reset-start/request.json",
+      "destination": "runtime-metadata/20261030-t1751-post-reset-start/request.json",
+      "kind": "runtime_metadata",
+      "sha256": "095fb849c51039137a856ce21e32a5541cec986f4efcbe0ac258ed9b64c985a3"
+    },
+    {
+      "source": "20261030-t1751-post-reset-start/result.json",
+      "destination": "runtime-metadata/20261030-t1751-post-reset-start/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "6d611e717352455a148433d097b1d6c44d300fb478d10ffd5fbec9166906d30b"
+    },
+    {
+      "source": "20261030-t1752-post-reset-stationary-brake-hold/manifest.json",
+      "destination": "runtime-metadata/20261030-t1752-post-reset-stationary-brake-hold/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "62a2c8dcfa44571b361a6038fb405098e78231b6d49cc25eed123a5948b3f788"
+    },
+    {
+      "source": "20261030-t1752-post-reset-stationary-brake-hold/result.json",
+      "destination": "runtime-metadata/20261030-t1752-post-reset-stationary-brake-hold/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "1a93fee613a4660a93508b84ec0e119ddd21442e873158a8478479db13339d5b"
+    },
+    {
+      "source": "20261030-t1753-post-reset-small-steering-calibration/closing-request.json",
+      "destination": "runtime-metadata/20261030-t1753-post-reset-small-steering-calibration/closing-request.json",
+      "kind": "runtime_metadata",
+      "sha256": "899e940b1954d1dd114a5aabb52fa40e09d6e7f57a2921635a44a507471484ff"
+    },
+    {
+      "source": "20261030-t1753-post-reset-small-steering-calibration/manifest.json",
+      "destination": "runtime-metadata/20261030-t1753-post-reset-small-steering-calibration/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "00e34daf113375cb2685e179aaf2819ccd6bcd8d7415e7f3c1525e856fd9fd77"
+    },
+    {
+      "source": "20261030-t1753-post-reset-small-steering-calibration/result.json",
+      "destination": "runtime-metadata/20261030-t1753-post-reset-small-steering-calibration/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "17e9ba7fbd2b1fdd2ffa9afa64808a2b44eef87c8f2c011621f0d26eb33e81ba"
+    },
+    {
+      "source": "20261030-t1754-post-reset-native-position-qualification/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1754-post-reset-native-position-qualification/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "a652dc48fbcb15854fcd55abb1b52f84a1cb13b228f47b8ace4c4a9be05ae890"
+    },
+    {
+      "source": "20261030-t1754-post-reset-native-position-qualification/manifest.json",
+      "destination": "runtime-metadata/20261030-t1754-post-reset-native-position-qualification/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "1a0b3e19ee1fbf96c0d3bb87dd0fb8ef911d79a066e79524f68fd17f008bd7d0"
+    },
+    {
+      "source": "20261030-t1754-post-reset-native-position-qualification/result.json",
+      "destination": "runtime-metadata/20261030-t1754-post-reset-native-position-qualification/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "91463c67d3a9aa44dd71469d71dc700292047d3fe03e1e700927b9b2ade5b3b2"
+    },
+    {
+      "source": "20261030-t1755-post-reset-requalification-audit/checks.json",
+      "destination": "runtime-metadata/20261030-t1755-post-reset-requalification-audit/checks.json",
+      "kind": "runtime_metadata",
+      "sha256": "9e859444f5cae9a2d7778ebe02f1c5b79f2da36519341de30df9458fcfe6bd10"
+    },
+    {
+      "source": "20261030-t1755-post-reset-requalification-audit/executed-audit.py",
+      "destination": "executed-snapshots/20261030-t1755-post-reset-requalification-audit/executed-audit.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "1e89d6da7f9fea024630cf384f7b9619ad5ccffc72b271cce5f00ad0f550ff98"
+    },
+    {
+      "source": "20261030-t1755-post-reset-requalification-audit/receipt.json",
+      "destination": "runtime-metadata/20261030-t1755-post-reset-requalification-audit/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "e7a520adc39e0512059d00ec6a2b426a3b0f6237b6f0c574dfd3f13afd1fc972"
+    },
+    {
+      "source": "20261030-t1755-post-reset-requalification-audit/references.json",
+      "destination": "runtime-metadata/20261030-t1755-post-reset-requalification-audit/references.json",
+      "kind": "runtime_metadata",
+      "sha256": "67d70bc8f5fd8296d9bcfa0c7f56ffa21e8b5b63ba69dc838e4f897ec05c014a"
+    },
+    {
+      "source": "20261030-t1755-post-reset-requalification-audit/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1755-post-reset-requalification-audit/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "0502071e71343e9c31da984ff8cb4a94e7478d5040f2fb7ca19e25b02f772baf"
+    },
+    {
+      "source": "20261030-t1755-post-reset-requalification-audit/result.json",
+      "destination": "runtime-metadata/20261030-t1755-post-reset-requalification-audit/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "07f9cc053e83428ce7d3ac7c63c398f2c522e1af335d6d9e79f0aca800f1c479"
+    },
+    {
+      "source": "20261030-t1756-v2-fresh-admission/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1756-v2-fresh-admission/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "4bc6eaa28d356981cb0f36e9933ae1685103f7337f24550bff16822c93a9679b"
+    },
+    {
+      "source": "20261030-t1756-v2-fresh-admission/manifest.json",
+      "destination": "runtime-metadata/20261030-t1756-v2-fresh-admission/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "7a9de14a32e781ee84099bcceb893cadbb716bc3e3710067522b30e199c5ed67"
+    },
+    {
+      "source": "20261030-t1756-v2-fresh-admission/result.json",
+      "destination": "runtime-metadata/20261030-t1756-v2-fresh-admission/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "5b5a69e4058834b3edee097d40aeef98dd1d3b3804bbe112e7eed4f98f8184f4"
+    },
+    {
+      "source": "20261030-t1757-native-neural-embodiment-v2/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1757-native-neural-embodiment-v2/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "ddf264165ed22674a363c2282c3053009f973a41d7291016d5f3264e86b9bd9a"
+    },
+    {
+      "source": "20261030-t1757-native-neural-embodiment-v2/manifest.json",
+      "destination": "runtime-metadata/20261030-t1757-native-neural-embodiment-v2/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "c1be477d7bbfbc07eb329f28d6db7794762080d02cf111e3f35d5b84945d9145"
+    },
+    {
+      "source": "20261030-t1757-native-neural-embodiment-v2/neural-embodiment-v2-initialization.json",
+      "destination": "runtime-metadata/20261030-t1757-native-neural-embodiment-v2/neural-embodiment-v2-initialization.json",
+      "kind": "runtime_metadata",
+      "sha256": "2dad14807c74db39fd5872c4bac263f32420417016cbaca0156b83760de4212c"
+    },
+    {
+      "source": "20261030-t1757-native-neural-embodiment-v2/neural-motor-reference.json",
+      "destination": "runtime-metadata/20261030-t1757-native-neural-embodiment-v2/neural-motor-reference.json",
+      "kind": "runtime_metadata",
+      "sha256": "564d83a1b0c94aa8ef6f20b6d82382f2c7607a0fd07d616cba46dec532800bf8"
+    },
+    {
+      "source": "20261030-t1757-native-neural-embodiment-v2/result.json",
+      "destination": "runtime-metadata/20261030-t1757-native-neural-embodiment-v2/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "f0ba9dca150ed7835e6dbfaf2b14320645f4e39ce5adf2ceb14dc5b02fbdca57"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/checks.json",
+      "destination": "runtime-metadata/20261030-t1758-embodiment-v2-actual-audit/checks.json",
+      "kind": "runtime_metadata",
+      "sha256": "42f5ed14c7057ae73ff9af9df9e835653b9c829f4d2c759c0f219ee85f94b132"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/executed-audit.py",
+      "destination": "executed-snapshots/20261030-t1758-embodiment-v2-actual-audit/executed-audit.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "61336b8378eeb314ab032d797540449dff593e2320dc3159eff157ab2e8c0ac7"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/executed-report.py",
+      "destination": "executed-snapshots/20261030-t1758-embodiment-v2-actual-audit/executed-report.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "05e8fb26bf8e523e360dc5b5bab9f8abc327f4a1a09919b4b61e3986afbe969c"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/input-references.json",
+      "destination": "runtime-metadata/20261030-t1758-embodiment-v2-actual-audit/input-references.json",
+      "kind": "runtime_metadata",
+      "sha256": "fa58b63cd9cf13f30b36ee2bf1454a0ed20f603751e8b03f8952bb0b925231cd"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/receipt.json",
+      "destination": "runtime-metadata/20261030-t1758-embodiment-v2-actual-audit/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "02a184fba152f3866650a1f80e79ba9a0fc1a2dd671572be84dc86e3d9544625"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1758-embodiment-v2-actual-audit/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "d7736deb4de713884e589755e70a5ecf4dfc66e6ddc791fbaa6b188227f3771c"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/response-summary.json",
+      "destination": "runtime-metadata/20261030-t1758-embodiment-v2-actual-audit/response-summary.json",
+      "kind": "runtime_metadata",
+      "sha256": "de413e583a481accba316fefad4dfbe3c622e9fb38a47f9d35b2795d9d5c5708"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/result.json",
+      "destination": "runtime-metadata/20261030-t1758-embodiment-v2-actual-audit/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "4405d0d69b23b1bd8a28c484b99c4885aea36204cb7be25464414af72befab40"
+    },
+    {
+      "source": "20261030-t1758-embodiment-v2-actual-audit/supplement-receipt.json",
+      "destination": "runtime-metadata/20261030-t1758-embodiment-v2-actual-audit/supplement-receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "0a2e81e7e45bb5d04abf3c41bf4c19972b01a65580e394103aa742c8d3c7e7c4"
+    },
+    {
+      "source": "20261030-t1759-post-v2-fresh-state/executed-program.py",
+      "destination": "executed-snapshots/20261030-t1759-post-v2-fresh-state/executed-program.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "4bc6eaa28d356981cb0f36e9933ae1685103f7337f24550bff16822c93a9679b"
+    },
+    {
+      "source": "20261030-t1759-post-v2-fresh-state/manifest.json",
+      "destination": "runtime-metadata/20261030-t1759-post-v2-fresh-state/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "71e138e2854a436c4b7e226afd47b9376631d26f8b2d49296c5028865d0a75ff"
+    },
+    {
+      "source": "20261030-t1759-post-v2-fresh-state/result.json",
+      "destination": "runtime-metadata/20261030-t1759-post-v2-fresh-state/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "44319f8697258ba6fda37d5c9a701b9a6c594e33ece407d658b721b691a0c6a7"
+    },
+    {
+      "source": "20261030-t1760-post-v2-pause/after.json",
+      "destination": "runtime-metadata/20261030-t1760-post-v2-pause/after.json",
+      "kind": "runtime_metadata",
+      "sha256": "03734dd5baf4d10edc552567cd6684d0034d6520f12515343778de9f7dbd70c0"
+    },
+    {
+      "source": "20261030-t1760-post-v2-pause/api-receipt.json",
+      "destination": "runtime-metadata/20261030-t1760-post-v2-pause/api-receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "8c22486c13336fba9428085a79828f6939b10da66cf18040dc6fac284963b2f3"
+    },
+    {
+      "source": "20261030-t1760-post-v2-pause/before.json",
+      "destination": "runtime-metadata/20261030-t1760-post-v2-pause/before.json",
+      "kind": "runtime_metadata",
+      "sha256": "f72547a63cca488f92e04ab950d6f25e94dbe9970c64dd5eee0d251a0561ea5f"
+    },
+    {
+      "source": "20261030-t1760-post-v2-pause/manifest.json",
+      "destination": "runtime-metadata/20261030-t1760-post-v2-pause/manifest.json",
+      "kind": "runtime_metadata",
+      "sha256": "11c8cb9afad2e464a5c6bd46fd7f95f0e33eacb19abc8f095f0fbb368527b941"
+    },
+    {
+      "source": "20261030-t1760-post-v2-pause/publication-before.json",
+      "destination": "runtime-metadata/20261030-t1760-post-v2-pause/publication-before.json",
+      "kind": "runtime_metadata",
+      "sha256": "f72547a63cca488f92e04ab950d6f25e94dbe9970c64dd5eee0d251a0561ea5f"
+    },
+    {
+      "source": "20261030-t1760-post-v2-pause/request.json",
+      "destination": "runtime-metadata/20261030-t1760-post-v2-pause/request.json",
+      "kind": "runtime_metadata",
+      "sha256": "35f9acd63bc657f7fc3105b4aee1414b8a5e9ec2e6d263836b7390c68ce5831e"
+    },
+    {
+      "source": "20261030-t1760-post-v2-pause/result.json",
+      "destination": "runtime-metadata/20261030-t1760-post-v2-pause/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "622784ab0e77ac5468dd1457edbf3b37da5d60613107e753674e42569476c36e"
+    },
+    {
+      "source": "20261030-t1761-v2-receipt-figure/executed-figure.py",
+      "destination": "executed-snapshots/20261030-t1761-v2-receipt-figure/executed-figure.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "7f96c5be1c1e5d94fffe2aaec70055ece95b006cdd007ef4747d2e410b4937fb"
+    },
+    {
+      "source": "20261030-t1761-v2-receipt-figure/independent-audit-receipt.json",
+      "destination": "runtime-metadata/20261030-t1761-v2-receipt-figure/independent-audit-receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "46437c82e4cacbe1571c4bbab74ba04ab5f42024336c6863cb637ce83a9d24a1"
+    },
+    {
+      "source": "20261030-t1761-v2-receipt-figure/independent-audit.json",
+      "destination": "runtime-metadata/20261030-t1761-v2-receipt-figure/independent-audit.json",
+      "kind": "runtime_metadata",
+      "sha256": "c1b17b7bcadf27ae851e6c6847e44a0a08aed88b887e4043caf4e73fdd3b374b"
+    },
+    {
+      "source": "20261030-t1761-v2-receipt-figure/independent-audit.py",
+      "destination": "executed-snapshots/20261030-t1761-v2-receipt-figure/independent-audit.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "4201b4394b659bad6a7dcc2ca2f2ff8baa9c03b04a3d8b5e81ee47446cb0b40c"
+    },
+    {
+      "source": "20261030-t1761-v2-receipt-figure/result.json",
+      "destination": "runtime-metadata/20261030-t1761-v2-receipt-figure/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "641dcff1e9c96703c3c3d8b51ecaf44e91a6020817d76bde2a9e80dd9a648394"
+    },
+    {
+      "source": "20261030-t1762-current-source-timing-recompute/executed-recompute-v1.py",
+      "destination": "executed-snapshots/20261030-t1762-current-source-timing-recompute/executed-recompute-v1.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "a8d1e9c6ca8189945294a6be4509a7fb5554a5d0d7b3b1aca46af0f9775571ef"
+    },
+    {
+      "source": "20261030-t1762-current-source-timing-recompute/executed-recompute.py",
+      "destination": "executed-snapshots/20261030-t1762-current-source-timing-recompute/executed-recompute.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "bb4891e1fab4bd37df14d20eb362d5bedff08464240fbec6f7b1206394ca2219"
+    },
+    {
+      "source": "20261030-t1762-current-source-timing-recompute/receipt.json",
+      "destination": "runtime-metadata/20261030-t1762-current-source-timing-recompute/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "b018f04dc9ce94abc3b9b48cf2f5d647e067f95bdb8aeef0b69dbac2cf924d81"
+    },
+    {
+      "source": "20261030-t1762-current-source-timing-recompute/result.json",
+      "destination": "runtime-metadata/20261030-t1762-current-source-timing-recompute/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "397009ccf3779d3a37bbcd065cb4e52ca52875c628b12e9a77b4c05b68864301"
+    },
+    {
+      "source": "20261030-t1762-current-source-timing-recompute/v1-failure.json",
+      "destination": "runtime-metadata/20261030-t1762-current-source-timing-recompute/v1-failure.json",
+      "kind": "runtime_metadata",
+      "sha256": "257fe8efb74a85e62dde930b521e03c65a449021be190bfbc50969583cd7b5a1"
+    },
+    {
+      "source": "20261030-t1763-archive-registration/executed-registration.py",
+      "destination": "executed-snapshots/20261030-t1763-archive-registration/executed-registration.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "e7d40a92f7a0f6ec914ba806991011984c5efef72ce13b7631a933f0a5a0ef2b"
+    },
+    {
+      "source": "20261030-t1763-archive-registration/executed-registration-v1.py",
+      "destination": "executed-snapshots/20261030-t1763-archive-registration/executed-registration-v1.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "3c5ee052d7a04ae17d1092b96ecb8bbaf2c3742a8e9fb4c8ce490e074f2def50"
+    },
+    {
+      "source": "20261030-t1763-archive-registration/registration-v1-failure.json",
+      "destination": "runtime-metadata/20261030-t1763-archive-registration/registration-v1-failure.json",
+      "kind": "runtime_metadata",
+      "sha256": "3cdbff2a0f1e44e901a5b43e49ceaecbf12422caed2458f42e6b662aa1699fe9"
+    },
+    {
+      "source": "20261030-t1763-archive-registration/owner-attestations.json",
+      "destination": "runtime-metadata/20261030-t1763-archive-registration/owner-attestations.json",
+      "kind": "runtime_metadata",
+      "sha256": "5eea7e68273df2159daef14844f23898d39b0914d1c1d66b2cfa86a38e64d103"
+    },
+    {
+      "source": "20261030-t1764-independent-archive-verification/payload-findings.json",
+      "destination": "runtime-metadata/20261030-t1764-independent-archive-verification/payload-findings.json",
+      "kind": "runtime_metadata",
+      "sha256": "cc25db2ae865a38bb4f0b48d9634d46645b6c91aac5ca282d1a7c5b78a739ad3"
+    },
+    {
+      "source": "20261030-t1764-independent-archive-verification/receipt.json",
+      "destination": "runtime-metadata/20261030-t1764-independent-archive-verification/receipt.json",
+      "kind": "runtime_metadata",
+      "sha256": "5e732c660f0c8a714f22867254a0ca11d1f976e41abd7caa74b85f9e59519a38"
+    },
+    {
+      "source": "20261030-t1764-independent-archive-verification/REPORT.md",
+      "destination": "runtime-metadata/20261030-t1764-independent-archive-verification/REPORT.md",
+      "kind": "runtime_metadata",
+      "sha256": "a5feec969919bbec281a0dd1959ed8edbfe7c704e27a828c115cdc770efd1653"
+    },
+    {
+      "source": "20261030-t1764-independent-archive-verification/result.json",
+      "destination": "runtime-metadata/20261030-t1764-independent-archive-verification/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "44136260c55c30f980fef62e25ea68154c0171b3b40269b925253d87db2cf8b0"
+    },
+    {
+      "source": "20261030-t1764-independent-archive-verification/verify.py",
+      "destination": "executed-snapshots/20261030-t1764-independent-archive-verification/verify.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "9049f9e0e1b18b828a6b34867d40691fb942b4fdcc552bf1ed6715bbf488e2a3"
+    },
+    {
+      "source": "20261030-t1766-failed-archive-payload-cleanup/executed-cleanup.ps1",
+      "destination": "executed-snapshots/20261030-t1766-failed-archive-payload-cleanup/executed-cleanup.ps1",
+      "kind": "executed_source_snapshot",
+      "sha256": "5745c722895af2c3bccf6b4f98006254fa6fdac9a7583f8c421d90fedbbcdfaf"
+    },
+    {
+      "source": "20261030-t1766-failed-archive-payload-cleanup/preflight.json",
+      "destination": "runtime-metadata/20261030-t1766-failed-archive-payload-cleanup/preflight.json",
+      "kind": "runtime_metadata",
+      "sha256": "85310c420c157e7ba0ab1ec569017e2be43fd3036cfb09aeac00c720e3ec3d64"
+    },
+    {
+      "source": "20261030-t1766-failed-archive-payload-cleanup/result.json",
+      "destination": "runtime-metadata/20261030-t1766-failed-archive-payload-cleanup/result.json",
+      "kind": "runtime_metadata",
+      "sha256": "b73a792dd0fc2aadd74205e002e6b3650c61ab6de66a09cd8c205ccafffe443d"
+    },
+    {
+      "source": "20261030-t1767-clean-archive-registration/executed-registration.py",
+      "destination": "executed-snapshots/20261030-t1767-clean-archive-registration/executed-registration.py",
+      "kind": "executed_source_snapshot",
+      "sha256": "7ad453c5473d7de2007c5f379ce74af3576df73869c80b7e9dd31b9c4ed23665"
+    },
+    {
+      "source": "20261030-t1767-clean-archive-registration/owner-attestations.json",
+      "destination": "runtime-metadata/20261030-t1767-clean-archive-registration/owner-attestations.json",
+      "kind": "runtime_metadata",
+      "sha256": "43d649ff8ec8c4000783c84519b934f1ed63aabbed6dc40a291612aaf455dfca"
+    }
+  ],
+  "current_source_whitelist": [
+    {
+      "source": "AGENTS.md",
+      "destination": "current-sources/AGENTS.md",
+      "kind": "current_source_at_archive_time",
+      "sha256": "919bc5a0ac0c12fb9b0cda92f1bb08470533c81676a96675803ea245d13e8afe"
+    },
+    {
+      "source": "README.md",
+      "destination": "current-sources/README.md",
+      "kind": "current_source_at_archive_time",
+      "sha256": "bbc4c3ec6eebd33feb5e298a08f49c433aa578d7afaf15788062e2fecf5cc95f"
+    },
+    {
+      "source": "configs/ac-axis-probe.json",
+      "destination": "current-sources/configs/ac-axis-probe.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "1df2d1fc5dfe767c93eacb33b429561641c809821f3eb29d291ea44ac268158c"
+    },
+    {
+      "source": "configs/ac-native-neural-embodiment-v2-20261030.json",
+      "destination": "current-sources/configs/ac-native-neural-embodiment-v2-20261030.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "c81d14a0c5b6d529273032ee378826d2f949cc1d9515155aecfa5bcd51d2b19e"
+    },
+    {
+      "source": "configs/ac-native-ownership-reset-20261030-t1750.json",
+      "destination": "current-sources/configs/ac-native-ownership-reset-20261030-t1750.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "57d637ddd0568d772be270ac484cb108f2b75f77551177b00038c1a76490967e"
+    },
+    {
+      "source": "configs/ac-source-timing-diagnostic-20261030.json",
+      "destination": "current-sources/configs/ac-source-timing-diagnostic-20261030.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "b787792d3514d930303b113becfabb3c0e4a8b5004c551da1dfede92d3eb8957"
+    },
+    {
+      "source": "configs/ac-source-timing-pace30-diagnostic-20261030.json",
+      "destination": "current-sources/configs/ac-source-timing-pace30-diagnostic-20261030.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "b73dc03cdb27c950b2d541fa7e6db1348c050d55a7376146e82f453b4285085a"
+    },
+    {
+      "source": "configs/ac-virtual-navigation-body-v2.json",
+      "destination": "current-sources/configs/ac-virtual-navigation-body-v2.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "5cf92b9af473092c8baf2b56783f826c41b93e77ab876795276fc07943c1ed50"
+    },
+    {
+      "source": "configs/flight-circuit-separated-v5-20261029.json",
+      "destination": "current-sources/configs/flight-circuit-separated-v5-20261029.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "521d1641a4a7ef50eb95f19ed9ad5380faf8a22ea83400d5aefbe2963d70c33f"
+    },
+    {
+      "source": "configs/flight-mn-embodiment-component-proof-contract-20261030.json",
+      "destination": "current-sources/configs/flight-mn-embodiment-component-proof-contract-20261030.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "4ae0e69f95dc5ab28e1b58eae03943c5622608d9d13fa6442be902448b7db2a7"
+    },
+    {
+      "source": "configs/flight-mn-embodiment-gpu-qualification-20261030.json",
+      "destination": "current-sources/configs/flight-mn-embodiment-gpu-qualification-20261030.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "ab27b171d43e841af297aabb54f062ca348e755672fe49c365cdf6cc33a723f2"
+    },
+    {
+      "source": "configs/flight-mn-embodiment-qualification-20261030.json",
+      "destination": "current-sources/configs/flight-mn-embodiment-qualification-20261030.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "e9fa3661508860c1f77803ebac4ca70433cbef56f7d779f5d549d028f1c72839"
+    },
+    {
+      "source": "configs/fly-flight-mechanism-plan-20261029.json",
+      "destination": "current-sources/configs/fly-flight-mechanism-plan-20261029.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "8016c2c9ecb17c2f6ccbd5d0eccbcbc32216a31cd32616b742b4764e45335de8"
+    },
+    {
+      "source": "docs/CONTEXT.md",
+      "destination": "current-sources/docs/CONTEXT.md",
+      "kind": "current_source_at_archive_time",
+      "sha256": "13a9d893751391d231e0a14cf1728c1daed8ea2d5190c7a55dc0453b9696f453"
+    },
+    {
+      "source": "docs/PROJECT_CHARTER.md",
+      "destination": "current-sources/docs/PROJECT_CHARTER.md",
+      "kind": "current_source_at_archive_time",
+      "sha256": "5977d4665e1be3fb401c5616cd27eb193dba8847f418b968322655b4540d0761"
+    },
+    {
+      "source": "docs/README.md",
+      "destination": "current-sources/docs/README.md",
+      "kind": "current_source_at_archive_time",
+      "sha256": "9fd99fd71183942a4532bca2a8276cd02f28a8fcac6fb2c1d46c77cccdd45b11"
+    },
+    {
+      "source": "docs/flight-embodiment-v2-and-source-timing-20261030.md",
+      "destination": "current-sources/docs/flight-embodiment-v2-and-source-timing-20261030.md",
+      "kind": "current_source_at_archive_time",
+      "sha256": "f3ccd3b8daa19758b57dc1de137785eaae7fa5b60cd26d6c8e3ab238b23d9dd4"
+    },
+    {
+      "source": "docs/implementation-status.md",
+      "destination": "current-sources/docs/implementation-status.md",
+      "kind": "current_source_at_archive_time",
+      "sha256": "2487b4021892b0dcb396d52f6fb6a9296c974fd3e56fc2da0dc4a23ac04602f2"
+    },
+    {
+      "source": "docs/research-plan.md",
+      "destination": "current-sources/docs/research-plan.md",
+      "kind": "current_source_at_archive_time",
+      "sha256": "884e33c42a2bdd4a4f16250097a011a1c124ab72b8317ab7794c003edb74f045"
+    },
+    {
+      "source": "integrations/ac/flybrain_telemetry/flybrain_telemetry.py",
+      "destination": "current-sources/integrations/ac/flybrain_telemetry/flybrain_telemetry.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "b7c6f3ee24dc251fdfea4895dea593ab4cb15f56b2b4d4ac43df1d41bffcaa7a"
+    },
+    {
+      "source": "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua",
+      "destination": "current-sources/integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua",
+      "kind": "current_source_at_archive_time",
+      "sha256": "b6d87d2708a13b37e858bf6cfe87f362540bf645514223e18e2c870fbd66e1f7"
+    },
+    {
+      "source": "integrations/ac_csp/candidates/SessionHeartbeatMMF.lua",
+      "destination": "current-sources/integrations/ac_csp/candidates/SessionHeartbeatMMF.lua",
+      "kind": "current_source_at_archive_time",
+      "sha256": "9056dda38a8edd7610d04dee1c9381391ec26c507dc3f95547dd05932356e415"
+    },
+    {
+      "source": "scripts/archive_embodiment_timing_evidence.py",
+      "destination": "current-sources/scripts/archive_embodiment_timing_evidence.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "0d225b11f4719fce9f5d0d8ee7a331d3031b4b3535950495fd1575e8155a9c0d"
+    },
+    {
+      "source": "scripts/archive_pace_motor_evidence.py",
+      "destination": "current-sources/scripts/archive_pace_motor_evidence.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "c8ae37e03b4c7af170f8418b08b747092f7d2686edfa1048ea5dcfa83a218b89"
+    },
+    {
+      "source": "scripts/audit_ac_csp_camera.py",
+      "destination": "current-sources/scripts/audit_ac_csp_camera.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "e667d0b06eae50b94d42726bb986d06da1e68488edca703285c7d955a3364486"
+    },
+    {
+      "source": "scripts/audit_ac_engine_ai_probe.py",
+      "destination": "current-sources/scripts/audit_ac_engine_ai_probe.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "b1c540beea198a771fb840d9a21c48db4d302f40c1063d455d4aeaf432c91fba"
+    },
+    {
+      "source": "scripts/calibrate_ac_sdk_steering.py",
+      "destination": "current-sources/scripts/calibrate_ac_sdk_steering.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "7fee785fb105dffc58e35c2f73bcfd9bb44f1c7b76d7d0253913a96e323805a2"
+    },
+    {
+      "source": "scripts/control_ac_session.py",
+      "destination": "current-sources/scripts/control_ac_session.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "2f83c118b6d48144fe6a8848f68e81f17f45806c1473394c5300d9d980027580"
+    },
+    {
+      "source": "scripts/hold_ac_stationary_brake.py",
+      "destination": "current-sources/scripts/hold_ac_stationary_brake.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "d28467fd3be0d5bb62b14023bcb8a0d27568bf716ad4bebb4a23561107da0747"
+    },
+    {
+      "source": "scripts/inspect_ac_collection_state.py",
+      "destination": "current-sources/scripts/inspect_ac_collection_state.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "98197e1ad848b0de119aad377bb53c225f9b3a5019ffc6884bd4db279ea0c65d"
+    },
+    {
+      "source": "scripts/inspect_ac_control_state.py",
+      "destination": "current-sources/scripts/inspect_ac_control_state.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "4bc6eaa28d356981cb0f36e9933ae1685103f7337f24550bff16822c93a9679b"
+    },
+    {
+      "source": "scripts/probe_ac_maneuver_plant.py",
+      "destination": "current-sources/scripts/probe_ac_maneuver_plant.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "ddf264165ed22674a363c2282c3053009f973a41d7291016d5f3264e86b9bd9a"
+    },
+    {
+      "source": "scripts/qualify_ac_native_position.py",
+      "destination": "current-sources/scripts/qualify_ac_native_position.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "a652dc48fbcb15854fcd55abb1b52f84a1cb13b228f47b8ace4c4a9be05ae890"
+    },
+    {
+      "source": "scripts/qualify_flight_embodiment.py",
+      "destination": "current-sources/scripts/qualify_flight_embodiment.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "a8a38bf0e5b8335d1e1d36bf736b478ab1c2172fd49f376988722986845d82e3"
+    },
+    {
+      "source": "scripts/qualify_flight_embodiment_gpu.py",
+      "destination": "current-sources/scripts/qualify_flight_embodiment_gpu.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "22d7016fa2e1bc7e151aabb89d4e53a1767d601ad431a815422db0dfe4bc12f6"
+    },
+    {
+      "source": "scripts/record_ac_engine_ai_probe.py",
+      "destination": "current-sources/scripts/record_ac_engine_ai_probe.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "3f327e62788ff05e1dd893cc8c53c4b33d84c48b11cbc05725c95cec36ec656c"
+    },
+    {
+      "source": "scripts/reset_ac_engine_framecap.py",
+      "destination": "current-sources/scripts/reset_ac_engine_framecap.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "ff84c802a3b2eebdc50a6f7e1eebf2aae447e155fb9981d8c38d926ca19d17c0"
+    },
+    {
+      "source": "src/flybrain_drive/ac_csp_vision.py",
+      "destination": "current-sources/src/flybrain_drive/ac_csp_vision.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "7a10bc801e0aea492254476308459f532c900f50f50bb41b46f1f393dbfe13b9"
+    },
+    {
+      "source": "src/flybrain_drive/ac_native_clock.py",
+      "destination": "current-sources/src/flybrain_drive/ac_native_clock.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "3961e30cba72d41ef68cd897145569e7651e72e6a519266d72a20c0c44973108"
+    },
+    {
+      "source": "src/flybrain_drive/ac_native_physics.py",
+      "destination": "current-sources/src/flybrain_drive/ac_native_physics.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37"
+    },
+    {
+      "source": "src/flybrain_drive/ac_native_position.py",
+      "destination": "current-sources/src/flybrain_drive/ac_native_position.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "30ebbd6a0727ac0cc2c77b121251a23bc2dcb4c8fc907373f9b8b1c117e808d8"
+    },
+    {
+      "source": "src/flybrain_drive/ac_teacher_physics.py",
+      "destination": "current-sources/src/flybrain_drive/ac_teacher_physics.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "bf50f276acc9044ca24bd1090aabf3d6613568e66904e2c4c8b9be88a78deb78"
+    },
+    {
+      "source": "src/flybrain_drive/ac_teacher_status.py",
+      "destination": "current-sources/src/flybrain_drive/ac_teacher_status.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "07668a3fadd1e29734388ea9ea71909c055685d8011b0c9b02ea356e1d414f83"
+    },
+    {
+      "source": "src/flybrain_drive/ac_vjoy.py",
+      "destination": "current-sources/src/flybrain_drive/ac_vjoy.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "d5d9fb74300bb502bc3faa183f2492ed70977e5802106823a46b91e6f14e7be4"
+    },
+    {
+      "source": "src/flybrain_drive/actuator_codec.py",
+      "destination": "current-sources/src/flybrain_drive/actuator_codec.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "d0966d4c62ecab0bd57d2429f3cc51fa1696131aa22991add112ad20f2c2cad2"
+    },
+    {
+      "source": "src/flybrain_drive/evidence.py",
+      "destination": "current-sources/src/flybrain_drive/evidence.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "03f44aa2b11bdb0db8584f539798ecd61f5ea6faed4cb2472eadd1a053108bd3"
+    },
+    {
+      "source": "src/flybrain_drive/flight_actuator.py",
+      "destination": "current-sources/src/flybrain_drive/flight_actuator.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "1ea383a8abbcca788a279f672611435d9f1596630bca5b22bead087a9340be2f"
+    },
+    {
+      "source": "src/flybrain_drive/flight_circuit.py",
+      "destination": "current-sources/src/flybrain_drive/flight_circuit.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "ea8c6ce537c3ea41f23ce192a932ea081572eeb181f368acb9e83fd92f715eca"
+    },
+    {
+      "source": "src/flybrain_drive/flight_commands.py",
+      "destination": "current-sources/src/flybrain_drive/flight_commands.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "8339875605819e610234f695b6665e44d9d1bc3c3b6c8e516a06787a90615e95"
+    },
+    {
+      "source": "src/flybrain_drive/flight_embodiment.py",
+      "destination": "current-sources/src/flybrain_drive/flight_embodiment.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "c0298e4b1a86cb94d4746f5338e4c4ea65172fe9d68a1a37fef72250a670c829"
+    },
+    {
+      "source": "src/flybrain_drive/flight_embodiment_trial.py",
+      "destination": "current-sources/src/flybrain_drive/flight_embodiment_trial.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "d4c3ae4e2fc241afb94d0d47f19f4eaa5d26e890bf20c620252f8fd1a5ea00c6"
+    },
+    {
+      "source": "src/flybrain_drive/flight_maneuver.py",
+      "destination": "current-sources/src/flybrain_drive/flight_maneuver.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "6219f0b1dc8b7a330f5dd31476acf1ed7b836f42085307932082437a524f9e92"
+    },
+    {
+      "source": "src/flybrain_drive/flight_maneuver_trial.py",
+      "destination": "current-sources/src/flybrain_drive/flight_maneuver_trial.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "75420d5ca501fffbf0049f21c32b61f8486225411454c7f9243e72fb167f2813"
+    },
+    {
+      "source": "src/flybrain_drive/graph.py",
+      "destination": "current-sources/src/flybrain_drive/graph.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "33cf5986625481109782cafbd0f552f2c4da011741c7f4daedf597b50c47ad7f"
+    },
+    {
+      "source": "src/flybrain_drive/session_heartbeat_candidate.py",
+      "destination": "current-sources/src/flybrain_drive/session_heartbeat_candidate.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "e343eb2dd5811c017d9a70ef53335ebee7973226231ff0d70fabc239074253af"
+    },
+    {
+      "source": "src/flybrain_drive/vehicle_circuit.py",
+      "destination": "current-sources/src/flybrain_drive/vehicle_circuit.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "cf30f028307d2c4ed795a73d531ae0e17cfa9715ea7a233e669da8ea21ba30d5"
+    },
+    {
+      "source": "src/flybrain_drive/virtual_body.py",
+      "destination": "current-sources/src/flybrain_drive/virtual_body.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "ab310cfcf3b1d826d22d88e2fbee3a10be4bff5ecf62dc7e5e010d425de6b065"
+    },
+    {
+      "source": "src/flybrain_drive/virtual_navigation_body.py",
+      "destination": "current-sources/src/flybrain_drive/virtual_navigation_body.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "e3bff2c8b0c3ebec3ffaf9a0bc25aa6bc626acb018b47411767f91fd1397e00e"
+    },
+    {
+      "source": "tests/test_ac_teacher_physics.py",
+      "destination": "current-sources/tests/test_ac_teacher_physics.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "eeabe5241d9b7367f36f84acfe9ae058e4969f428de379c6b8e33560dafe6d8e"
+    },
+    {
+      "source": "tests/test_archive_embodiment_timing_evidence.py",
+      "destination": "current-sources/tests/test_archive_embodiment_timing_evidence.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "7e980dc123143482a2d5177b25197da8e1a1078201140d02f4bd2ffb2e3149d2"
+    },
+    {
+      "source": "tests/test_csp_source_timing.py",
+      "destination": "current-sources/tests/test_csp_source_timing.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "38fe2553df416a93d97b0e3c334a1feddb1305c76bcb55af4c3bc34baf1476f5"
+    },
+    {
+      "source": "tests/test_flight_embodiment.py",
+      "destination": "current-sources/tests/test_flight_embodiment.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "2d6eb885531f780767b3effa7d2d7c35fbf9e4aaa3d98b546989eac5d221a8bd"
+    },
+    {
+      "source": "tests/test_flight_embodiment_trial.py",
+      "destination": "current-sources/tests/test_flight_embodiment_trial.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "d321d9dce8d1b347bb8613b8bde11529053c881de730873ec31a6849c4393d00"
+    },
+    {
+      "source": "tests/test_session_heartbeat_candidate.py",
+      "destination": "current-sources/tests/test_session_heartbeat_candidate.py",
+      "kind": "current_source_at_archive_time",
+      "sha256": "a74eb93fc66e80b81f4d5bbffd452c91a83a1ad15996a4135570405eda20079e"
+    },
+    {
+      "source": "docs/figures/flight-embodiment-v2-actual-20261030.png",
+      "destination": "current-sources/docs/figures/flight-embodiment-v2-actual-20261030.png",
+      "kind": "derived_figure_not_camera",
+      "sha256": "52b6d110b3ad461a45801bddb00733fb0983a7082a2a680bdea4e1913d813904"
+    },
+    {
+      "source": "configs/flight-embodiment-timing-archive-20261030-t1763.json",
+      "destination": "current-sources/configs/flight-embodiment-timing-archive-20261030-t1763.json",
+      "kind": "current_source_at_archive_time",
+      "sha256": "b0191c78038e03dbe10b8b846fd44310309bfe2531f0ce3cf4fe0e385aac1060"
+    },
+    "configs/flight-embodiment-timing-archive-20261030-t1767.json"
+  ]
+}

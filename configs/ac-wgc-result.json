@@ -1,0 +1,196 @@
+{
+  "date": "2026-10-27",
+  "scope": "actual AC whole-window WGC, practice/menu overlay",
+  "runs": [
+    {
+      "run": "runs\\ac-wgc-foreground-20261027-t30c",
+      "frames": 5,
+      "foreground_flags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "unique_rgb_hashes": 5,
+      "pixel_shapes": [
+        [
+          940,
+          1602,
+          3
+        ],
+        [
+          940,
+          1602,
+          3
+        ],
+        [
+          940,
+          1602,
+          3
+        ],
+        [
+          940,
+          1602,
+          3
+        ],
+        [
+          940,
+          1602,
+          3
+        ]
+      ],
+      "hashes_verified": true,
+      "source_timestamps_strictly_increasing": true
+    },
+    {
+      "run": "runs\\ac-wgc-background-after-foreground-20261027-t30d",
+      "frames": 3,
+      "foreground_flags": [
+        false,
+        false,
+        false
+      ],
+      "unique_rgb_hashes": 3,
+      "pixel_shapes": [
+        [
+          940,
+          1602,
+          3
+        ],
+        [
+          940,
+          1602,
+          3
+        ],
+        [
+          940,
+          1602,
+          3
+        ]
+      ],
+      "hashes_verified": true,
+      "source_timestamps_strictly_increasing": true
+    }
+  ],
+  "initial_background_timeouts": 2,
+  "background_after_foreground_frames": 3,
+  "background_continuity_verified": false,
+  "minimized_capture_verified": false,
+  "game_render_freshness_verified": false,
+  "body_image_synchronization_verified": false,
+  "multi_view_calibration_verified": false,
+  "actor_stream_created": false,
+  "ui_actions_sent": 0,
+  "actuator_messages_sent": 0,
+  "report": "docs/ac-wgc-capture-20261027.md",
+  "next_action": "validate sustained nonforeground render cadence, client crop/mirror projection and sensor/image clocks",
+  "cadence_probe": {
+    "run": "runs/ac-wgc-cadence-20261027-t31",
+    "result": {
+      "status": "completed",
+      "frames": 100,
+      "duration_seconds": 10.812999999994645,
+      "received_hz": 9.155645981693242,
+      "receipt_gap_seconds": {
+        "p50": 0.125,
+        "p95": 0.125,
+        "max": 0.125
+      },
+      "foreground_frames": 0,
+      "unique_rgb_hashes": 100,
+      "capture_diagnostics": {
+        "frames_arrived": 175,
+        "frames_discarded_before_receipt_bound": 74,
+        "frames_returned": 100,
+        "last_capture_timespan_native": 806658125000,
+        "worker_finished": false
+      },
+      "ui_actions_sent": 0,
+      "actuator_messages_sent": 0,
+      "exposure_clock_verified": false,
+      "moving_driving_verified": false,
+      "actor_stream_created": false,
+      "goal_achieved": false
+    },
+    "raw_prefix_and_endpoint_hashes_verified": true
+  },
+  "background_continuity_verified_scope": "100 images over 10.813s, nonforeground practice/menu; not moving gameplay or minimized",
+  "target_25hz_probe": {
+    "run": "runs/ac-wgc-cadence-25hz-20261027-t33b",
+    "result": {
+      "status": "completed",
+      "frames": 100,
+      "duration_seconds": 6.25,
+      "received_hz": 15.84,
+      "receipt_gap_seconds": {
+        "p50": 0.0629999999946449,
+        "p95": 0.0629999999946449,
+        "max": 0.125
+      },
+      "foreground_frames": 0,
+      "unique_rgb_hashes": 100,
+      "capture_diagnostics": {
+        "frames_arrived": 102,
+        "frames_discarded_before_receipt_bound": 1,
+        "frames_returned": 100,
+        "last_capture_timespan_native": 809387500000,
+        "worker_finished": false
+      },
+      "ui_actions_sent": 0,
+      "actuator_messages_sent": 0,
+      "exposure_clock_verified": false,
+      "moving_driving_verified": false,
+      "actor_stream_created": false,
+      "goal_achieved": false
+    },
+    "raw_prefix_and_endpoint_hashes_verified": true
+  },
+  "eye_body_graphics_recording": {
+    "run": "runs/ac-eye-body-clock-20261027-t33",
+    "audit": {
+      "scope": "Audit raw AC window/physics/graphics records; never bless them as actor samples.",
+      "frames": 20,
+      "raw_native_prefixes_verified": 80,
+      "unique_rgb_hashes": 20,
+      "foreground_frames": 0,
+      "graphics_statuses": [
+        "live"
+      ],
+      "host_group_span_seconds": {
+        "median": 0.01600000000325963,
+        "max": 0.1409999999887077
+      },
+      "raw_tyre_temperature_min": [
+        27.274368286132812,
+        27.274354934692383,
+        27.460277557373047,
+        27.43211555480957
+      ],
+      "raw_tyre_temperature_max": [
+        27.274368286132812,
+        27.274354934692383,
+        27.460277557373047,
+        27.43211555480957
+      ],
+      "raw_wheel_load_min": [
+        3336.348388671875,
+        3427.09814453125,
+        3191.272705078125,
+        3150.378173828125
+      ],
+      "raw_wheel_load_max": [
+        3366.78857421875,
+        3447.70068359375,
+        3233.142333984375,
+        3184.16796875
+      ],
+      "source_time_units_axes_verified": false,
+      "exposure_bounds_verified": false,
+      "actor_stream_created": false,
+      "training_admissible": false,
+      "goal_achieved": false,
+      "note": "Host group span includes acquisition wait; not exposure error or latency bound"
+    }
+  }
+}

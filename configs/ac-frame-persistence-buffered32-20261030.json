@@ -1,0 +1,8 @@
+{
+  "schema": "flybrain.frame_persistence.bounded_profile.v1",
+  "name": "buffered32_32mib_v1",
+  "maximum_pending": 32,
+  "maximum_retained_payload_bytes": 33554432,
+  "maximum_group_payload_bytes": 1048576,
+  "maximum_groups": 1200
+}

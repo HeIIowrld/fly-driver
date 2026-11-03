@@ -1,0 +1,29 @@
+{
+  "source_checkpoint": "runs/ac-csp-yaw-only-training-20261028-t305/checkpoint.pt",
+  "source_checkpoint_sha256": "dd5d5e6cab21f9b668f3def9cc4ab6e98af30ba3e2dd627664490d0813d46806",
+  "seed": 862853,
+  "epochs": 4,
+  "chunk_length": 16,
+  "learning_rate": 0.0003,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "action_profile": "normalized_ac_absolute",
+  "trainable_groups": [
+    "organs"
+  ],
+  "organ_validity_mode": "gate_only",
+  "pedal_mode": "independent",
+  "episodes_per_batch": 2,
+  "readout_gain_parameterization": "log",
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "teacher_label_contract": {
+    "kind": "geometric_recovery_fixed_task",
+    "maximum_speed_kmh": 30.0,
+    "reference_sha256": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4",
+    "track_sha256": "adfbf94c3625c872507b406d02b6e375274901427db77555f7899121a2d1c414",
+    "kinematic_calibration_sha256": "449293c71a648b31bf7ca71841ef95a9014d7b6655aa16af3a464a0a50bbeecd",
+    "teacher_implementation_sha256": "9d0fc7ea310214209d17a23df9682b497924def6548e8a7226ef1ed1d0cda421",
+    "interpretation": "teacher-only geometric desired canonical control at recorded state; execution status recorded separately"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "scope": "Known-development diagnosis after fixed joint training; no checkpoint selection or refitting",
+  "training": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1437-embodied-joint-training",
+  "script": "scripts/evaluate_embodied_flight_navigation.py",
+  "execution_snapshot": "C:/Users/jeff4/AppData/Local/flybrain/execution-snapshots/20261029-t1438",
+  "training_must_be_terminal_completed": true,
+  "checkpoint": "Fixed epoch24 even if some guarded proposals rejected; never best-development checkpoint",
+  "conditions": ["intact", "new_command_removed", "all_visual_train_mean", "motion_train_mean", "intensity_train_mean", "vehicle_feedback_train_mean"],
+  "removal_policy": "Input information replaced by fixed TRAIN means before both inherited and new visual pathways; body/task/clocks/labels stay original. Not a physiological neuron lesion.",
+  "report": "Full and after3sec steering/forward RMSE; TRAIN mean and zero baselines; compare source v6 and counterfactuals independently on each of2 original development episodes",
+  "gates": ["steering better than TRAIN mean and source", "visual information helps steering", "motion information helps steering", "forward better than TRAIN mean and source", "vehicle feedback helps forward"],
+  "limitations": "Development already explored, not blind evaluation. No braking labels, desired speed fixed30kmh, no closed-loop, fast-path, physiology or lap qualification.",
+  "goal_achieved": false
+}

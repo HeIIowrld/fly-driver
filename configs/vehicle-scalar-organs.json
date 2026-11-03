@@ -1,0 +1,16 @@
+{
+  "scope": "explicit encoder calibration proposal; not a trained policy or AC unit calibration",
+  "fidelity": "functional_vehicle_population_code_not_measured_fly_physiology",
+  "wheel_order": ["FL", "FR", "RL", "RR"],
+  "units": {"tyre_core_temperature": "K", "wheel_normal_load": "N"},
+  "scalar_organs": [
+    {"sensor": "tyre_core_temperature", "minimum": 273.15, "maximum": 433.15,
+     "tuning_width": 15, "change_scale": 10, "populations": 7},
+    {"sensor": "wheel_normal_load", "minimum": 0, "maximum": 10000,
+     "tuning_width": 1000, "change_scale": 10000, "populations": 7}
+  ],
+  "encoding_ranges_are_optimal_operating_limits": false,
+  "native_AC_clock_and_unit_calibration_verified": false,
+  "measured_connectome_input_ports_assigned": false,
+  "trained_thermal_load_driving_policy_available": false
+}

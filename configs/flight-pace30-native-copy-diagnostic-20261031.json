@@ -1,0 +1,70 @@
+{
+  "schema": "flybrain.prospective_pace_recording.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "command": "expert-pace60-100-stop30",
+  "profile": {
+    "schema": "flybrain.pace60_100_stop30_profile.v1",
+    "command": "expert-pace60-100-stop30",
+    "duration_seconds": 30,
+    "hard_speed_kmh": 120,
+    "hard_displacement_m": 1100,
+    "speed_schedule": [
+      {
+        "after_seconds": 0,
+        "speed_hint_kmh": 60
+      },
+      {
+        "after_seconds": 5,
+        "speed_hint_kmh": 100
+      },
+      {
+        "after_seconds": 15,
+        "speed_hint_kmh": 0
+      },
+      {
+        "after_seconds": 23,
+        "speed_hint_kmh": 60
+      }
+    ],
+    "natural_ai_braking_label": false,
+    "brake_intervention": {
+      "api": "physics.setAIStopCounter",
+      "requested_seconds": 8,
+      "after_seconds": 15,
+      "speed_window_kmh": [
+        40,
+        110
+      ],
+      "attempts_maximum": 1,
+      "clear_after_seconds": 23,
+      "clear_requires_actual_moving_brake_and_stop": true
+    }
+  },
+  "actor_world_input": false,
+  "engine_pid": 12432,
+  "generation": "15533904ULL:0.0013473",
+  "raw_camera_qualification": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1711-new-engine-camera-raw-audit",
+  "camera_configuration": "configs/ac-csp-exterior-front-v3-retina.json",
+  "scope": "One prospectively assigned diagnostic pace30; no fit, student control, role reassignment, or GUI. Historical camera qualification is from a prior generation; independent new raw audit required.",
+  "input_sha256": {
+    "scripts/record_pace_task.py": "f9327bcd80baeb57a8058141c4de213c7bb3194e1624d34eacc1d818dcdae4ae",
+    "scripts/record_ac_engine_ai_probe.py": "838a39430709a3c21dbd1615d9b2b8fdbadc365ebc4ad1f79b06d14a462dec77",
+    "scripts/control_ac_session.py": "f69dc5ccc8d7cb8f1928aa21392543c8b82ce022fc94c7d4ae4fbccaa0b7dc54",
+    "src/flybrain_drive/teacher_pace.py": "707cd2bca2878d8e04a398fc11b85470c1830ceed2bee79af547a90712dd1a4f",
+    "src/flybrain_drive/prospective_corpus.py": "84bbd5a4ba9ccccb2c90723c5cf1c708a33ba3411b36780592fee5719143c9b6",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "475e085d974595aa503fa687d58913cf1551b39fb4d230721763f5fd68a8d119",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1711-new-engine-camera-raw-audit/result.json": "09228d49f4a67054f30170db14a393953348e43fc889e4800d1dbd2ffb0696eb",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1708-pace-predeploy-review/result.json": "85a1488bca6ea37f0209356e3bcf34435ab182bb56dcbf866c1ccfa3e3ec6a3f",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1713-pace30-diagnostic-pilot/result.json": "512dcf115f825fb512b3c899624911ddd5e71d3742a451262b65376b102aef59",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1713-pace30-diagnostic-pilot/recording/control/api-receipt.json": "3456d4055a02cc5a59183a7df16fb96e4691319bcf31102e4e563753ff659437",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1714-task-serialization-audit/result.json": "602d38e4250f468fab7e33c69084b5d7d90c7b2ffba7837f34d994b6ec2ae4fb",
+    "scripts/record_ac_airflow_timed_diagnostic.py": "1c203dd4b7457f2768af918040087e434bd6c4d314d20d543ab1ce72363d7016",
+    "src/flybrain_drive/ac_teacher_physics.py": "3717438ce54193259e9d44752104e1c064dd8debbe11dee3b4bcc929c6f8d489"
+  },
+  "revision": "20261031-native-copy-pace-diagnostic-v1",
+  "revision_reason": "Test bounded high-frequency native recording under pace load; same raw data requirements, prior generation calibration explicitly retained as historical.",
+  "preexecution_disk_free_bytes": 104645386240,
+  "native_copy_history": true
+}

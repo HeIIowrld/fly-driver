@@ -1,0 +1,22 @@
+{
+  "seed": 862953,
+  "workers": 3,
+  "dataset": "runs/ac-road-recovery-training-data-20261028-t497",
+  "experiments": [
+    {
+      "name": "base",
+      "config": "configs/ac-road-recovery-base-training.json",
+      "output": "runs/ac-road-recovery-base-training-20261028-t499"
+    },
+    {
+      "name": "medium",
+      "config": "configs/ac-road-recovery-medium-training.json",
+      "output": "runs/ac-road-recovery-medium-training-20261028-t500"
+    },
+    {
+      "name": "high",
+      "config": "configs/ac-road-recovery-high-training.json",
+      "output": "runs/ac-road-recovery-high-training-20261028-t501"
+    }
+  ]
+}

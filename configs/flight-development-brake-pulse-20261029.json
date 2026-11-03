@@ -1,0 +1,22 @@
+{
+  "schema": "flybrain.finite_ai_brake_intervention.v1",
+  "role": "development_diagnostic",
+  "fit_allowed": false,
+  "generation": "4525688ULL:0.0011165",
+  "duration_seconds": 30,
+  "speed_hint_kmh": 30,
+  "pulse_after_seconds": 3,
+  "pulse_speed_window_kmh": [
+    25,
+    35
+  ],
+  "pulse_seconds": 0.4,
+  "pulse_count_max": 1,
+  "api": "physics.setAIStopCounter(0, .4)",
+  "cleanup_api": "physics.setAIStopCounter(0, 0)",
+  "expected": "Actual brake>.05 plus >=1kmh speed drop within1.5seconds after pulse; raw native independently audited",
+  "natural_ai_labels": false,
+  "student_policy": false,
+  "tests_passed": 219,
+  "known_native_csp_ai_flag_disagreement_preserved": true
+}

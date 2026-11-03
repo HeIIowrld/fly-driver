@@ -1,0 +1,199 @@
+{
+  "schema": "flybrain.prospective_pace_recording.v1",
+  "role": "development",
+  "fit_allowed": false,
+  "command": "expert-pace60-100-stop30",
+  "profile": {
+    "schema": "flybrain.pace60_100_stop30_profile.v1",
+    "command": "expert-pace60-100-stop30",
+    "duration_seconds": 30,
+    "hard_speed_kmh": 120,
+    "hard_displacement_m": 1100,
+    "speed_schedule": [
+      {
+        "after_seconds": 0,
+        "speed_hint_kmh": 60
+      },
+      {
+        "after_seconds": 5,
+        "speed_hint_kmh": 100
+      },
+      {
+        "after_seconds": 15,
+        "speed_hint_kmh": 0
+      },
+      {
+        "after_seconds": 23,
+        "speed_hint_kmh": 60
+      }
+    ],
+    "natural_ai_braking_label": false,
+    "brake_intervention": {
+      "api": "physics.setAIStopCounter",
+      "requested_seconds": 8,
+      "after_seconds": 15,
+      "speed_window_kmh": [
+        40,
+        110
+      ],
+      "attempts_maximum": 1,
+      "clear_after_seconds": 23,
+      "clear_requires_actual_moving_brake_and_stop": true
+    }
+  },
+  "actor_world_input": false,
+  "engine_pid": 12432,
+  "generation": "15533904ULL:0.0013473",
+  "raw_camera_qualification": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-pace-native-copy-ai-stop-raw-audit",
+  "camera_configuration": "configs/ac-csp-exterior-front-v3-retina.json",
+  "scope": "One predeclared whole protected DEVELOPMENT candidate; known development geography, no claim of globally unseen geography, no fit or role change.",
+  "input_sha256": {
+    "scripts/record_pace_task.py": "0271c9c237397cefcbf88c8a429d25a37c1bb8e9dd3edccd01bfb72447493786",
+    "scripts/record_ac_engine_ai_probe.py": "fefc50f9b2ab004b1c6a42803ec4e313125feefc1ad587bd93d791e045620a6f",
+    "scripts/control_ac_session.py": "f69dc5ccc8d7cb8f1928aa21392543c8b82ce022fc94c7d4ae4fbccaa0b7dc54",
+    "src/flybrain_drive/teacher_pace.py": "707cd2bca2878d8e04a398fc11b85470c1830ceed2bee79af547a90712dd1a4f",
+    "src/flybrain_drive/prospective_corpus.py": "058f168040cb917abad354b1af9c9ca82edceb5e10c0cd79b75c58b7cc62b3e5",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "475e085d974595aa503fa687d58913cf1551b39fb4d230721763f5fd68a8d119",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1711-new-engine-camera-raw-audit/result.json": "09228d49f4a67054f30170db14a393953348e43fc889e4800d1dbd2ffb0696eb",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1708-pace-predeploy-review/result.json": "85a1488bca6ea37f0209356e3bcf34435ab182bb56dcbf866c1ccfa3e3ec6a3f",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1713-pace30-diagnostic-pilot/result.json": "512dcf115f825fb512b3c899624911ddd5e71d3742a451262b65376b102aef59",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1713-pace30-diagnostic-pilot/recording/control/api-receipt.json": "3456d4055a02cc5a59183a7df16fb96e4691319bcf31102e4e563753ff659437",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1714-task-serialization-audit/result.json": "602d38e4250f468fab7e33c69084b5d7d90c7b2ffba7837f34d994b6ec2ae4fb",
+    "scripts/transit_to_pace_region.py": "f88be07a50d20a737066b850ab4a0432415509471e5a9fa0785920ba3e63b7b3",
+    "tests/test_transit_to_pace_region.py": "1ef4067d5955e57940851cc5b5bbb461e62f116eb1ca4d8e738b2befc79bc720",
+    "scripts/collect_spatial_flight_teacher.py": "21b77ab0d2577b879ed70e430ee844ffdd0c35628e42314c680ee6931070a76b",
+    "configs/ac-axis-probe.json": "1df2d1fc5dfe767c93eacb33b429561641c809821f3eb29d291ea44ac268158c",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1718-post-pace-paused-baseline\\result.json": "890e3eadbcafb117737e97f3b6e990c30cb742312f692c021cecec9992f81f44",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1711-new-engine-camera-raw-audit\\result.json": "09228d49f4a67054f30170db14a393953348e43fc889e4800d1dbd2ffb0696eb",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1716-pace30-raw-audit\\result.json": "d106057937ea87e1077add4d06b6dd9df7f4f97caabea1f67f9505f12590223d",
+    "scripts/record_ac_wgc.py": "9fed27a78e78299250b4d352d377468c3ab9a110db2db7ce751d971ade5182e7",
+    "src/flybrain_drive/ac_camera_archive.py": "e527162935ccead14627dbefe1e10992bf324250969bedb69fb41e5fd2a6387e",
+    "src/flybrain_drive/ac_camera_mount.py": "cb20bd6054473faedd6dc3a36e29f855c1161abedc0cfdb6ffad0f85ccced417",
+    "src/flybrain_drive/ac_capture.py": "e1f962bda7c871efbd8a23f08bf6e0218d233b7f1c1993305e51c444582ff672",
+    "src/flybrain_drive/ac_csp_clock.py": "d6b2d38691755610e6c11a662448bf2e67560193a7bc8d815ace991c9b392d0c",
+    "src/flybrain_drive/ac_csp_geometry.py": "0edfcc6daaecbaf7201fb40dced21e270e27dd437afb9a5dedaee756a974c181",
+    "src/flybrain_drive/ac_csp_retina.py": "6595b077f9c6d9620a22aac32f6405cff12d8accc8e411dc2dcde881dacab2e2",
+    "src/flybrain_drive/ac_csp_vision.py": "3e1aafb37bf240535f0381aab3a356e2550a1be37c3243c7dfb22dd0db2399fd",
+    "src/flybrain_drive/ac_image_buffer.py": "8580daf0d085c370a41d65784504686e66ec3fec7fb8dcc444b08e3ef5e37d4a",
+    "src/flybrain_drive/ac_lifecycle_commit.py": "c41e8c386f479a74d78b77aa796ab3bc5375f958b619687640f3d4666d98856a",
+    "src/flybrain_drive/ac_metadata_mmf.py": "1df14bb6fb391a1bfdffc2f2e531364c9aa40b89a6b3432618e1bbc5f9f9f731",
+    "src/flybrain_drive/ac_native_clock.py": "3961e30cba72d41ef68cd897145569e7651e72e6a519266d72a20c0c44973108",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "src/flybrain_drive/ac_pixel_retina.py": "cf028f7862dbe01ea8221cd6136c283acb0ed518c288d240d98edd131ae26cfe",
+    "src/flybrain_drive/ac_published_state.py": "2f009ad3c6c1f28ffef4d2ba4c6a0afd17323204d4ce65cd06856ec5918d8589",
+    "src/flybrain_drive/ac_shared_texture.py": "bed33b2b71ba597597a92867d82832e6d3848466d2ed7dca36958fdc317e6eaa",
+    "src/flybrain_drive/ac_vjoy.py": "d5d9fb74300bb502bc3faa183f2492ed70977e5802106823a46b91e6f14e7be4",
+    "src/flybrain_drive/ac_wgc.py": "1af2ae0af07de3d8e3680bec5f434197074f426e82ffdd100c3d6a004c25d487",
+    "src/flybrain_drive/episode_storage.py": "e53dd663b7781a8f2dfc6fa1ba7ff757f78424480e700882f62039292702f63c",
+    "src/flybrain_drive/evidence.py": "03f44aa2b11bdb0db8584f539798ecd61f5ea6faed4cb2472eadd1a053108bd3",
+    "src/flybrain_drive/graph.py": "33cf5986625481109782cafbd0f552f2c4da011741c7f4daedf597b50c47ad7f",
+    "src/flybrain_drive/immutable_frame_writer.py": "6e61bc194f53b08a7da4321b1e8935f58f43bcad4570e59587fa249b934ac04b",
+    "src/flybrain_drive/spatial_teacher_plan.py": "bb46d5b0459372920e2b7126d71b376b33e2e9819cbd87c2654c248c9bd9ad14",
+    "configs\\flight-pace30-diagnostic-pilot-v2-20261030.json": "d9f1123344405bee4142a8c2f89df48fbd03183f67be03db024febb2f1e4328e",
+    "configs\\flight-pace-region-transit-20261030.json": "a2c46c3cdf276e5e05f258f3594d9973689ff3fbe6127c8d0deb9e6ba9f654d7",
+    "configs/flight-pace30-role-contract-20261030.json": "1fd18cdb1ef815819d684f30b621adfbf90526c4629b9f46ced83d33d6c6cce2",
+    "scripts/audit_ac_engine_ai_probe.py": "433c43a57d47ccba567a5c57c1f467e672fef4930f2ec672654c7e9e6e5639b3",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1717-pace30-task-native-audit/result.json": "2ec01c39e93037962d27f84768bc9c275cf89ec288c003729a89155b4ff3e34e",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1719-transit-review/result.json": "2b0e4f5b429844bf669cf4a904ec508bd219f67139305eb5415fd081cbefc6ac",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-pace-transit-current/result.json": "e4cff01fccf7348865c5d7bdf0c9b9ba62322c3f854984e27a309eab94356da3",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-pace-native-copy-ai-stop-raw-audit/result.json": "33a39c9a3fc999c05e6a6a3aa261e99a684a297843e40401c5018fc7b22c5712",
+    "scripts/record_ac_airflow_timed_diagnostic.py": "1c203dd4b7457f2768af918040087e434bd6c4d314d20d543ab1ce72363d7016",
+    "src/flybrain_drive/ac_teacher_physics.py": "3717438ce54193259e9d44752104e1c064dd8debbe11dee3b4bcc929c6f8d489",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-dev-owned-camera-transit/result.json": "effcf57f1620b4f740f755e08c8114151dc9474246e97bed7e463f352fdc693f"
+  },
+  "revision": "20261031-single-development-pace-native-v1",
+  "revision_reason": "Preassigned whole TRAIN candidates using the unchanged V2 pace profile and recorder. Diagnostic and transit histories remain in their original roles.",
+  "role_reassignment_allowed": false,
+  "spline_interval": [
+    0.67,
+    0.84
+  ],
+  "eligible_start_interval": [
+    0.67,
+    0.72
+  ],
+  "preferred_buffered_start_interval": [
+    0.68,
+    0.71
+  ],
+  "role_contract_source": "configs/flight-pace30-role-contract-20261030.json",
+  "minimum_free_bytes": 40000000000,
+  "batch_registration": {
+    "schema": "flybrain.prospective_pace_train_batch.v1",
+    "maximum_attempts": 1,
+    "maximum_completed_histories": 1,
+    "attempt_ordinals": [
+      0
+    ],
+    "role_for_every_attempt": "development",
+    "fit_allowed_for_every_attempt": false,
+    "implementation": "Existing scripts/record_pace_task.py invoked separately by the parent operator, with one unique output per attempt. This plan metadata does not implement an automatic batch loop.",
+    "before_first_activation": "Verify original completed DEV transit and fresh current same-generation idle and eligible spline.",
+    "before_every_activation": [
+      "Recheck all pinned input hashes and at least 40 GB free space.",
+      "Verify existing recorder fresh paused ownership guards, camera OFF, background application, vJoy FREE, native speed below 0.1 km/h, gas below 0.02, brake above 0.98, and exact engine PID/generation.",
+      "Read the current paused native graphics spline and activate only within the inclusive eligible_start_interval.",
+      "For attempts after the first, verify the immediately preceding candidate has passed the complete per_history_continuation_gate before any further activation."
+    ],
+    "continuation_requires_all_previous_attempts_passed": true,
+    "next_start_ineligible_action": "Stop the batch without activation; do not transit, start another lap, or change the registered role to extend this batch.",
+    "failure_unknown_or_interrupted_action": "Stop the batch and preserve all attempted/completed histories and terminal/unknown evidence. No retry, replacement, subset selection, or later best-history choice.",
+    "retention": "Retain every original before, driving, stopping, cleanup, and after observation with original clocks, masks, native packets, labels, and receipts. Admit or reject each entire route; never slice it to fit geography.",
+    "whole_history_route_contract": "Existing admit_whole_history must accept the complete before/telemetry/after route inside spline_interval with its original lap and route guards."
+  },
+  "per_history_continuation_gate": {
+    "required_before_any_next_activation": true,
+    "audit_command": "python -m scripts.audit_ac_engine_ai_probe --recording <unique-candidate-output>/recording --require-aid-off --output <unique-candidate-raw-audit-output>",
+    "audit_status": "completed",
+    "candidate_child_terminal_exit_code": 0,
+    "candidate_and_control_receipts_required": true,
+    "require_audit_source_bindings_match_original_candidate": true,
+    "camera_wait_miss_count": 0,
+    "actor_replay_max_errors": {
+      "view_rgb": 0,
+      "view_contrast": 0,
+      "view_valid": 0,
+      "contrast_valid": 0,
+      "view_age": 0,
+      "organs": 0,
+      "organ_valid": 0
+    },
+    "maximum_decision_interval_seconds": 0.08,
+    "intervals_above_80ms": 0,
+    "preactivation_baseline_advance_verified": true,
+    "camera_aid_state_verified": true,
+    "raw_mmf_slots_and_original_metadata_verified": true,
+    "deferred_persistence_verified": true,
+    "all_original_frames_and_states_retained": true,
+    "missing_or_unknown_any_required_evidence_action": "Stop batch; preserve full candidate and audit. Never retry, trim, resample, or select a qualifying subset.",
+    "gate_pass_is_not_label_or_fit_admission": true
+  },
+  "label_admission_policy": {
+    "status": "candidate_only_pending_independent_original_task_native_label_audit",
+    "fit_allowed": false,
+    "training_updates": 0,
+    "native_targets": "Preserve actual native gas, brake, and steer from the same original native event prefix, using byte offsets 4, 8, and 24 respectively. Do not reconstruct them from later receipts or substitute desired controls.",
+    "body_state": "Preserve all 21 body channels, their original validity masks, and their original native clocks. No body validity changes or frame dropping to conceal authority or actuation limits.",
+    "task_labels": "Preserve explicit external desired speed, phase, command, and original task clock as recorded. The scripted brake intervention remains explicitly identified and is not relabeled natural AI braking.",
+    "authority_and_cleanup": "Retain every observation and recurrent-state transition. Clock ambiguity at authority transitions and cleanup are eligible only for explicitly documented supervision-loss masks after original-event audit; never actor/body validity changes, clock retiming, frame deletion, or state reset.",
+    "original_clock": "Use original native/camera/task clocks and original masks. No held-sensor clock redating or synthetic observation insertion.",
+    "physical_teacher_yaw_reference": {
+      "available": false,
+      "fit_allowed": false,
+      "fabricated_reference_allowed": false,
+      "actual_yaw_is_not_desired_yaw_reference": true
+    },
+    "actuator_representability": "Keep original native targets distinct from any explicitly declared reachable projection. Preserve sub-floor pedals, coactivation, steering-domain violations, and projection/infeasible flags. Any unsupported supervisory target affects loss masks only and does not prove actuator capability.",
+    "motor_capability_claim": "Capability limits, unrepresentable targets, and omitted supervision must be reported in full. No masked loss, candidate success, or calibration result may be presented as learned driving, solved motor control, valid racing line, or laptime improvement.",
+    "no_fabricated_optimal_pedal_or_yaw_labels": true,
+    "whole_history_only": true,
+    "no_role_switch_or_best_selection": true,
+    "raw_payload_policy": "Original source payload references only; no copied/repacked payload used as replacement evidence.",
+    "future_fit_requires_separate_explicit_qualification_and_plan": true
+  },
+  "source_hash_scope": "All 42 original transit-plan source/metadata bindings retained, plus the V2 source plan, transit plan, role contract, original raw-audit executable, and independent t1717/t1719 results. Existing record_pace_task seals the outer plan SHA and snapshots declared project .py/.json/.lua sources before activation; original runtime payloads remain source references.",
+  "native_copy_history": true,
+  "stop_camera_after_owned_ai": true,
+  "same_copy_native_authority": true
+}

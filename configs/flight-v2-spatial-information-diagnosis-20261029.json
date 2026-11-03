@@ -1,0 +1,19 @@
+{
+  "schema": "flybrain.flight.spatial_information_diagnosis.v1",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1360-v2-flight-episode-cache",
+  "training": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1361-v2-visual-boundary-training",
+  "ridge_penalty": 10.0,
+  "normalization_floor": 0.005,
+  "normalization_frames": "all original TRAIN frames; targets only from original valid TRAIN rows",
+  "feature_clip": 5.0,
+  "variants": ["existing_all_scene_576", "front_intensity_pool4", "front_intensity_pool8", "front_intensity_raw", "front_roadband_intensity_raw", "front_motion_pool4", "front_motion_pool8", "front_joint_pool8"],
+  "pool4": {"rows": 4, "columns": 4, "sigma_image_uv": 0.18},
+  "pool8": {"rows": 8, "columns": 8, "sigma_image_uv": 0.09},
+  "roadband": {"v_min": 0.25, "v_max": 0.75},
+  "roadband_scope": "Post-hoc engineering diagnostic after3 original front frames were reviewed. Uses existing retinal UV coordinates without changing optical calibration, pixels or actor inputs. Not a measured fly attention circuit.",
+  "comparison_scope": "Known development diagnosis. Same ridge algorithm/penalty across representations; dimensions differ, so do not claim a unique causal failure from a best score or deploy a comparison model.",
+  "cache_reproduction_tolerance": 0.000002,
+  "checkpoint_modification_permitted": false,
+  "evaluation_role_opened": false,
+  "goal_achieved": false
+}

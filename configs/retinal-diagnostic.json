@@ -1,0 +1,15 @@
+{
+  "status": "development_vision_only_diagnostic_not_final_goal",
+  "configuration": "configs/sensory-visible-bc-pilot.json",
+  "model_path": "runs/retinal-diagnostic-20261027/runs/retinal-ridge-t6/ridge-model.npz",
+  "model_sha256": "23d8d705fea1e015789b4c88a30c3f4e59429a388a02fdccf594c6155fea64f9",
+  "training_static_poses": 150,
+  "held_out_static_poses": 150,
+  "development_completion": "4/4",
+  "same_coefficients_without_vision": "0/4",
+  "fixed_speed_intent_mps": 1.5,
+  "replicated_neural_training_gate_passed": false,
+  "real_circuit_driving": false,
+  "AC_driving": false,
+  "evidence": "docs/retinal-diagnostic-20261027.md"
+}

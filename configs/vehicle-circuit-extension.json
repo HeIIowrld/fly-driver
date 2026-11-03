@@ -1,0 +1,37 @@
+{
+  "scope": "structural candidate extension; engineering vehicle mapping, not validated physiology",
+  "source_registry": "configs/malecns-recovered-source.json",
+  "base_graph": "assets/external/malecns-visual-cx-candidate-20261027/visual-cx-body.npz",
+  "base_graph_sha256": "60a3e19d6c0e29217d3549375f15e670c65b9e03b3123b813d1f23f3fc4f538b",
+  "max_hops": 4,
+  "max_route_union_nodes": 10000,
+  "source_groups": {
+    "thermal_receptor_candidates": {"status": "Traced", "class": "thermosensory", "type": ["TRN_VP2", "TRN_VP3a", "TRN_VP3b"]},
+    "leg_load_receptor_candidates": {"status": "Traced", "class": "mechanosensory_proprioceptive", "subclass": "campaniform sensilla", "entryNerve": ["ProLN", "MesoLN", "MetaLN"]},
+    "existing_PFL_visual_route": {"status": "Traced", "type": ["PFL2", "PFL3"]}
+  },
+  "target_groups": {
+    "steering": {"status": "Traced", "type": "DNa02"},
+    "forward_candidate": {"status": "Traced", "type": ["DNg100", "DNg97"]},
+    "halt_partial_candidate": {"status": "Traced", "type": "AN19A018", "somaNeuromere": ["T1", "T2"]}
+  },
+  "internal_groups": {
+    "walk_off_candidate": {"status": "Traced", "type": "DNg60"}
+  },
+  "new_input_groups": ["thermal_receptor_candidates", "leg_load_receptor_candidates"],
+  "sources": [
+    "https://www.nature.com/articles/s41586-024-07854-7",
+    "https://www.nature.com/articles/s41467-023-42864-5",
+    "https://reiserlab.github.io/celltype-explorer-drosophila-male-cns/types/DNg100_R.html",
+    "https://reiserlab.github.io/celltype-explorer-drosophila-male-cns/types/DNg97_R.html",
+    "https://reiserlab.github.io/celltype-explorer-drosophila-male-cns/types/DNg60_R.html",
+    "https://reiserlab.github.io/celltype-explorer-drosophila-male-cns/types/AN19A018_R.html"
+  ],
+  "limitations": [
+    "AN19A018 is broader than the six experimentally identified thoracic BRK cells; T1/T2 annotation subset is incomplete and remains a candidate",
+    "Exclude TRN_VP1m from the temperature boundary; class keywords alone do not establish temperature tuning",
+    "Four wheel to six leg load mapping is an engineering decision still to be declared",
+    "All shortest routes within four hops are structural; relay function is not established by path existence",
+    "No transmitter signs, physiological dynamics, temperature preferences or driving actions inferred from structural counts"
+  ]
+}

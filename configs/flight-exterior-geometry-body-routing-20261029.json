@@ -1,0 +1,82 @@
+{
+  "schema": "flybrain.exterior_geometry_body_routing.v1",
+  "conditions": [
+    "vision_only",
+    "body_only",
+    "vision_body"
+  ],
+  "epochs": 200,
+  "seed": 863640,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "body_source": "audited_episode_references",
+  "body_contract": "configs/ac-virtual-navigation-body-v2.json",
+  "camera_config": "configs/ac-csp-exterior-front-v3-retina.json",
+  "visual_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1636-exterior-flight-preview-data",
+  "preregistered_candidate": "vision_body",
+  "body_channel_interventions": {
+    "yaw_absent": [
+      4
+    ],
+    "tilt_absent": [
+      0,
+      1
+    ],
+    "speed_wheels_absent": [
+      16,
+      17,
+      18,
+      19,
+      20
+    ]
+  },
+  "source_sha256": {
+    "scripts/train_visual_body_preview.py": "589ea836fce4db65a5adf90f7eb5fcdf0ff7527f02e465a81c33f1c059865f87",
+    "scripts/train_column_preview_comparison.py": "abe68e9dda496f7953cec71f54d47f3660715a02c159ccef9d3f3ecccbc63038",
+    "configs/ac-virtual-navigation-body-v2.json": "5cf92b9af473092c8baf2b56783f826c41b93e77ab876795276fc07943c1ed50"
+  },
+  "actor_inputs": "Only actual frozen14 visual channels and registered21 body values+validity. No world pose, route, absolute heading, teacher action, clock or target input.",
+  "normalization": "TRAIN3 only; whole known DEVELOPMENT1 for terminal reporting; fixed last200 checkpoint per condition.",
+  "candidate_gate": "All3 DEVELOPMENT bearings beat mean/zero. Vision_body standardized6-head error must beat matched vision_only and body_only and each full-input removal. Channel removals diagnose physical versus tyre-temperature dependence; no deployment qualification.",
+  "scope": "Engineering geometry/self-motion head routing only. Full raw21+validity retained unchanged. Load/tyre/wheel feedback remains required for later grip/brake/pace/flight-motor control; no control-authority head implemented by this experiment.",
+  "student_deployed": false,
+  "goal_achieved": false,
+  "body_route_indices": [
+    0,
+    1,
+    4,
+    16
+  ],
+  "geometry_body_channels": [
+    "pitch",
+    "roll",
+    "yaw_left_rate",
+    "speed_magnitude"
+  ],
+  "excluded_geometry_channels_preserved_for_control": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    17,
+    18,
+    19,
+    20
+  ],
+  "baseline_training": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1640-exterior-visual-body-preview-learning",
+  "baseline_result_sha256": "8692734774d53160812bcbe7507849d33cc364d7166adf155eb0c7277581babf",
+  "negative_control": "Vision-only training must reproduce same-seed full-body baseline predictions within2e-6 on all four original histories.",
+  "hypothesis_provenance": "Role-routing hypothesis was motivated by known DEVELOPMENT ablations; this is a diagnostic repeat on known development, not independent final validation. No hyperparameter or checkpoint search."
+}

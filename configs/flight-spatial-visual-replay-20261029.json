@@ -1,0 +1,33 @@
+{
+  "schema": "flybrain.spatial_frozen_visual_replay.v1",
+  "role": "preassigned_train_replay_only",
+  "source_audit": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1527-spatial-mmf-completed-history-audit",
+  "source_audit_result_sha256": "7ce1d030132a7c37221efee5c9fdcb64ffbe87d1957e1aa9f30174ea08b36ce1",
+  "episodes": [
+    {
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1526-spatial-corner-mmf-corpus\\episode-03-train",
+      "role": "train",
+      "raw_audit": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1527-spatial-mmf-completed-history-audit\\episode-03-train"
+    },
+    {
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1526-spatial-corner-mmf-corpus\\episode-04-train",
+      "role": "train",
+      "raw_audit": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1527-spatial-mmf-completed-history-audit\\episode-04-train"
+    }
+  ],
+  "model_dir": "assets/external/flyvis-pretrained-20261029/unpacked/results/flow/0000/000",
+  "cache_root": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-data-windows-v1",
+  "author_weights_frozen": true,
+  "optimizer_updates": 0,
+  "original_clocks_and_held_input": true,
+  "neural_reset_policy": "One grey initial state per complete original history; no internal reset",
+  "fractional_frozen_tail": true,
+  "source_sha256": {
+    "scripts/replay_flyvis_cameras.py": "3f2128eb53da46570857ae2875a33d89ebba25d8d6e2ffec3598cc3bb51331c8",
+    "src/flybrain_drive/flyvis_camera.py": "6c26afb43f07dc45860d7f1b8d630e53cdce80ca1220079e674ae2427be6a0c2",
+    "src/flybrain_drive/flyvis_fractional_tail.py": "536d5a5f258e36ed8fd0e2fdfd34e1f815c4976194de8ae3a1425078302047e3",
+    "src/flybrain_drive/flyvis_graphed_tail.py": "13760f54c6ea5cd15d792d5b7cc24381057dc131ae87f3218fb0928ae8b8bf6e",
+    "src/flybrain_drive/flyvis_frozen_tail.py": "7fe72ba7aadfbfc86ab92bf99b0e82026a611060ff0df1d08875a3a47dfefe59"
+  },
+  "student_deployed": false
+}

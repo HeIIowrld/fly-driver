@@ -1,0 +1,81 @@
+{
+  "status": "development_component_driving_not_full_fly_or_AC",
+  "controller_kind": "RoutedController; original config used for environment/sensors/evaluation only",
+  "checkpoint_path": "runs/routed-circuit-driving-20261027/runs/routed-normal-t7/checkpoint.pt",
+  "checkpoint_sha256": "149686a70f42fb2506e8da08e283d0796d1e1141b3ac135be545ca96707b8d18",
+  "measured_graph_nodes": 927,
+  "measured_graph_edges": 11526,
+  "source_sha256": {
+    "graph": "d06012073b05df988736ea55bc9a89d3f3c26961901bcbab366ca2c7d6e1c0c9",
+    "ports": "ff57c508bc22c083d8b820ad05ac69757426444cc004b37c984087aef1c12f44",
+    "retina": "23d8d705fea1e015789b4c88a30c3f4e59429a388a02fdccf594c6155fea64f9"
+  },
+  "cases": {
+    "normal": {
+      "completion": "4/4",
+      "mean_case_lateral_rms_m": 0.09471621135121067,
+      "trace_readout_max_error": 7.107844979259426e-08
+    },
+    "body_missing": {
+      "completion": "4/4",
+      "mean_case_lateral_rms_m": 0.2209381013644352,
+      "trace_readout_max_error": 7.118247324910953e-08
+    },
+    "vision_missing": {
+      "completion": "0/4",
+      "mean_case_lateral_rms_m": 1.3521965263566602,
+      "trace_readout_max_error": 3.637895540364866e-12
+    },
+    "circuit_cut": {
+      "completion": "0/4",
+      "mean_case_lateral_rms_m": 1.3525748500880705,
+      "trace_readout_max_error": 0.0
+    },
+    "visual-only": {
+      "completion": "4/4",
+      "mean_case_lateral_rms_m": 0.19492597899703357,
+      "trace_readout_max_error": 7.108900845764765e-08
+    }
+  },
+  "calibration": {
+    "calibration_steps": 200,
+    "amplitude": 0.03,
+    "visual_steady_rmse": 0.023210143451486646,
+    "readout_gain": 11.111336801924868,
+    "position_decoder_rmse": 0.00014987292230583804,
+    "body_paths": {
+      "haltere_": {
+        "input_neurons": 201,
+        "unit_equivalent_gain": 0.049907279109197865,
+        "feedback_gain": 0.1
+      },
+      "chordotonal_": {
+        "input_neurons": 425,
+        "unit_equivalent_gain": 0.4843330908920504,
+        "feedback_gain": 0.2
+      }
+    },
+    "physiological_preferences_verified": false,
+    "biophysics": "normalized counts, engineered signed-rate dynamics and gains",
+    "vehicle": {
+      "wheelbase": 1.6,
+      "track": 1.1,
+      "wheel_radius": 0.22,
+      "chassis_mass": 210.0,
+      "suspension_stiffness": 20000.0,
+      "suspension_damping": 1000.0,
+      "max_speed": 4.0,
+      "max_curvature": 0.3,
+      "max_torque": 160.0,
+      "max_steer": 0.5,
+      "max_residual_yaw_moment": 80.0,
+      "max_torque_rate": 600.0,
+      "calibration_status": "illustrative_unvalidated"
+    }
+  },
+  "physiological_tuning_verified": false,
+  "upstream_visual_CX": "cut-boundary engineered retinal steering surrogate",
+  "AC_driving": false,
+  "repeated_training_gate_passed": false,
+  "evidence": "docs/routed-circuit-driving-20261027.md"
+}

@@ -1,0 +1,17 @@
+{
+  "seed": 862953,
+  "workers": 2,
+  "dataset": "runs/ac-curve-countersteer-training-data-20261028-t571",
+  "experiments": [
+    {
+      "name": "brake2",
+      "config": "configs/ac-countersteer-brake2-training.json",
+      "output": "runs/ac-countersteer-brake2-training-20261028-t582"
+    },
+    {
+      "name": "brake4",
+      "config": "configs/ac-countersteer-brake4-training.json",
+      "output": "runs/ac-countersteer-brake4-training-20261028-t583"
+    }
+  ]
+}

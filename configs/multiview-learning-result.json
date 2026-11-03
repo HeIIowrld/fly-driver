@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-27",
+  "scope": "fixed-speed MuJoCo curvature proxy; no native AC control",
+  "pipeline_execution": "completed",
+  "useful_visual_control_verified": false,
+  "multi_view_advantage_verified": false,
+  "AC_ready": false,
+  "goal_achieved": false,
+  "teacher_decisions": 512,
+  "training": {
+    "status": "completed",
+    "before": {
+      "rmse": [
+        0.15918371771028333,
+        null,
+        null
+      ],
+      "output_rms": [
+        2.582718977063421e-06,
+        1.3657033921006107e-07,
+        6.290888727671884e-09
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "conditioned": {
+      "rmse": [
+        0.22601215445757805,
+        null,
+        null
+      ],
+      "output_rms": [
+        0.14884300432893405,
+        1.3657033921006107e-07,
+        6.290888727671884e-09
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "after": {
+      "rmse": [
+        0.15869537917079032,
+        null,
+        null
+      ],
+      "output_rms": [
+        0.007244879685232564,
+        1.9762735075452038e-07,
+        5.20465206967833e-09
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "last_epoch": {
+      "rmse": [
+        0.15875074707617182,
+        null,
+        null
+      ],
+      "output_rms": [
+        0.0014811314500982177,
+        1.9362320601592845e-07,
+        5.254813174135953e-09
+      ],
+      "supervision_counts": [
+        512,
+        0,
+        0
+      ],
+      "decisions": 512
+    },
+    "selected_epoch": 5,
+    "optimizer_updates": 32,
+    "action_profile": "mujoco_curvature_proxy_only",
+    "checkpoint_sha256": "7eda3c176aae7a91a5044af6dcd49647e29c074d4dfe35b70025d3ad457a79ff",
+    "training_rmse_improved_from_conditioned": true,
+    "training_rmse_improved_from_untrained": true,
+    "closed_loop_evaluated": false,
+    "AC_ready": false,
+    "goal_achieved": false
+  },
+  "closed_loop_evaluated": true,
+  "evaluation_mean_lateral_rms_m": {
+    "body_missing": 0.19912590721911444,
+    "front_only": 0.20270480222493192,
+    "normal": 0.19911837934379095,
+    "teacher_reference": 0.15218802064728115,
+    "vision_missing": 0.19646372665770395
+  },
+  "evaluation_steps_per_case": 160,
+  "evaluation_seconds_per_case": 6.4,
+  "evaluation_is_development_not_final_test": true,
+  "pytest_passed_per_run": 28,
+  "ruff": "passed",
+  "verified_collected_files": [
+    259,
+    261
+  ],
+  "checkpoint": "runs/multiview-learning-20261027-t26b/runs/training/checkpoint.pt",
+  "report": "docs/multiview-learning-20261027.md"
+}

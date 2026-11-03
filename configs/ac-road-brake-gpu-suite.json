@@ -1,0 +1,22 @@
+{
+  "seed": 862953,
+  "workers": 3,
+  "dataset": "runs/ac-next-road-training-data-20261028-t479",
+  "experiments": [
+    {
+      "name": "brake1",
+      "config": "configs/ac-road-brake1-training.json",
+      "output": "runs/ac-road-brake1-training-20261028-t482"
+    },
+    {
+      "name": "brake2",
+      "config": "configs/ac-road-brake2-training.json",
+      "output": "runs/ac-road-brake2-training-20261028-t483"
+    },
+    {
+      "name": "brake3",
+      "config": "configs/ac-road-brake3-training.json",
+      "output": "runs/ac-road-brake3-training-20261028-t484"
+    }
+  ]
+}

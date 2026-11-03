@@ -1,0 +1,33 @@
+{
+  "schema": "flybrain.exterior_paired_visual_boundary.v1",
+  "feature_mode": "retinotopic_pair",
+  "conditions": [
+    "raw_control",
+    "processed_actual"
+  ],
+  "epochs": 200,
+  "seed": 863635,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "feature_scale_floor": 1e-05,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "scene_spec": "configs/flight-exterior-preview-pooling-20261029.json",
+  "camera_config": "configs/ac-csp-exterior-front-v3-retina.json",
+  "preregistered_candidate": "processed_actual",
+  "checkpoint": "fixed last200; no development model selection",
+  "actor_policy": false,
+  "author_weights_changed": false,
+  "normalization": "TRAIN3 only; masks/clocks/whole DEVELOPMENT1 unchanged",
+  "candidate_gate": "All three DEVELOPMENT bearing RMSEs must beat both TRAIN-mean and zero; intact standardized six-target MSE must beat vision-TRAIN-mean ablation. No deployment or physiological claim from auxiliary success.",
+  "source_sha256": {
+    "scripts/train_spatial_preview_boundary.py": "84ebb226ed1d9be98707df77d6e1c2373301885cf9664df1a24b00102e031bea",
+    "src/flybrain_drive/visual_preview_learning.py": "6e6cfd9820f97b6e9b4b3a9db02e027e23784602c1def75c16ad7b71a5b0436a"
+  }
+}

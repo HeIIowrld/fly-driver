@@ -1,0 +1,77 @@
+{
+  "role": "preregistered_fixed_checkpoint_initial_condition_repeat",
+  "protocol_id": "routed-fixed-checkpoint-repeat-20261027-t8",
+  "steps": 8000,
+  "cases": [
+    {
+      "name": "repeat_b3_c01",
+      "seed": 720301,
+      "start_x": 1.5,
+      "lateral_offset": -0.4490480640879706,
+      "heading_offset_degrees": 5.000588783531606
+    },
+    {
+      "name": "repeat_b3_c02",
+      "seed": 720302,
+      "start_x": 2.0,
+      "lateral_offset": 0.09759109952303913,
+      "heading_offset_degrees": -5.814086681358248
+    },
+    {
+      "name": "repeat_b3_c03",
+      "seed": 720303,
+      "start_x": 2.5,
+      "lateral_offset": -0.3462561331568139,
+      "heading_offset_degrees": 6.781129537419348
+    },
+    {
+      "name": "repeat_b3_c04",
+      "seed": 720304,
+      "start_x": 4.0,
+      "lateral_offset": -0.29810594620037234,
+      "heading_offset_degrees": -0.3334690090771524
+    },
+    {
+      "name": "repeat_b3_c05",
+      "seed": 720305,
+      "start_x": 4.5,
+      "lateral_offset": 0.016269904544855995,
+      "heading_offset_degrees": 5.551266139678665
+    },
+    {
+      "name": "repeat_b3_c06",
+      "seed": 720306,
+      "start_x": 5.0,
+      "lateral_offset": 0.35819870293035283,
+      "heading_offset_degrees": 5.41279331790345
+    },
+    {
+      "name": "repeat_b3_c07",
+      "seed": 720307,
+      "start_x": 5.5,
+      "lateral_offset": -0.13360702407077318,
+      "heading_offset_degrees": 2.206094916161767
+    },
+    {
+      "name": "repeat_b3_c08",
+      "seed": 720308,
+      "start_x": 6.0,
+      "lateral_offset": -0.7577075954202146,
+      "heading_offset_degrees": 4.189388432221639
+    },
+    {
+      "name": "repeat_b3_c09",
+      "seed": 720309,
+      "start_x": 6.5,
+      "lateral_offset": 0.9437851937234945,
+      "heading_offset_degrees": -0.31809206477191765
+    },
+    {
+      "name": "repeat_b3_c10",
+      "seed": 720310,
+      "start_x": 7.0,
+      "lateral_offset": -0.19600367961974863,
+      "heading_offset_degrees": 2.7049999129607443
+    }
+  ]
+}

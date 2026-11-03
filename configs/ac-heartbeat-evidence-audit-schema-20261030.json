@@ -1,0 +1,49 @@
+{
+  "schema": "flybrain.session_heartbeat.independent_evidence_requirements.v1",
+  "original_evidence_schema": "flybrain.session_heartbeat.raw_evidence.v1",
+  "raw_data": {
+    "header": "<5I",
+    "magic": "0x46424832",
+    "version": 1,
+    "capacity": 8192,
+    "total_bytes": 8212,
+    "sequence": "even2*n; n1..256; slotindex=n%2"
+  },
+  "raw_control": {
+    "header": "<5I",
+    "magic": "0x46424843",
+    "version": 1,
+    "capacity": 2048,
+    "total_bytes": 2068,
+    "sequence": "even2*n; n1..512"
+  },
+  "original_static_blobs": [
+    "calibration",
+    "lease",
+    "arm",
+    "sync_status"
+  ],
+  "read_columns": [
+    "observed_after_copy_qpc_ns",
+    "first_sha256",
+    "second_sha256"
+  ],
+  "original_read_channels": [
+    "data0",
+    "data1",
+    "lua_control"
+  ],
+  "unavailable_original_pairs": [
+    "zero",
+    "odd",
+    "torn"
+  ],
+  "all_original_bytes_and_wire_clocks_preserved": true,
+  "original_snapshot_JSON_extraction": "Exact emitted snapshot_json string encodedUTF8, never reserialized object",
+  "original_clock_domain": "host_perf_counter_QueryPerformanceCounter_ns",
+  "CRC_scope": "Exact original declared payload bytes; hash includes entire original mapping buffer",
+  "map_absence_policy": "Only explicit --terminal-confirmed --check-retired-maps; exact retired owner four names; FILE_MAP_READ/no views",
+  "source_timing_policy": "Analyze actual observed stages/containment. MMF heartbeat may have zero nested io.save. No unequal-run causal claim.",
+  "historical_t1793_original_byte_limit_preserved": true,
+  "teacher_student_or_fit_admission": false
+}

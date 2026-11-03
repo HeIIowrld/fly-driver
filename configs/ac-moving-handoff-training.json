@@ -1,0 +1,61 @@
+{
+  "source_checkpoint": "runs/ac-engine-ai-coast-representation-training-20261028-t751/checkpoint.pt",
+  "source_checkpoint_sha256": "ac397ab2a294ebac52b6d9f036cd569ee2168a4dacd64863bc766171f82993c1",
+  "seed": 862992,
+  "epochs": 16,
+  "chunk_length": 128,
+  "learning_rate": 2e-05,
+  "brain_ticks_per_decision": 4,
+  "control_dt_seconds": 0.04,
+  "action_profile": "normalized_ac_absolute",
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "organ_validity_mode": "gate_only",
+  "pedal_mode": "independent",
+  "episodes_per_batch": null,
+  "readout_gain_parameterization": "log",
+  "activation_gradient": "leaky_surrogate",
+  "surrogate_negative_slope": 0.05,
+  "teacher_label_contract": {
+    "kind": "engine_ai_future_applied_control_receipt_v1",
+    "actor_steering_device_scale": 0.6,
+    "ai_steer_multiplier": 0.9,
+    "ai_speed_hint_kmh": 15,
+    "target_receipt_horizon_seconds": 0.04,
+    "maximum_target_lateness_seconds": 0.025,
+    "clock": "host_monotonic_QPC_time.perf_counter",
+    "physical_command_time_verified": false,
+    "interpretation": "Executed applied native-control receipt surrogate, not internal AI request. Inverse stationary codec; moving control lag remains an engineering approximation."
+  },
+  "brake_positive_weight": 1.0,
+  "brake_label_threshold": 0.05,
+  "optimizer_update_scope": "epoch",
+  "evaluation_exclusion": {
+    "directory": "runs\\ac-bundled-yaw-teacher-sealed-20261028-t347\\dataset",
+    "manifest_sha256": "067215f1e72480e6d37f1a48aded0513f329b0dd21ea2c87257ca67e94da71c0",
+    "role": "next recorded track section reserved from gradient updates; not a final circuit test"
+  },
+  "device": "cuda",
+  "training_sparse_backend": "cached_csr_gpu",
+  "deployment_sparse_backend": "cached_csr_cpu",
+  "chunk_validated_training": true,
+  "readout_gain_learning_rate": 0.005,
+  "resource_experiment": {
+    "scope": "Finite on-policy-context moving-handoff correction; preserve all unsupervised student/waiting prefix states. New47 expert future receipt labels; zero positive brake targets. No automatic promotion.",
+    "workers": 1,
+    "training_dataset": "runs/ac-moving-handoff-merged-20261028-t804",
+    "frozen_source_graph": true,
+    "source_success_regression_evaluation_required": true,
+    "live_capture_and_training_scheduled_separately": true,
+    "new_candidate_automatically_promoted": false,
+    "original_prefix_resets": 0,
+    "throttle_coast_weight_unchanged": 100,
+    "new_expert_rows": 47,
+    "braking_positive_targets_added": 0
+  },
+  "throttle_coast_weight": 100.0,
+  "throttle_coast_threshold": 0.005
+}

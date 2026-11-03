@@ -1,0 +1,29 @@
+{
+  "scope": "bounded MuJoCo multi-view rendered-sensor and circuit diagnostic, not autonomous driving or AC mirror acquisition",
+  "seed": 800101,
+  "source_checkpoint": "runs/vehicle-model-20261027-t24/runs/initialized-vehicle-model/initialized-checkpoint.pt",
+  "source_checkpoint_sha256": "985d675866d95c82f800f9286f4f9ae8b77fc9662c2bf951fafedd0b11c86810",
+  "source_config": "configs/sensory-anatomical-eye-pilot.json",
+  "scalar_calibration": "configs/vehicle-scalar-organs.json",
+  "decisions": 24,
+  "source_size": 96,
+  "fovy_degrees": 100,
+  "views": [
+    {"source_id": "front", "yaw_degrees": 0, "origin_body_m": [0.95, 0, 0.2], "period_decisions": 1},
+    {"source_id": "mirror_left", "yaw_degrees": 135, "origin_body_m": [0.6, 0.65, 0.2], "period_decisions": 2},
+    {"source_id": "mirror_right", "yaw_degrees": -135, "origin_body_m": [0.6, -0.65, 0.2], "period_decisions": 3},
+    {"source_id": "mirror_rear", "yaw_degrees": 180, "origin_body_m": [-0.95, 0, 0.2], "period_decisions": 4}
+  ],
+  "mirror_named_sources_are_actual_reflected_mirrors": false,
+  "view_geometry": "front, outboard and rear virtual mounts with source-specific origins; direct perspectives, not real mirrors; reconstructed source optical axes",
+  "mount_revision_reason": "shared front mount in t25b caused severe chassis occlusion in rear/side views; move each direct virtual source outside its view-facing body surface",
+  "max_view_age_seconds": 0.15,
+  "temporal_RGB_contrast_scale": 10,
+  "neighbors": 12,
+  "drop_source": {"source_id": "mirror_right", "start_decision": 8, "end_decision_exclusive": 15},
+  "scenario_control": [-0.25, 0.1],
+  "scenario_control_is_model_output": false,
+  "optimizer_updates": 0,
+  "camera_port_assignment_is_measured": false,
+  "fusion_advantage_verified": false
+}

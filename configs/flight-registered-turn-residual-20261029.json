@@ -1,0 +1,52 @@
+{
+  "schema": "flybrain.registered_turn_residual.v1",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1649-body-registered-preview-data",
+  "conditions": [
+    "body_uniform",
+    "registered_uniform",
+    "body_balanced",
+    "registered_balanced"
+  ],
+  "epochs": 200,
+  "seed": 863655,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "body_contract": "configs/ac-virtual-navigation-body-v2.json",
+  "body_route_indices": [
+    0,
+    1,
+    4,
+    16
+  ],
+  "neural_features": 896,
+  "support_features": 128,
+  "neural_normalization": "TRAIN3 only mean/std floor1e-5 then clip5",
+  "support_normalization": "Original binary ray-plane support bits pass through as0/1; never tiny-variance scaled",
+  "architecture": "Identical1024to128 plus42to16 body,144to64to6 tanh; identical seed/initial parameters, fixed last200 per representation",
+  "candidate_gate": "Fixed last registered_balanced. Full six-head standardized MSE at least1% below prior-only, matched body_balanced and BOTH neural mean controls. All three full DEVELOPMENT bearing RMSEs below prior-only AND body_balanced AND zero/mean. Entire corpus and all transition groups reported; no posthoc threshold changes. Known development diagnostic only, no motor transfer qualification.",
+  "known_development_has_informed_hypothesis": true,
+  "independent_final_validation": false,
+  "objective": "Six residuals to engineering yaw/speed current-turn prior. Original TRAIN target scales. Compare uniform and inverse-present-sign-frequency weights. Threshold0.25 TRAIN target std. Every originally valid observation retained with positive weight; original labels/masks/clocks unchanged.",
+  "source_sha256": {
+    "scripts/train_registered_turn_residual.py": "096d14ec19ed094d0298e995ff4c162aaf184ad5426cd92a95484dfc72c77ac7",
+    "src/flybrain_drive/turn_residual.py": "dce6a92e506d6231436cfdcbeb3bfd7b96a6747ce75fa23bd3975249b7e4ea7c",
+    "scripts/train_body_registered_preview.py": "cce7b4a4060fa1102ed84d8f9ddabf3756c7afc268f5779df80e20ded04b788f",
+    "scripts/train_visual_body_preview.py": "6529f7f992f14c4abdd850406bd1d22df62b503b19fa0981e7e784b199ab15e8",
+    "scripts/train_column_preview_comparison.py": "abe68e9dda496f7953cec71f54d47f3660715a02c159ccef9d3f3ecccbc63038",
+    "scripts/diagnose_registered_anticipation.py": "f593aaf6f303b0f529c6c83dead792de6708ed59484e80371060a7500a359b42"
+  },
+  "author_weights_changed": false,
+  "flight_motor_transfer": false,
+  "actor_deployed": false,
+  "candidate": "registered_balanced",
+  "dataset_sha256": "60b6c77e8690d0e832a8fa309487a9b2383cecca8ddb1d612bb5ed10b25ab365",
+  "prior_contract": "Yaw-left rad/s, unsigned speed m/s >1. kappa_right=-yaw_left/speed; bearing_d=0.5*d*kappa_right for d5/10/20m. Unavailable prior0 with recorded original body masks, no label filtering. Approximate no-slip constant-turn prior, not measured road or actual fly circuit."
+}

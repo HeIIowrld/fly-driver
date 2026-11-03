@@ -1,0 +1,101 @@
+{
+  "schema": "flybrain.same_copy_native_authority.pace30_diagnostic_registration.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "teacher_labels_admitted": false,
+  "optimizer_updates": 0,
+  "expected_engine_pid": 24200,
+  "expected_generation": "733364ULL:0.0027459",
+  "duration_seconds": 30,
+  "speed_hint_kmh": 100,
+  "existing_hard_speed_kmh": 120,
+  "existing_hard_displacement_m": 1100,
+  "arguments": [
+    "--config",
+    "configs/ac-csp-exterior-front-v3-retina.json",
+    "--image-format",
+    "bmp",
+    "--shared-transport",
+    "--batched-shared-copy",
+    "--async-pixel-precompute",
+    "--async-frame-persistence",
+    "--mmf-metadata",
+    "--source-timing",
+    "--same-copy-native-authority",
+    "--ai-steer-multiplier",
+    ".9",
+    "--duration-seconds",
+    "30",
+    "--speed-hint-kmh",
+    "100",
+    "--pace-task",
+    "--output",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1778-same-copy-pace30"
+  ],
+  "output": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1778-same-copy-pace30",
+  "authority_scope": "Same420-byte native body+AI flag only; not exact source time, engine atomicity, camera synchronization or optimal teacher.",
+  "admission": "Preserve alloriginalobservations/clocks/masks; validate originalraw7arrays/aidOFF and <=80ms originalgaps, samebodyprefix/receipt/AIflag; require genuine advancing AItrue examples. Remain diagnostic/fitfalse irrespective of qualification.",
+  "input_sha256": {
+    "scripts/record_ac_engine_ai_probe.py": "baf4cf8bd4cb4ff7284e94cc424a3094536dfb07027cbcddfd149b7df4a8ed04",
+    "src/flybrain_drive/ac_teacher_physics.py": "bf50f276acc9044ca24bd1090aabf3d6613568e66904e2c4c8b9be88a78deb78",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "src/flybrain_drive/ac_teacher_status.py": "07668a3fadd1e29734388ea9ea71909c055685d8011b0c9b02ea356e1d414f83",
+    "src/flybrain_drive/ac_image_buffer.py": "8580daf0d085c370a41d65784504686e66ec3fec7fb8dcc444b08e3ef5e37d4a",
+    "src/flybrain_drive/ac_csp_vision.py": "7a10bc801e0aea492254476308459f532c900f50f50bb41b46f1f393dbfe13b9",
+    "src/flybrain_drive/ac_csp_retina.py": "a69fa20b57d66f00536d7ae20bd508871efc8e9f8a380abbdcbf1d3b3ccb6bb7",
+    "src/flybrain_drive/ac_published_state.py": "f9169c54cb84e6abe0466d65a80394c3c984d451365598025dcd6542dfdec09e",
+    "scripts/record_ac_wgc.py": "9fed27a78e78299250b4d352d377468c3ab9a110db2db7ce751d971ade5182e7",
+    "scripts/control_ac_session.py": "2f83c118b6d48144fe6a8848f68e81f17f45806c1473394c5300d9d980027580",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "b6d87d2708a13b37e858bf6cfe87f362540bf645514223e18e2c870fbd66e1f7",
+    "configs/ac-csp-exterior-front-v3-retina.json": "06d333b95f284cf922ddae93237c9e274f3cddb7eda9256c210011082ab7ebd8",
+    "configs/ac-axis-probe.json": "1df2d1fc5dfe767c93eacb33b429561641c809821f3eb29d291ea44ac268158c",
+    "scripts/audit_ac_same_copy_teacher.py": "a739445c3f7a11291e127c213084899b8121d6341df0d46d8c527221a8ceab28",
+    "scripts/audit_ac_engine_ai_probe.py": "b1c540beea198a771fb840d9a21c48db4d302f40c1063d455d4aeaf432c91fba",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1770-same-copy-teacher-preparation\\result.json": "cf2403485d1e9a3835812effba4df13582e74a800f2266b5cc260174afe335dc",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1769-continuation-paused-state\\result.json": "dad3e6889d8dbbb4c774d9130ee9159e74fca4d0f0428f5025de09be1e30408b",
+    "src/flybrain_drive/teacher_pace.py": "707cd2bca2878d8e04a398fc11b85470c1830ceed2bee79af547a90712dd1a4f",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1778-same-copy-pace30-registration\\executed-run.py": "c94882ee047895dce473ec09e9f85caac428138099a1c7130a5c1fd0939a5b86",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1774-same-copy-camera3-authority-audit\\result.json": "9ef26c5f0160a5e74b39b8f8c9bda95fe052ccf8975c98f7d6e2d60d4a6c00e7",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1775-same-copy-camera3-raw-audit\\result.json": "984a7f4412ff3a9bb34479f9d65a2dc55b0c78b6ef4fd534366ced78b4f1f830",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1777-post-same-copy-camera3-state\\result.json": "64cd249cdfd58611a9ae293227830a175ddfce0e7ff8bd5e632f34127e8dd2bf"
+  },
+  "profile": {
+    "schema": "flybrain.pace60_100_stop30_profile.v1",
+    "command": "expert-pace60-100-stop30",
+    "duration_seconds": 30,
+    "hard_speed_kmh": 120,
+    "hard_displacement_m": 1100,
+    "speed_schedule": [
+      {
+        "after_seconds": 0,
+        "speed_hint_kmh": 60
+      },
+      {
+        "after_seconds": 5,
+        "speed_hint_kmh": 100
+      },
+      {
+        "after_seconds": 15,
+        "speed_hint_kmh": 0
+      },
+      {
+        "after_seconds": 23,
+        "speed_hint_kmh": 60
+      }
+    ],
+    "natural_ai_braking_label": false,
+    "brake_intervention": {
+      "api": "physics.setAIStopCounter",
+      "requested_seconds": 8,
+      "after_seconds": 15,
+      "speed_window_kmh": [
+        40,
+        110
+      ],
+      "attempts_maximum": 1,
+      "clear_after_seconds": 23,
+      "clear_requires_actual_moving_brake_and_stop": true
+    }
+  },
+  "initial_native_AI_flag": "Historical pausedtrue t1777; not current student admission. Baselineineligible, newbodypacketmustadvance; owned teacher lease and CSP/runtime guards stillapply."
+}

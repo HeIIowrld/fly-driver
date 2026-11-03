@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-27",
+  "run": "runs/ac-native-clock-20261027-t32",
+  "result": {
+    "status": "completed",
+    "samples": 30,
+    "graphics_statuses": [
+      "live"
+    ],
+    "distinct_graphics_packets": 30,
+    "distinct_physics_packets": 30,
+    "current_time_raw_first": 4192728,
+    "current_time_raw_last": 4195671,
+    "current_time_raw_nondecreasing": true,
+    "raw_time_units_verified": false,
+    "lap_transition_verified": false,
+    "simulation_clock_verified": false,
+    "actor_stream_created": false,
+    "ui_actions_sent": 0,
+    "actuator_messages_sent": 0,
+    "goal_achieved": false
+  },
+  "analysis": {
+    "samples": 30,
+    "raw_prefix_hashes_verified": 90,
+    "host_order_verified": true,
+    "display_millisecond_matches": 60,
+    "display_millisecond_checks": 60,
+    "host_duration_seconds": 2.952999999994063,
+    "graphics_raw_delta": 2943,
+    "milliseconds_candidate_elapsed_seconds": 2.943,
+    "host_relative_candidate_rate": 0.9966136132766398,
+    "status_live_is_sufficient_to_prove_active_driving": false,
+    "physics_image_alignment_verified": false,
+    "lap_transition_verified": false,
+    "pause_behavior_verified": false,
+    "actor_clock_constructed": false,
+    "interpretation": "raw integer equals displayed minutes:seconds:milliseconds; unit corroborated in this live stationary/menu sample only; does not date a physics packet or image exposure"
+  },
+  "report": "docs/ac-native-clock-20261027.md",
+  "native_actor_clock_verified": false,
+  "native_body_units_axes_verified": false,
+  "actor_stream_created": false,
+  "goal_achieved": false
+}

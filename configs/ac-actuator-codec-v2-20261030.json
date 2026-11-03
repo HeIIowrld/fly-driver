@@ -1,0 +1,295 @@
+{
+  "schema": "flybrain.ac.stationary_actuator_codec.v2",
+  "calibration": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\result.json",
+  "program": [
+    [
+      "raw_brake_0.015",
+      0.0,
+      0.0,
+      0.015,
+      1.5
+    ],
+    [
+      "raw_brake_0.016",
+      0.0,
+      0.0,
+      0.016,
+      1.5
+    ],
+    [
+      "raw_brake_0.017",
+      0.0,
+      0.0,
+      0.017,
+      1.5
+    ],
+    [
+      "raw_brake_0.018",
+      0.0,
+      0.0,
+      0.018,
+      1.5
+    ],
+    [
+      "raw_brake_0.019",
+      0.0,
+      0.0,
+      0.019,
+      1.5
+    ],
+    [
+      "raw_brake_0.0195",
+      0.0,
+      0.0,
+      0.0195,
+      1.5
+    ],
+    [
+      "raw_brake_0.02",
+      0.0,
+      0.0,
+      0.02,
+      1.5
+    ],
+    [
+      "raw_brake_0.0205",
+      0.0,
+      0.0,
+      0.0205,
+      1.5
+    ],
+    [
+      "raw_brake_0.021",
+      0.0,
+      0.0,
+      0.021,
+      1.5
+    ],
+    [
+      "raw_brake_0.025",
+      0.0,
+      0.0,
+      0.025,
+      1.5
+    ],
+    [
+      "raw_gas_0.015",
+      0.0,
+      0.015,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.016",
+      0.0,
+      0.016,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.017",
+      0.0,
+      0.017,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.018",
+      0.0,
+      0.018,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.019",
+      0.0,
+      0.019,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.0195",
+      0.0,
+      0.0195,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.02",
+      0.0,
+      0.02,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.0205",
+      0.0,
+      0.0205,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.021",
+      0.0,
+      0.021,
+      1.0,
+      1.5
+    ],
+    [
+      "raw_gas_0.025",
+      0.0,
+      0.025,
+      1.0,
+      1.5
+    ],
+    [
+      "encoded_brake_0.0",
+      0.0,
+      0.0,
+      0.0,
+      1.5
+    ],
+    [
+      "encoded_brake_0.005",
+      0.0,
+      0.0,
+      0.005,
+      1.5
+    ],
+    [
+      "encoded_brake_0.01",
+      0.0,
+      0.0,
+      0.01,
+      1.5
+    ],
+    [
+      "encoded_brake_0.011",
+      0.0,
+      0.0,
+      0.011,
+      1.5
+    ],
+    [
+      "encoded_brake_0.0165",
+      0.0,
+      0.0,
+      0.0165,
+      1.5
+    ],
+    [
+      "encoded_brake_0.019",
+      0.0,
+      0.0,
+      0.019,
+      1.5
+    ],
+    [
+      "encoded_brake_0.02",
+      0.0,
+      0.0,
+      0.02,
+      1.5
+    ],
+    [
+      "encoded_brake_0.025",
+      0.0,
+      0.0,
+      0.025,
+      1.5
+    ],
+    [
+      "encoded_brake_0.05",
+      0.0,
+      0.0,
+      0.05,
+      1.5
+    ],
+    [
+      "encoded_gas_0.005",
+      0.0,
+      0.005,
+      1.0,
+      1.5
+    ],
+    [
+      "encoded_gas_0.01",
+      0.0,
+      0.01,
+      1.0,
+      1.5
+    ],
+    [
+      "encoded_gas_0.011",
+      0.0,
+      0.011,
+      1.0,
+      1.5
+    ],
+    [
+      "encoded_gas_0.0165",
+      0.0,
+      0.0165,
+      1.0,
+      1.5
+    ],
+    [
+      "encoded_gas_0.02",
+      0.0,
+      0.02,
+      1.0,
+      1.5
+    ],
+    [
+      "encoded_gas_0.025",
+      0.0,
+      0.025,
+      1.0,
+      1.5
+    ]
+  ],
+  "scope": "Independent stationary Neutral raw cutoff refinement and explicit nearest feasible pedal encoding; no learning/visual driving claim.",
+  "hard_speed_kmh": 12,
+  "hard_displacement_m": 8,
+  "request_limits": {
+    "steering_abs": 0.05,
+    "throttle": 0.15,
+    "brake": 1.0
+  },
+  "final_brake_deadline_seconds": 3,
+  "world_position": "Privileged displacement safety bound/diagnostics only; never road following or actor input",
+  "source_date": "2026-10-30",
+  "model_action_requests": 0,
+  "actor_input": false,
+  "input_sha256": {
+    "scripts/probe_ac_maneuver_plant.py": "a05befb2fe1cb118a5fc5d6be7e3293aebe9375aa09215864cacd057b768e0bb",
+    "scripts/calibrate_ac_sdk_steering.py": "7fee785fb105dffc58e35c2f73bcfd9bb44f1c7b76d7d0253913a96e323805a2",
+    "src/flybrain_drive/ac_vjoy.py": "d5d9fb74300bb502bc3faa183f2492ed70977e5802106823a46b91e6f14e7be4",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "src/flybrain_drive/ac_teacher_status.py": "07668a3fadd1e29734388ea9ea71909c055685d8011b0c9b02ea356e1d414f83",
+    "configs/ac-axis-probe.json": "1df2d1fc5dfe767c93eacb33b429561641c809821f3eb29d291ea44ac268158c",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\result.json": "035f68ce1c7933c3d32d48e007255a7e93734e808db7ea676a9f60d4f215a9ae",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\samples.jsonl": "56710bb4528a225830102083ca6d26493309d714f5a27169d87ba522d1739a05",
+    "src/flybrain_drive/actuator_codec.py": "d0966d4c62ecab0bd57d2429f3cc51fa1696131aa22991add112ad20f2c2cad2",
+    "src/flybrain_drive/flight_actuator.py": "1ea383a8abbcca788a279f672611435d9f1596630bca5b22bead087a9340be2f"
+  },
+  "mode": "stationary_actuator_codec",
+  "actuator_codec": {
+    "contract": "flybrain.actuator.minimum_positive_projection.v1",
+    "minimum_positive": 0.02
+  },
+  "analysis_contract": {
+    "phase_grouping": "contiguous stage order, never merge names",
+    "settling_samples": 2,
+    "minimum_steady_samples_per_stage": 3,
+    "identity_absolute_tolerance": 0.0001,
+    "interpretation": "Native physics receipt after earlier accepted request; no simultaneous application assumption. Encoding is capability projection, optimizer_updates=0."
+  },
+  "revision_reason": "t1678 preserved failure: file telemetry at ~130ms and one >150ms gap. Stationary-only <=8 samples/stage and .5s timeout; no relaxed neural80ms interval.",
+  "stationary_sampling": {
+    "maximum_samples_per_stage": 8,
+    "minimum_samples_per_stage": 5,
+    "file_timeout_seconds": 0.5,
+    "preserves_original_timestamps": true
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "flybrain.preview.train_only_temporal_credit.v1",
+  "created_kst": "2026-10-30T01:02:05.044018+09:00",
+  "status": "completed_six_arm_internal_diagnostic_not_qualified",
+  "basis": "t1680 TRAIN-only audit",
+  "goal": "Improve future visual path evidence without replacing author fly vision or measured flight motor circuit",
+  "folds": [
+    {
+      "internal_holdout": 4,
+      "fit": [
+        5,
+        6
+      ]
+    },
+    {
+      "internal_holdout": 5,
+      "fit": [
+        4,
+        6
+      ]
+    },
+    {
+      "internal_holdout": 6,
+      "fit": [
+        4,
+        5
+      ]
+    }
+  ],
+  "external_roles_unchanged": true,
+  "known_development_used_for_selection": false,
+  "start": "original author pretrained, fold-only normalization and readout; never all-TRAIN adapted checkpoint/readout",
+  "arms": [
+    {
+      "detach_intervals": 2,
+      "optimizer_window_intervals": 8,
+      "gradient_accumulation_subchunks": 4
+    },
+    {
+      "detach_intervals": 8,
+      "optimizer_window_intervals": 8,
+      "gradient_accumulation_subchunks": 1
+    }
+  ],
+  "state_contract": "original full histories and clocks, no numerical resets at detach, previous retina held over original interval, same parameters for each8interval window",
+  "qualifier": "First compare eight-interval state continuity and gradients/memory without optimizer updates; do not shorten/drop data to pass memory",
+  "all_six_targets_and_original_masks": true,
+  "primary_comparators": [
+    "current yaw/speed physics",
+    "body only",
+    "neuron mean replacement preserving attitude support",
+    "each view removed",
+    "causal history lag"
+  ],
+  "diagnostic_groups": [
+    "entry",
+    "exit",
+    "opposite",
+    "left",
+    "right",
+    "near_straight",
+    "body_unavailable",
+    "target_invalid"
+  ],
+  "data_limitations": {
+    "train_observations": 2217,
+    "entry20m": 5,
+    "exit20m": 9,
+    "speed_at_least70kmh": 0,
+    "telemetry_brake_ge02_and_speed_gt20kmh": 0
+  },
+  "independent_new_validation_required": true,
+  "future_data": "Pre-register unseen regions/roles, both-direction entry/exit, moving native brake and loads,60to100/variable speeds/gears/tyres/setups. No known DEV relabelled TRAIN.",
+  "execution": {
+    "run": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1696-train-only-author-temporal-credit",
+    "author_optimizer_updates": 1116,
+    "auxiliary_readout_updates": 1200,
+    "all_six_lose_body_only": true,
+    "independent_final_validation": false,
+    "visual_anticipation_qualified": false,
+    "source_seed_and_hyperparameters": "configs/flight-author-temporal-fold-learning-20261030.json"
+  }
+}

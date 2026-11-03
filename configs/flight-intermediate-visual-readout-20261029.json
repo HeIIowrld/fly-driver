@@ -1,0 +1,102 @@
+{
+  "schema": "flybrain.intermediate_visual_readout.v1",
+  "types": [
+    "L1",
+    "L2",
+    "Mi1",
+    "Tm3",
+    "Tm1",
+    "Tm9"
+  ],
+  "episodes": [
+    {
+      "id": "original-episode-00",
+      "role": "train",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1335-teacher-corpus-v2\\episode-00-train",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-00-train\\body",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-00-train\\vision"
+    },
+    {
+      "id": "original-episode-01",
+      "role": "train",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1335-teacher-corpus-v2\\episode-01-train",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-01-train\\body",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-01-train\\vision"
+    },
+    {
+      "id": "original-episode-02",
+      "role": "development",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1335-teacher-corpus-v2\\episode-02-development",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-02-development\\body",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-02-development\\vision"
+    },
+    {
+      "id": "original-episode-03",
+      "role": "train",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1335-teacher-corpus-v2\\episode-03-train",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-03-train\\body",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-03-train\\vision"
+    },
+    {
+      "id": "original-episode-04",
+      "role": "train",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1335-teacher-corpus-v2\\episode-04-train",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-04-train\\body",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-04-train\\vision"
+    },
+    {
+      "id": "original-episode-05",
+      "role": "train",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1335-teacher-corpus-v2\\episode-06-train",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-06-train\\body",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-06-train\\vision"
+    },
+    {
+      "id": "original-episode-06",
+      "role": "train",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1335-teacher-corpus-v2\\episode-07-train",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-07-train\\body",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-07-train\\vision"
+    },
+    {
+      "id": "original-episode-07",
+      "role": "development",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1335-teacher-corpus-v2\\episode-08-development",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-08-development\\body",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1346-v2-visual-body-replays\\episode-08-development\\vision"
+    },
+    {
+      "id": "spatial-episode-03-train",
+      "role": "train",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1526-spatial-corner-mmf-corpus\\episode-03-train",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1530-spatial-body-replay\\episode-03-train",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1531-spatial-visual-replay\\episode-03-train"
+    },
+    {
+      "id": "spatial-episode-04-train",
+      "role": "train",
+      "recording": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1526-spatial-corner-mmf-corpus\\episode-04-train",
+      "body_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1530-spatial-body-replay\\episode-04-train",
+      "reference_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1531-spatial-visual-replay\\episode-04-train"
+    }
+  ],
+  "python_executable": "C:/Users/jeff4/AppData/Local/Programs/Python/Python312/python.exe",
+  "gpu_site": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-env/Lib/site-packages",
+  "model_dir": "assets/external/flyvis-pretrained-20261029/unpacked/results/flow/0000/000",
+  "cache_root": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-data-windows-v1",
+  "original_response_reproduction_tolerance": 2e-06,
+  "roles": "Original roles unchanged:8 TRAIN/2 known development. Frozen inference only; no evaluation access or fitting",
+  "optimizer_updates": 0,
+  "physiological_tuning_not_asserted": true,
+  "next_feature_candidate": "Actual modeled intermediate activity plus T4/T5; no raw intensity shortcut in the proposed readout",
+  "source_sha256": {
+    "scripts/replay_visual_intermediate_batch.py": "fc005e84af7cf993b983a8b91fff48d525e01d642ced7b69ff0369355183e4c1",
+    "scripts/replay_flyvis_cameras.py": "73bd09c2fb0bc4467f05b0043e787a373caffe6ace79f8db9a18568d56095ab2",
+    "src/flybrain_drive/retinotopic_readout.py": "6ebe3850be077b666f93bd1b5d9190a866cbd506a81d182625d464cbe34c1754",
+    "src/flybrain_drive/flyvis_camera.py": "6c26afb43f07dc45860d7f1b8d630e53cdce80ca1220079e674ae2427be6a0c2",
+    "src/flybrain_drive/flyvis_fractional_tail.py": "536d5a5f258e36ed8fd0e2fdfd34e1f815c4976194de8ae3a1425078302047e3",
+    "src/flybrain_drive/flyvis_graphed_tail.py": "13760f54c6ea5cd15d792d5b7cc24381057dc131ae87f3218fb0928ae8b8bf6e",
+    "src/flybrain_drive/flyvis_frozen_tail.py": "7fe72ba7aadfbfc86ab92bf99b0e82026a611060ff0df1d08875a3a47dfefe59"
+  },
+  "student_deployed": false
+}

@@ -1,0 +1,524 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-29",
+  "timezone": "Asia/Seoul",
+  "status": "User reaffirmed mechanism-first flight-derived virtual-body controller; current driving model is a comparator, visual and flight mechanism adoption pending",
+  "enforced_by_runtime": false,
+  "goal": {
+    "confirmed_by_user": true,
+    "target_game": "original Assetto Corsa",
+    "target": "Fly sensory-organ and reviewed neural-circuit agent completes a full circuit lap using vision and body feedback",
+    "body_mode": "vehicle_motion_reencoded_as_fly_sensory_feedback",
+    "primary_mode": "V+body",
+    "first_success": "one unassisted full lap by C3-VB with a reviewed real functional subgraph",
+    "baseline_success_is_final_goal": false,
+    "primary_backend": "assetto_corsa",
+    "component_test_backend": "mujoco",
+    "hardware_role": "optional optimization after task and sensory/circuit contracts are fixed",
+    "sensorimotor_basis": "flight-derived visual/wing/haltere balance control embodied as a vehicle",
+    "vehicle_tasks": [
+      "steering",
+      "acceleration",
+      "deceleration",
+      "body-tilt/rotation/load/grip feedback",
+      "racing-trajectory and lap-time optimization"
+    ],
+    "mechanism_validation_required_before_final_success": true,
+    "mechanism_plan": "configs/fly-flight-mechanism-plan-20261029.json"
+  },
+  "documents": {
+    "plan": "docs/research-plan.md",
+    "design": "docs/assetto-fly-design.md",
+    "implementation": "docs/implementation-status.md",
+    "evidence": "docs/project-review-20261027.md",
+    "prior_plan": "docs/research-plan-20261005-archive.md",
+    "latest_evidence": "docs/fly-flight-mechanism-plan-20261029.md"
+  },
+  "implementation_snapshot": {
+    "main_revision": "9b8b45f",
+    "critic_followup_revision": "0cd8a5f",
+    "AC_adapter": "actual stationary steering/gas/brake responses verified twice via native physics; SDK file publisher recovered after Python crash; synchronized actor and moving driving pending",
+    "measured_eye_map": "authors microCT axes 857 left/852 right connected to separately fitted live driver; observed 460/446; acceptance and retinal neuron registration pending",
+    "organ_encoders": "132 position/gyro/scalar features and thermal/load structural ports implemented; native sensor units/axes/time/image synchronization and native actor integration pending",
+    "real_structural_graph": "historical MaleCNS Traced graph and official annotations recovered with hashes; see configs/malecns-recovered-source.json",
+    "reviewed_functional_graph": "6557-node 644512-edge measured-structure candidate; engineered input registration, transmitter signs, rate dynamics and readout; physiological function not validated",
+    "latest_evidence": "docs/ac-axis-response-20261027.md",
+    "latest_student_evidence": "docs/multiview-dagger-20261027.md",
+    "latest_tests": "current changes: Windows native ABI/reader 5 passed and evaluation scenarios 2 passed; WSL selected model/scenario 8 passed; Ruff passed; earlier broad suites are historical",
+    "teacher_diagnostic": "4/4 completion; V nominal 6700-decision trace exactly matches no-render O teacher diagnostic",
+    "historical_sensory_GRU_pilot": "configs/sensory-visible-bc-pilot.json; completed 0/4; mean 25.03m; vision missing 32.89m",
+    "latest_student_pilot": "DAgger 2781 decisions: both COO and CSR 2/2 open model-road completions; vision missing 0/2; native AC steering/pedals unverified",
+    "retinal_diagnostic_baseline": "V-only ridge 4/4 completion; same model without vision 0/4; one deterministic fit and development course only",
+    "modality_port_integration": "visual 36, rotation 201, position/movement 425 ports isolated and used by a routed component; no direct visual motor bypass",
+    "routed_circuit_pilot": "normal 4/4; vision missing 0/4; circuit cut 0/4 with zero commands; body feedback reduced error versus gain-zero visual-only circuit on these 4 conditions",
+    "fixed_checkpoint_repeat": "configs/routed-repeat-result.json; 10/10 in each of 3 batches; no model or gain changes",
+    "runtime_profile": "actor p99 3.40ms, total p99 18.57ms; 22.87% total steps over 10ms under three concurrent CPU processes; not hard real-time",
+    "next_action": "calibrate native view/body/time domains, obtain compatible teacher driving sequences, offline distill and evaluate actual vision/body student",
+    "real_body_port_candidates": "1454 Traced proprioceptive annotations present in graph; configs/malecns-body-port-inventory.json; functional ports not verified",
+    "historical_main_final_completion": "0/63",
+    "latest_replicated_candidate": false,
+    "anatomical_driver": "separately fitted retina and checkpoint; routed 4/4, vision missing 0/4, circuit cut 0/4; same development course only",
+    "visual_cx_structural_candidate": "2626 nodes/92740 edges; old PFL injection removed; MeTu 974/1009 have full ordered chain; not a driving policy",
+    "visual_cx_evidence": "docs/visual-cx-audit-20261027.md",
+    "neurotransmitter_evidence": "official aggregate NT table joined to 2625/2626 candidate nodes; receptor-specific signs unassigned",
+    "local_retinal_adapter": "1009 local MeTu windows, 36,324 learned retinal parameters; engineering RF registration",
+    "temporal_failure": "64-tick endpoint fit fails constant-input 200-tick response; unclipped max 78.10; no state reset workaround",
+    "temporal_teacher_data": "10700 decisions in 4 episodes, seeds731101-731104; training-only, collected and hashed",
+    "temporal_training": "10700 decisions, 4 episodes; persistent numerical state, 512-tick detached BPTT, 8 whole-episode gradient updates",
+    "full_input_normalization": "retains recovered source incoming denominator instead of rescaling retained input to one; new conditioning and temporal pilot completed 4/4",
+    "EPG_control": "final EPG silenced also 4/4 with lower mean error; physiological compass/EPG benefit not proven",
+    "body_feedback_control": "same checkpoint body missing still base4/4 and stress8/8; mean errors modestly higher, not completion necessity",
+    "AC_bridge_registry": "configs/ac-bridge-result.json",
+    "AC_capture_registry": "configs/ac-wgc-result.json",
+    "AC_installation": "Z4 GT3 / Monza running with reviewed vJoy WHEEL profile; stationary cockpit",
+    "game_temperature_load_feedback": "direct native physics wheelLoad/tyreCoreTemperature recorded in actual AC; raw values only, not yet calibrated actor feedback",
+    "multi_view_input": "four direct calibrated virtual source views, source-local receptive fields and frozen photometric normalization; actual AC mirror projection uncalibrated",
+    "native_sensor_registry": "configs/ac-native-physics-result.json",
+    "latest_full_model_road_evaluation": "configs/multiview-dagger-result.json",
+    "next_training": "native sensor/view/action calibration, then compatible offline AC teacher distillation",
+    "native_clock_registry": "configs/ac-native-clock-result.json",
+    "native_action_learning_registry": "configs/native-action-learning-result.json",
+    "native_pedal_bottleneck": "legacy coupling cannot express 94/231 teacher requests; independent codec and sensory-only output-gain conditioning implemented; proxy replay reaches .15 RMS, native labels/training/driving still absent",
+    "native_axis_registry": "configs/ac-axis-probe-result.json",
+    "background_operation": "nonforeground stationary steering/gas/brake verified: 0/66 foreground records; WGC also received nonforeground images; minimized and moving policy loops unverified"
+  },
+  "information_contract": {
+    "actor_allowed": [
+      "observed eye responses",
+      "declared body sensor model with validity and age",
+      "previous applied commands",
+      "persistent sensory/neural state"
+    ],
+    "actor_forbidden": [
+      "world pose/GPS",
+      "track centerline/AI line",
+      "ground-truth lateral/heading error",
+      "lap distance/course progress",
+      "future road geometry/map",
+      "occupancy grid",
+      "hidden teacher actions",
+      "HUD/minimap/driving-line overlays"
+    ],
+    "training_only": [
+      "teacher labels",
+      "reward truth",
+      "privileged critic features",
+      "route/contact evaluation truth"
+    ],
+    "vision_only": "ablation comparator; confirmed main target uses vision plus body feedback"
+  },
+  "eye_contract": {
+    "status": "planned",
+    "map_fields": [
+      "eye side",
+      "optical azimuth/elevation",
+      "acceptance angle",
+      "neighbors",
+      "head/body transform",
+      "valid FOV",
+      "source/version/hash/uncertainty"
+    ],
+    "current_angular_hex": "synthetic approximation, not measured fly anatomy",
+    "capture_preference": [
+      "same-frame separate-eye or multi-projection views",
+      "wide common-view panorama with explicit non-stereo label",
+      "partial forward view with missing rays invalid; wide-eye goal remains unmet"
+    ],
+    "duplicated_narrow_frame_is_wide_binocular_vision": false,
+    "sequential_view_switching_is_simultaneous_stereo": false,
+    "initial_rate_proposal_hz": {
+      "new_exposures": 25,
+      "policy": 50
+    },
+    "actual_rate_and_latency": "measure before sealing; not current AC capability"
+  },
+  "body_contract": {
+    "tilt": "calibrated native roll/pitch as virtual-body attitude; not raw gyro called static tilt",
+    "rotation": "body angular rates plus relative heading estimate; absolute world heading excluded from actor",
+    "inertia": "native acceleration with explicit gravity and frame convention",
+    "load_and_grip": "load transfer, slip and tyre condition as declared task-specific virtual-body feedback; no assumed one-to-one wing or haltere receptor equivalence",
+    "temperature": "available tyre temperatures with declared units; biological receptor tuning and optimal range not assumed",
+    "racing_line": "teacher/reward/evaluation reference only; actor chooses trajectory from vision/body/goal state, not ground-truth line coordinates"
+  },
+  "circuit_contract": {
+    "primary_data_candidate": "MaleCNS v1.0 reviewed functional subgraph",
+    "regions_to_review": [
+      "visual pathways",
+      "heading/memory/CX",
+      "descending outputs",
+      "ascending/local feedback"
+    ],
+    "neural_ids": "exact IDs for 626 organ afferents, 36 PFL cut-boundary inputs, DNa02/DNa03 and measured two-hop relays; configs/malecns-body-steering-candidate.json; not full functional model",
+    "requirements": [
+      "measured and learned edge masks separated",
+      "recurrent/cross-side links preserved within selected graph",
+      "extraction rules and boundary loss",
+      "I/O reachability and side/sign checks",
+      "explicit cross-dataset type mapping"
+    ],
+    "full_graph_expansion": "after functional-subgraph gate"
+  },
+  "comparators": [
+    "C0-S",
+    "C1",
+    "C3-V",
+    "C7-V",
+    "C1-VB",
+    "C3-VB",
+    "C7-VB"
+  ],
+  "stages": [
+    {
+      "id": "A0",
+      "task": "AC capability, view coverage, timestamps and action response",
+      "depends_on": [],
+      "artifacts": [
+        "capability matrix",
+        "10-minute synchronized record",
+        "action/reset checks"
+      ],
+      "gate": "declared views/fields/rates/latency and missing/stale-data detection",
+      "status": "partial: native physics and whole-window RGB recorded; timing, multi-view calibration, sustained background cadence and action response pending"
+    },
+    {
+      "id": "A1",
+      "task": "eye and organ stimulus validation",
+      "depends_on": [],
+      "artifacts": [
+        "eye/organ manifests",
+        "golden stimuli"
+      ],
+      "gate": "side/sign/time/held-position/directional-motion contracts",
+      "status": "partial_synthetic_eye_and_organ_training_integration_verified; measured_anatomy_and_temporal_visual_model_pending"
+    },
+    {
+      "id": "A2",
+      "task": "fixed-speed visual steering BC and iterative DAgger",
+      "depends_on": [
+        "A1"
+      ],
+      "artifacts": [
+        "C0-S/C1 baselines",
+        "vision-dependence checks"
+      ],
+      "gate": "proposed easy 100m task: each of 3 training seeds >=90% over 10 declared conditions",
+      "status": "partial_vision_baseline_4of4; declared_replication_gate_pending"
+    },
+    {
+      "id": "A3",
+      "task": "reviewed visual/CX/DN subgraph driving",
+      "depends_on": [
+        "A1",
+        "A2"
+      ],
+      "artifacts": [
+        "graph/I/O manifests",
+        "C3-V/C7-V",
+        "decoder-bypass control"
+      ],
+      "gate": "actual graph drives A2 task with verified state/ports/cost",
+      "status": "partial_measured_cut_boundary_circuit_4of4; upstream_visual_CX_review_pending"
+    },
+    {
+      "id": "A4",
+      "task": "joint steering/speed/braking with organ feedback, load-transfer/grip/tyre-state and setup-response adaptation",
+      "depends_on": [
+        "A3"
+      ],
+      "artifacts": [
+        "C3-VB/C1-VB/C7-VB",
+        "raw/encoded/removed-body controls",
+        "validated source load/tyre surrogate with declared limits",
+        "hidden-condition episode splits and state uncertainty metrics"
+      ],
+      "gate": "driving and organ contracts; declared independent-driving gate before RL",
+      "status": "partial_steering_yaw_feedback; load_transfer_validation_tyre_physics_state_inference_speed_brake_pending"
+    },
+    {
+      "id": "A5",
+      "task": "AC data retraining and segment driving",
+      "depends_on": [
+        "A0",
+        "A4"
+      ],
+      "artifacts": [
+        "synchronized AC dataset",
+        "bridge replay",
+        "straight/turn/braking evaluations"
+      ],
+      "gate": "declared segment success without teacher/game AI/human fallback",
+      "status": "not_completed"
+    },
+    {
+      "id": "A6",
+      "task": "first full circuit lap",
+      "depends_on": [
+        "A5"
+      ],
+      "artifacts": [
+        "frozen C3-VB checkpoint",
+        "synchronized full-lap evidence"
+      ],
+      "gate": "continuous ordered lap without collision/exit/reset/teleport/intervention; finite declared time/progress limits",
+      "status": "not_completed"
+    },
+    {
+      "id": "A7",
+      "task": "replication, ablations and separate unseen-track evaluation",
+      "depends_on": [
+        "A6"
+      ],
+      "artifacts": [
+        "per-training-seed outcomes",
+        "vision/body/circuit ablations"
+      ],
+      "gate": "proposed replication: 3 fresh training seeds each >=9/10 unassisted full laps",
+      "status": "not_completed"
+    },
+    {
+      "id": "A8",
+      "task": "end-to-end runtime and optional hardware optimization",
+      "depends_on": [
+        "A6"
+      ],
+      "artifacts": [
+        "p50/p95/p99 latency",
+        "memory/precision/task accuracy",
+        "optional RTL"
+      ],
+      "gate": "sealed model retains task performance and meets measured target period",
+      "status": "not_completed"
+    }
+  ],
+  "work_items": [
+    {
+      "id": "P01",
+      "task": "common observation/state/intent/time schema and TrainingOnly boundary",
+      "depends_on": []
+    },
+    {
+      "id": "P02",
+      "task": "AC bridge, capability probe, field/view coverage and 10-minute recording",
+      "depends_on": [
+        "P01"
+      ]
+    },
+    {
+      "id": "P03",
+      "task": "eye acceptance-angle and organ position/direction encoders with stimuli",
+      "depends_on": [
+        "P01"
+      ]
+    },
+    {
+      "id": "P04",
+      "task": "fixed-speed BC/iterative DAgger baseline and visual dependence",
+      "depends_on": [
+        "P03"
+      ]
+    },
+    {
+      "id": "P05",
+      "task": "review graph/ports and seal degree-preserving control",
+      "depends_on": [
+        "P01"
+      ]
+    },
+    {
+      "id": "P06",
+      "task": "C3-V then C3-VB and AC segments",
+      "depends_on": [
+        "P02",
+        "P04",
+        "P05"
+      ]
+    }
+  ],
+  "training": {
+    "initial_per_model_seed_proposed_caps": {
+      "BC_unique_decisions": 100000,
+      "DAgger_rounds": 3,
+      "DAgger_decisions_per_round": 20000,
+      "RL_before_driving_gate": 0,
+      "optional_RL_after_gate": 50000
+    },
+    "first_AC_candidate_decision_cap": 15000,
+    "data_reuse": "compatible synchronized eye/body/action/time contracts and verified hashes only",
+    "transfer": "start from pretrained fly sensory/circuit checkpoint; calibrate target sensor/action domains; short AC recordings for offline fine-tuning; zero-shot transfer evaluated separately",
+    "existing_campaigns_changed": false,
+    "jobs_submitted": false,
+    "primary_strategy": "reuse published AC teacher weights and suitable data -> offline fly-circuit distillation -> bounded target recordings/relabeling -> student-only actual driving",
+    "AC_installation_blocks_source_pretraining": false,
+    "source_simulator_role": "component mechanics/sensory tests and auxiliary pretraining; not required to fully recreate AC tyres before teacher reuse",
+    "offline_updates_require_new_game_interactions": false,
+    "first_AC_candidate_cap_scope": "proposed initial total calibration/teacher-collection/evaluation interactions; measure wall time and reset overhead separately",
+    "AC_online_RL_initial_decision_cap": 0,
+    "next_source_training_tasks": [
+      "validate load-transfer and tyre surrogate physics before increasing training",
+      "review propulsion and braking output paths with common AC-compatible controls",
+      "learn joint driving and hidden tyre/grip/vehicle-response state from sensory sequences",
+      "evaluate held-out setup and tyre-state episodes plus state/modality removal controls"
+    ],
+    "vehicle_state_plan": "configs/vehicle-state-learning-plan.json",
+    "existing_policy_transfer": "configs/ac-autonomy-transfer-plan.json"
+  },
+  "evaluation": {
+    "proposed_training_seeds": [
+      101101,
+      101102,
+      101103
+    ],
+    "proposed_development_scenarios": [
+      102101,
+      102102,
+      102103,
+      102104,
+      102105,
+      102106,
+      102107,
+      102108,
+      102109,
+      102110
+    ],
+    "proposed_final_scenarios": [
+      103101,
+      103102,
+      103103,
+      103104,
+      103105,
+      103106,
+      103107,
+      103108,
+      103109,
+      103110
+    ],
+    "seed_contract": "scenario IDs are not game random seeds; record actual supported randomness and fixed setup, verify freshness before use",
+    "split_unit": "whole episode/track segment groups, no adjacent-frame leakage",
+    "metrics": [
+      "completion",
+      "interventions",
+      "collision",
+      "track exit",
+      "stationary/reverse progress",
+      "time",
+      "lateral error",
+      "control oscillation",
+      "latency",
+      "memory"
+    ],
+    "vision_tests": [
+      "frozen/removed/delayed images",
+      "same-physics visual changes",
+      "unseen turns/start poses"
+    ],
+    "body_tests": [
+      "remove organs",
+      "same-information raw channel control",
+      "delay/mask channels",
+      "local/ascending versus global fusion"
+    ],
+    "circuit_tests": [
+      "matched-sensor GRU",
+      "per-node degree-preserving rewiring",
+      "decoder-only bypass"
+    ],
+    "learned_track_memory": "separate from unseen-track generalization"
+  },
+  "timing_example": {
+    "assumed_decisions_per_second": 25,
+    "AC_speed_measured": false,
+    "seconds_for_100000": 4000,
+    "seconds_for_1000000": 40000,
+    "excludes": [
+      "setup",
+      "reset",
+      "offline training",
+      "evaluation"
+    ]
+  },
+  "pending_choices": [
+    "installed car/track",
+    "eye-view capture method",
+    "available telemetry",
+    "eye-map data",
+    "actual neural IDs",
+    "measured rates/latency thresholds"
+  ],
+  "outputs": "Markdown with JSON/NPZ/PNG/video; no explanatory HTML generation/update/auto-open",
+  "note": "This is a research design registry, not an executable sweep, scheduler, enforcement mechanism, or achieved result.",
+  "runtime_preference": "avoid taking foreground focus during user work; continuous recording/control use native APIs rather than desktop clicks",
+  "legacy_body_contract_before_flight_selection": {
+    "initial": [
+      "FeCO-like held-position populations",
+      "FeCO-like positive/negative movement populations",
+      "haltere-inspired rotation surrogate",
+      "applied-command efference copy"
+    ],
+    "later": [
+      "bandwidth-verified bidirectional motion/vibration populations",
+      "declared estimated load/strain",
+      "local versus ascending feedback"
+    ],
+    "candidate_vehicle_inputs": [
+      "angular rate",
+      "acceleration with declared gravity/frame convention",
+      "wheel/steering feedback",
+      "suspension position/rate when available"
+    ],
+    "unavailable_channel": "invalid, never silently filled with simulator truth",
+    "fidelity": "Vehicle-to-organ functional hypothesis; gyro is not a complete oscillating haltere model; four corners are not six fly legs"
+  },
+  "mechanism_gates": [
+    {
+      "id": "M0",
+      "task": "Current-model mechanism coverage and source audit",
+      "status": "structural_inventory_completed_functional_verification_missing"
+    },
+    {
+      "id": "M1",
+      "task": "Pinned visual-circuit integration and published stimulus-response reproduction",
+      "status": "author_source_pinned_not_integrated",
+      "checks": [
+        "ON/OFF flashes",
+        "opposite moving edges and direction tuning",
+        "rotational versus translational optic flow",
+        "source times, missing views and recurrent state continuity"
+      ]
+    },
+    {
+      "id": "M2",
+      "task": "Flight motor and virtual-body registration",
+      "status": "source_candidates_inventoried_not_functionally_assigned",
+      "checks": [
+        "bilateral common/differential response",
+        "rotation perturbation and stabilizing sign",
+        "local feedback/visual feedback delay tests",
+        "motor phase/gain interactions where supported",
+        "tilt and angular velocity remain distinct"
+      ]
+    },
+    {
+      "id": "M3",
+      "task": "Causal dependence on the chosen fly mechanism",
+      "status": "not_completed",
+      "checks": [
+        "vision/body/haltere-path removal",
+        "specific edge/path lesions",
+        "left/right and time scrambling",
+        "degree/weight-matched rewired control trained fairly",
+        "ordinary recurrent model at matched data/parameter/compute budget"
+      ]
+    },
+    {
+      "id": "M4",
+      "task": "Native AC control and trajectory optimization",
+      "status": "not_completed",
+      "checks": [
+        "joint steering/acceleration/deceleration without teacher fallback",
+        "held-out corner and grip/temperature/setup conditions",
+        "valid complete lap and repeatability",
+        "lap-time and racing-trajectory improvement with all original completion requirements retained"
+      ]
+    }
+  ]
+}

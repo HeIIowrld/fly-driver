@@ -1,0 +1,23 @@
+{
+  "schema": "flybrain.camera.paused_rotation_experiment.v1",
+  "seed": 863375,
+  "frames": 61,
+  "period_seconds": 0.04,
+  "deadline_seconds": 8,
+  "static_pre_seconds": 0.6,
+  "motion_seconds": 1.2,
+  "conditions": [
+    {"index": 0, "scene": "full_scene", "yaw_left_rad_s": 0.0},
+    {"index": 1, "scene": "full_scene", "yaw_left_rad_s": 0.2},
+    {"index": 2, "scene": "full_scene", "yaw_left_rad_s": -0.2},
+    {"index": 3, "scene": "track_only", "yaw_left_rad_s": 0.0},
+    {"index": 4, "scene": "track_only", "yaw_left_rad_s": 0.2},
+    {"index": 5, "scene": "track_only", "yaw_left_rad_s": -0.2}
+  ],
+  "scope": "New controlled camera-only rotation in actual paused AC scenery. Camera centers fixed; vehicle, desktop and controls untouched. Track-only diagnostic excludes all cars, not a proposed actor observation change.",
+  "actor_admission": "Every frame is marked aid_probe_only=true and camera_motion_diagnostic.actor_admissible=false; normal actor admission must reject it even when ideal line is OFF.",
+  "neural_replay": "Fixed original author network,4 independent camera states, one initial grey state per condition, all original observed intervals held causally without internal resets. No model selection or weight updates.",
+  "reference_scope": "Paused same-engine heartbeat and image motion metadata independently prove the static camera prefix. Do not forge native packet advances or bypass production StationaryMotionReference requirements.",
+  "failure_policy": "Preserve complete and failed originals, stop at first capture failure. No automatic retry, relaxed frame age, clock editing or UI fallback.",
+  "goal_achieved": false
+}

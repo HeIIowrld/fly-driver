@@ -1,0 +1,18 @@
+{
+  "scope": "Post-hoc information-availability comparison only; never a fly circuit, actor, biological claim or deployment gate",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1360-v2-flight-episode-cache",
+  "seed": 863385,
+  "epochs": 200,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "hidden_units": 64,
+  "normalization_std_floor": 0.005,
+  "feature_clip": 5.0,
+  "variants": ["linear_tanh", "hidden64_tanh"],
+  "objective": "Unweighted MSE on every original valid TRAIN left-turn target; deterministic full batch; no recurrent state",
+  "normalization": "Original valid TRAIN rows only; no development statistics",
+  "selection": "Fixed last epoch200 for both variants; no development fitting, early stopping or hyperparameter search",
+  "counterfactuals": ["intact", "motion_train_mean", "intensity_train_mean", "all_train_mean"],
+  "limitations": "Development outcomes already known from prior comparisons; this is exploratory diagnosis, not held-out confirmation. Capacity and optimizer differ from biological model. No evaluation-role data, actuator or UI use.",
+  "goal_achieved": false
+}

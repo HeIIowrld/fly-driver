@@ -1,0 +1,421 @@
+{
+  "purpose": "PPO retention and critic-gradient screen; source-frozen independent study",
+  "device": "cuda:0",
+  "seed": 3101,
+  "start_x_range": [
+    3.0,
+    80.0
+  ],
+  "policy": "gru",
+  "num_envs": 4,
+  "torch_threads": 1,
+  "horizon": 256,
+  "updates": 24,
+  "epochs": 4,
+  "checkpoint_interval": 2,
+  "learning_rate": 3e-05,
+  "gamma": 0.998,
+  "gae_lambda": 0.99,
+  "clip": 0.2,
+  "environment": {
+    "mode": "V",
+    "max_steps": 8000,
+    "image_size": 32,
+    "control_dt": 0.01,
+    "physics_dt": 0.001,
+    "camera_hz": 25,
+    "road": {
+      "length": 100.0,
+      "width": 6.0,
+      "grade": 0.02,
+      "hill_amplitude": 0.6,
+      "hill_period": 70.0,
+      "bank_degrees": 6.0,
+      "turn_amplitude": 2.0,
+      "turn_period": 70.0,
+      "bump_height": 0.03,
+      "flattened": false
+    },
+    "visual_schema": "retina_v1",
+    "actuation_mode": "residual",
+    "vehicle": {
+      "max_speed": 4.0
+    },
+    "camera": {
+      "forward": 0.95,
+      "near_m": 0.03,
+      "far_m": 250,
+      "yaw_degrees": 40.0,
+      "pitch_degrees": -15.0,
+      "fovy": 120.0,
+      "source_size": 96,
+      "sampling": "angular_hex",
+      "angular_width": 110.0,
+      "angular_height": 90.0
+    }
+  },
+  "target_kl": 0.01,
+  "collector_restart": false,
+  "value_coefficient": 0.25,
+  "initial_log_std": [
+    -1.7,
+    -2.5,
+    -1.7
+  ],
+  "motion_input": true,
+  "behavior_cloning": {
+    "data_seed": 9101,
+    "target_speed": 2.0,
+    "epochs": 24,
+    "chunk_length": 128,
+    "learning_rate": 0.0005,
+    "episodes": [
+      {
+        "start_x": 3.0,
+        "steps": 800
+      },
+      {
+        "start_x": 35.0,
+        "steps": 800
+      },
+      {
+        "start_x": 65.0,
+        "steps": 800
+      },
+      {
+        "start_x": 3.0,
+        "steps": 400,
+        "lateral_offset": -0.6,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 3.0,
+        "steps": 400,
+        "lateral_offset": 0.6,
+        "heading_offset_degrees": 4
+      },
+      {
+        "start_x": 35.0,
+        "steps": 400,
+        "lateral_offset": -0.6,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 35.0,
+        "steps": 400,
+        "lateral_offset": 0.6,
+        "heading_offset_degrees": 4
+      },
+      {
+        "start_x": 65.0,
+        "steps": 400,
+        "lateral_offset": -0.6,
+        "heading_offset_degrees": -4
+      },
+      {
+        "start_x": 65.0,
+        "steps": 400,
+        "lateral_offset": 0.6,
+        "heading_offset_degrees": 4
+      }
+    ],
+    "teacher_actuation_mode": "fixed",
+    "train_yaw_action": false,
+    "batching": "parallel_episodes",
+    "episodes_per_batch": 12,
+    "dagger_rounds": [
+      {
+        "data_seed": 9201,
+        "teacher_beta": 0.0,
+        "epochs": 16,
+        "episodes": [
+          {
+            "start_x": 3,
+            "steps": 800
+          },
+          {
+            "start_x": 35,
+            "steps": 800
+          },
+          {
+            "start_x": 65,
+            "steps": 800
+          }
+        ]
+      }
+    ],
+    "precollected_teacher": "/home/hj/mecar-flybrain-rdna4-active-20261005/runs/rdna4-screening-stage1/full_student/seed-4101/training/teacher-data"
+  },
+  "start_lateral_range": [
+    -0.5,
+    0.5
+  ],
+  "start_heading_range": [
+    -4.0,
+    4.0
+  ],
+  "retain_checkpoint_interval": 8,
+  "validation": {
+    "role": "development",
+    "interval": 8,
+    "record": true,
+    "record_every": 16,
+    "regression_patience": 0,
+    "suite": {
+      "purpose": "development checkpoint selection only",
+      "steps": 2000,
+      "cases": [
+        {
+          "name": "dev_nominal",
+          "seed": 9301,
+          "start_x": 3
+        },
+        {
+          "name": "dev_bank",
+          "seed": 9302,
+          "start_x": 35,
+          "road": {
+            "grade": 0.035,
+            "bank_degrees": -8
+          }
+        }
+      ]
+    }
+  },
+  "campaign": {
+    "seeds": [
+      7101
+    ],
+    "arms": [
+      {
+        "name": "ppo_control",
+        "overrides": {}
+      },
+      {
+        "name": "anchored_ppo",
+        "overrides": {
+          "learning_rate": 1e-05,
+          "target_kl": 0.005,
+          "max_update_kl": 0.01,
+          "anchor_coefficient": 5.0,
+          "anchor_mask": [
+            1,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "name": "head_critic_anchor",
+        "overrides": {
+          "learning_rate": 1e-05,
+          "target_kl": 0.005,
+          "max_update_kl": 0.01,
+          "anchor_coefficient": 5.0,
+          "anchor_mask": [
+            1,
+            1,
+            0
+          ],
+          "critic_feature_grad": false,
+          "critic_learning_rate": 0.0003
+        }
+      }
+    ],
+    "record_evaluation": true,
+    "record_every": 16,
+    "evaluation_role": "development_confirmation",
+    "evaluation": {
+      "purpose": "local development confirmation; never used during SGD/checkpoint selection",
+      "steps": 4000,
+      "cases": [
+        {
+          "name": "screen_nominal",
+          "seed": 9401,
+          "start_x": 3
+        },
+        {
+          "name": "screen_crest",
+          "seed": 9402,
+          "start_x": 35
+        },
+        {
+          "name": "screen_bank",
+          "seed": 9403,
+          "start_x": 3,
+          "road": {
+            "grade": 0.04,
+            "bank_degrees": -8
+          }
+        },
+        {
+          "name": "screen_recovery",
+          "seed": 9404,
+          "start_x": 3,
+          "lateral_offset": 0.7,
+          "heading_offset_degrees": 5
+        }
+      ]
+    }
+  },
+  "improvement_study": {
+    "local_seeds": [
+      7101,
+      7102
+    ],
+    "remote_seeds": [
+      7201,
+      7202,
+      7203
+    ],
+    "trial_timeout_seconds": 3600,
+    "max_local_trials": 6,
+    "max_remote_tasks": 9,
+    "remote_array_concurrency": 2,
+    "recovery_fallback": {
+      "name": "recovery_dagger_anchor",
+      "overrides": {
+        "learning_rate": 1e-05,
+        "target_kl": 0.005,
+        "max_update_kl": 0.01,
+        "anchor_coefficient": 5.0,
+        "anchor_mask": [
+          1,
+          1,
+          0
+        ],
+        "critic_feature_grad": false,
+        "critic_learning_rate": 0.0003,
+        "behavior_cloning": {
+          "dagger_rounds": [
+            {
+              "data_seed": 9201,
+              "teacher_beta": 0.0,
+              "epochs": 16,
+              "episodes": [
+                {
+                  "start_x": 3,
+                  "steps": 800
+                },
+                {
+                  "start_x": 35,
+                  "steps": 800
+                },
+                {
+                  "start_x": 65,
+                  "steps": 800
+                }
+              ]
+            },
+            {
+              "data_seed": 9601,
+              "teacher_beta": 0.0,
+              "epochs": 12,
+              "episodes": [
+                {
+                  "start_x": 3,
+                  "steps": 400,
+                  "lateral_offset": -0.9,
+                  "heading_offset_degrees": -7
+                },
+                {
+                  "start_x": 3,
+                  "steps": 400,
+                  "lateral_offset": 0.9,
+                  "heading_offset_degrees": 7
+                },
+                {
+                  "start_x": 35,
+                  "steps": 400,
+                  "lateral_offset": -0.9,
+                  "heading_offset_degrees": -7
+                },
+                {
+                  "start_x": 35,
+                  "steps": 400,
+                  "lateral_offset": 0.9,
+                  "heading_offset_degrees": 7
+                },
+                {
+                  "start_x": 65,
+                  "steps": 400,
+                  "lateral_offset": -0.9,
+                  "heading_offset_degrees": -7
+                },
+                {
+                  "start_x": 65,
+                  "steps": 400,
+                  "lateral_offset": 0.9,
+                  "heading_offset_degrees": 7
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "locked_test": {
+      "purpose": "Locked new test seeds/geometry: only evaluated after development checkpoint selection",
+      "steps": 8000,
+      "cases": [
+        {
+          "name": "nominal_start",
+          "seed": 9801,
+          "start_x": 3.0
+        },
+        {
+          "name": "nominal_crest",
+          "seed": 9802,
+          "start_x": 35.0
+        },
+        {
+          "name": "same_xy_flat",
+          "seed": 9803,
+          "start_x": 3.0,
+          "road": {
+            "flattened": true,
+            "grade": 0.02
+          }
+        },
+        {
+          "name": "heldout_uphill_bank",
+          "seed": 9804,
+          "start_x": 3.0,
+          "road": {
+            "grade": 0.05,
+            "bank_degrees": -9,
+            "hill_amplitude": 1.2,
+            "bump_height": 0.06
+          }
+        },
+        {
+          "name": "heldout_downhill_turn",
+          "seed": 9805,
+          "start_x": 3.0,
+          "road": {
+            "grade": -0.05,
+            "bank_degrees": -9,
+            "hill_amplitude": 1.2,
+            "turn_amplitude": 3.0,
+            "turn_period": 60.0,
+            "bump_height": 0.06
+          }
+        },
+        {
+          "name": "heldout_recovery_left",
+          "seed": 9806,
+          "start_x": 3.0,
+          "lateral_offset": 0.9,
+          "heading_offset_degrees": 7.0
+        },
+        {
+          "name": "heldout_recovery_right",
+          "seed": 9807,
+          "start_x": 3.0,
+          "lateral_offset": -0.9,
+          "heading_offset_degrees": -7.0
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "scope": "New engineering visual/body/task-to-fly-command boundary, both steering and longitudinal heads, fixed measured motor graph; offline only",
+  "source": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1361-v2-visual-boundary-training",
+  "source_spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "initialization": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1435-final-embodied-path-verification",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1434-body21-flight-cache",
+  "seed": 863432,
+  "epochs": 24,
+  "chunk_observations": 64,
+  "learning_rate": 0.003,
+  "maximum_line_search_trials": 4,
+  "line_search_contraction": 0.5,
+  "armijo": 0.0001,
+  "objective": "Half equal-left/right/neutral bounded logistic steering loss plus half per-original-valid-label bounded logistic forward loss; no label clipping, duplication or shifting",
+  "gradient": "Parameters fixed throughout each full original TRAIN-history pass;64-observation derivative detaches preserve numerical state and previous held drive; actual elapsed substeps unchanged",
+  "checkpoint_selection": "Last fixed epoch24, never development selection or early stopping",
+  "data_policy": "Same original TRAIN/development roles, labels, masks, goals, clocks and scene as source v6; only explicit body21 feedback migration. Only TRAIN arrays opened by optimizer/acceptance/normalization.",
+  "positive_braking_supervision_expected": 0,
+  "braking_claim_allowed": false,
+  "source_aid_absence_qualification_upgraded": false,
+  "biological_claim": "Retinotopic nonlinear adapter is an engineering missing-brain approximation. Vehicle speed/wheels are virtual-body surrogates, not measured fly sensory organs. Fixed50ms motor circuit, no fast-path or physiological qualification.",
+  "goal_achieved": false
+}

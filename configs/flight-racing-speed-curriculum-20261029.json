@@ -1,0 +1,15 @@
+{
+  "schema": "flybrain.racing_speed_curriculum.v1",
+  "supersedes": "Ordinary driving fixed30kmh preference; user says30kmh is not racing",
+  "objective": "Fast valid circuit laps with fly vision/flight sensorimotor control, including straight acceleration and corner braking",
+  "constant_30kmh_racing_success_allowed": false,
+  "low_speed_scope": "30kmh and lower only for explicitly declared calibration/body-response experiments",
+  "teacher_speed_validation_stages_kmh": [60, 100],
+  "stage_meaning": "Pending capability and measured tracking checks, not settings already deployed",
+  "final_speed_policy": "No single cruising target. Vision-inferred road/line and body/tyre/setup feedback determine acceleration and braking; optimize valid lap time",
+  "teacher_geometry_speed_profile": "Supervision/reward/critic only; never pass oracle future curvature through the actor speed-goal channel",
+  "actor_racing_goal_contract": "flybrain.flight.racing_goal.v1",
+  "legacy_model_and_runtime": "Old speed-goal contract accepts only0..30kmh; current engine-AI protocol has40kmh guard. Both remain explicitly unqualified for racing and require new versions; never silently lift guards or reinterpret checkpoints",
+  "ordinary_cruise30_as_next_milestone": false,
+  "high_speed_driving_verified": false
+}

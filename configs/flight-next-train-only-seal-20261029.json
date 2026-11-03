@@ -1,0 +1,24 @@
+{
+  "seed": 863202,
+  "require_aid_off": true,
+  "collection_plan": "configs/flight-next-aid-free-corpus-v1-20261029.json",
+  "dataset_role": "train",
+  "role_policy": "Only preassigned completed train indices0/1. Failed development2 and unexecuted train3/4/evaluation5 are excluded without role reassignment. No blind evaluation claim.",
+  "sources": [
+    {
+      "recording": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1289-new-teacher-corpus/episode-00-train",
+      "targets": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1302-fresh-train0-targets",
+      "raw_audit": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1300-fresh-train0-raw-audit",
+      "preassigned_role": "train",
+      "collection_index": 0
+    },
+    {
+      "recording": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1289-new-teacher-corpus/episode-01-train",
+      "targets": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1303-fresh-train1-targets",
+      "raw_audit": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1301-fresh-train1-raw-audit",
+      "preassigned_role": "train",
+      "collection_index": 1
+    }
+  ],
+  "scope": "Two entire successful30s records only, unchanged actor arrays and clocks. Applied-control receipt surrogate bounded by driving-phase clock interval; API cleanup stopping is outside the supervised window. Coverage is not corner-braking competence. No optimizer updates or completed six-record corpus claim."
+}

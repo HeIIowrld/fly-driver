@@ -1,0 +1,224 @@
+"""Train fixed unified circuit geometry port using last-three stationary reference on synthetic yaw."""
+import argparse
+import json
+from pathlib import Path
+
+import numpy as np
+import torch
+from torch import nn
+
+from flybrain_drive.evidence import begin_run, write_json
+from flybrain_drive.flight_embodied_navigation import EmbodiedVisualFlightCircuit
+from flybrain_drive.flight_maneuver import PhysicalManeuverCircuit
+from flybrain_drive.flight_opponent_temporal_boundary import OpponentTemporalMotionBoundary
+from flybrain_drive.flight_visual_body_temporal_context import PerViewVisualBodyContextBoundary
+from flybrain_drive.graph import sha256
+from flybrain_drive.racing_goal import racing_goal
+from flybrain_drive.temporal_body_context import per_view_temporal_body_context
+from flybrain_drive.unified_flight_sensorimotor import UnifiedFlightSensorimotor
+from flybrain_drive.virtual_navigation_body import NavigationBodyObservation
+from flybrain_drive.visual_self_motion import VisualSelfMotionPool
+
+
+class GeometryVisualPort(nn.Module):
+    """Offline-only hypothesis: causal geometry signal modulates original visual ports."""
+    def __init__(self, base, ports):
+        super().__init__()
+        self.base=base
+        self.projection=nn.Linear(6,ports,bias=False)
+        nn.init.zeros_(self.projection.weight)
+        self.current=None
+
+    def forward(self,traces,body,valid):
+        if self.current is None or self.current.shape != (1,6) or not torch.isfinite(self.current).all():
+            raise ValueError('Explicit finite causal geometry input required')
+        return self.base(traces,body,valid)+.5*torch.tanh(self.projection(self.current))
+
+
+def read(path):
+    return json.loads(Path(path).read_text(encoding='utf8'))
+
+
+def load_stimulus(root,seed,amplitude):
+    result,config=read(root/'result.json'),read(root/'manifest.json')['config']
+    path=root/'responses.npz'
+    if (result['status'] != 'completed_coherent_four_view_yaw'
+            or sha256(path) != result['responses_sha256'] or config['texture_seed'] != seed
+            or result['cases'] != [0.,-amplitude,amplitude] or config['stationary_seconds'] != .4):
+        raise ValueError('Exact independently declared synthetic texture source required')
+    with np.load(path,allow_pickle=False) as f:
+        retina,motion,times=f['retina'].copy(),f['motion'].copy(),f['times'].copy()
+    if (retina.shape != (3,41,4,721) or motion.shape != (3,41,4,8,721)
+            or not np.allclose(times,np.arange(41)*.04,rtol=0,atol=1e-12)
+            or not np.all(retina[:,:11] == retina[:,0:1])):
+        raise ValueError('Complete original four-view synthetic responses required')
+    return retina,motion,times
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--output',required=True)
+    a=p.parse_args()
+    base=Path('C:/Users/jeff4/AppData/Local/flybrain/runtime-runs')
+    fit_sources=[base/'20261101-flyvis-coherent-four-view-yaw',
+        base/'20261101-flyvis-coherent-yaw-texture-863103',
+        base/'20261101-flyvis-coherent-yaw-texture-863104']
+    fit_seeds=[863101,863103,863104]
+    dev_source=base/'20261101-flyvis-coherent-yaw-texture-863201-speed013'
+    training=base/'20261029-t1437-embodied-joint-training'
+    opponent=base/'20261031-opponent-temporal-graph-trained'
+    context=base/'20261031-historical-train00-temporal-context-onepass'
+    fit=base/'20261030-body-feedback-brake-steering-anchored'
+    plan=read(base/'20261030-t1913-b2-whole-history-load/firstfit-b2-interface/fit-plan-SEALED.json')['model']
+    tr,op,cr,br=[read(x/'result.json') for x in (training,opponent,context,fit)]
+    checkpoint=fit/'body-feedback-adapter.pt'
+    if (sha256(tr['checkpoint']) != op['source_checkpoint_sha256']
+            or sha256(opponent/'temporal-boundary.pt') != op['checkpoint_sha256']
+            or sha256(context/'context-boundary.pt') != cr['checkpoint_sha256']
+            or sha256(checkpoint) != br['checkpoint_sha256']
+            or br['checkpoint_sha256'] != '4030ac7e53c9175a517adb3d588d9c5be4746f818ddc09762c6ee524771e2315'):
+        raise ValueError('Fixed original graph and adapter lineage required')
+    run=begin_run(a.output,dict(program_sha256=sha256(__file__),seed=863009,
+        fit_source_sha256=[sha256(p/'responses.npz') for p in fit_sources],dev_source_sha256=sha256(dev_source/'responses.npz'),
+        optimizer='Adam lr=.1, 30 mean-of-three-textures full-episode updates',fit_texture_seeds=fit_seeds,dev_texture_seed=863201, development_role='previously examined known development, not independent test',
+        objective='last-10 mean turn, relative to stationary: yaw -0.23 -> +.01; yaw +0.23 -> -.01',
+        static_anchor='MSE to initial stationary last-10 mean',body_yaw=0,
+        geometry='fixed camera ray-weighted yaw axis only; causal stationary last3 of first11 reference; zero until ready',
+        geometry_camera_sha256=sha256('configs/ac-csp-exterior-front-v3-retina.json'),
+        geometry_registration_sha256=sha256(base/'20261031-pace-train-flyvis-replay/retina-registration.npz'),
+        frozen_graph_sha256=sha256(plan['checkpoint']),actor_deployed=False))
+    result=dict(status='failed',optimizer_updates=0,vehicle_control_sent=False,actor_deployed=False,
+        physiological_reproduction_verified=False,only_synthetic_stimulus=True)
+    try:
+        torch.set_num_threads(1);torch.manual_seed(863009)
+        if not torch.cuda.is_available():raise RuntimeError('GPU required')
+        spec=read(training/'manifest.json')['config']['plan']
+        source=read(Path(spec['source'])/'result.json')
+        visual=EmbodiedVisualFlightCircuit(spec['source_spec'],torch.load(source['checkpoint'],
+            map_location='cpu',weights_only=True),sparse_backend='cached_csr_cpu')
+        visual.load_state_dict(torch.load(tr['checkpoint'],map_location='cpu',weights_only=True)['model'])
+        physical=PhysicalManeuverCircuit(plan['spec'],torch.load(plan['checkpoint'],
+            map_location='cpu',weights_only=True),sparse_backend='cached_csr_cpu')
+        temporal=OpponentTemporalMotionBoundary(visual.backbone.scene_command.mean,
+            visual.backbone.scene_command.scale,len(visual.backbone.vision_ports))
+        temporal.load_state_dict(torch.load(opponent/'temporal-boundary.pt',map_location='cpu',weights_only=True)['model'])
+        boundary=PerViewVisualBodyContextBoundary(len(visual.backbone.vision_ports))
+        boundary.load_state_dict(torch.load(context/'context-boundary.pt',map_location='cpu',weights_only=True)['model'])
+        model=UnifiedFlightSensorimotor(physical,visual.backbone,temporal,boundary)
+        model.view_context=GeometryVisualPort(model.view_context,len(model.motor.backbone.vision_ports))
+        adapter=torch.load(checkpoint,map_location='cpu',weights_only=True)['model']
+        for key in ('indices','scales'):
+            if not torch.equal(getattr(model.body_feedback,key),adapter[key]):
+                raise ValueError('Original body adapter contract changed')
+        model.body_feedback.load_state_dict(adapter)
+        model.motor.backbone.circuit.sparse_backend='cached_csr_gpu'
+        model=model.to('cuda').eval().requires_grad_(False)
+        model.view_context.projection.requires_grad_(True)
+        parameter=model.view_context.projection.weight
+        initial=parameter.detach().clone()
+        optimizer=torch.optim.Adam([parameter],lr=.1)
+        command=torch.tensor([[0.,10.]],device='cuda')
+        goals=torch.tensor(racing_goal(100,1),device='cuda')
+        view_valid=torch.ones(1,4,dtype=torch.bool,device='cuda')
+        body=np.zeros(21,dtype=np.float64);body[16]=10.
+        body_valid=np.ones(21,dtype=bool)
+        camera_file=Path('configs/ac-csp-exterior-front-v3-retina.json')
+        registration=base/'20261031-pace-train-flyvis-replay/retina-registration.npz'
+        with np.load(registration,allow_pickle=False) as f:
+            pool=VisualSelfMotionPool.from_registration(read(camera_file),{k:f[k].copy() for k in f.files})
+
+        def scenes(root,seed,amplitude=.23):
+            retina,motion,times=load_stimulus(root,seed,amplitude)
+            image=np.concatenate((retina[:,:,:,None],motion),axis=3)
+            with torch.no_grad():
+                pooled=model.scene_pool(torch.tensor(image.reshape(-1,4,9,721),
+                    dtype=torch.float32,device='cuda')).reshape(3,41,576)
+            features=pool.features(motion)
+            reference=features[:,8:11].mean(1,keepdims=True)
+            geometry=features-reference
+            geometry[:,:11]=0
+            geometry[:,:,[0,1,3,4,5]]=0
+            return pooled,times,torch.tensor(geometry,dtype=torch.float32,device='cuda')
+
+        def rollout(images,times,geometry,learn):
+            cases=[]
+            for c in range(3):
+                model.reset_episode();out=[]
+                for i,t in enumerate(times):
+                    now=1.+float(t)
+                    observation=NavigationBodyObservation('synthetic',i,now-.01,now,
+                        body.copy(),body_valid.copy(),'synthetic-fixture')
+                    ctx=per_view_temporal_body_context((None,)*4,observation,
+                        render_start_lowers=(now-.03,)*4,camera_receipt_time=now-.02,decision_time=now)
+                    method=model.training_decision if learn else model.decision
+                    model.view_context.current=geometry[c,i:i+1]
+                    intent,_=method(decision_time=now,command=command,racing_goals=goals,
+                        scene_features=images[c,i:i+1],scene_valid=view_valid,body_context=ctx)
+                    out.append(intent[0])
+                cases.append(torch.stack(out))
+            return torch.stack(cases)
+
+        fit_data=[scenes(path,seed) for path,seed in zip(fit_sources,fit_seeds,strict=True)]
+        baselines=[rollout(x,t,g,False).detach() for x,t,g in fit_data]
+        baseline=baselines[0]
+        old=np.load(base/'20261101-unified-flight-coherent-four-view-yaw/outputs.npz',allow_pickle=False)
+        np.testing.assert_allclose(baseline.cpu().numpy(),old['outputs'][0],rtol=0,atol=2e-6)
+        old.close()
+        static_anchors=[value[0,-10:,0].mean().detach() for value in baselines]
+        torch.cuda.reset_peak_memory_stats()
+        losses=[]
+        for epoch in range(30):
+            optimizer.zero_grad(set_to_none=True)
+            per_texture=[]
+            for (fit_x,fit_time,fit_geometry),static_anchor in zip(fit_data,static_anchors,strict=True):
+                pred=rollout(fit_x,fit_time,fit_geometry,True)
+                means=pred[:,-10:,0].mean(1)
+                objective=(means[1]-means[0]-.01).square()+(means[2]-means[0]+.01).square()
+                per_texture.append(objective+(means[0]-static_anchor).square())
+            loss=torch.stack(per_texture).mean()
+            if not torch.isfinite(loss):raise ValueError('Finite synthetic objective required')
+            loss.backward()
+            if parameter.grad is None or not torch.isfinite(parameter.grad).all():
+                raise ValueError('Finite visual gradient required')
+            grad=float(parameter.grad.norm().detach().cpu())
+            optimizer.step()
+            losses.append(float(loss.detach().cpu()))
+            write_json(run/'progress.json',dict(update=epoch+1,loss=losses[-1],gradient_norm=grad))
+            result['optimizer_updates']=epoch+1
+            del pred,loss,per_texture
+        final=[rollout(x,t,g,False).detach().cpu().numpy() for x,t,g in fit_data]
+        dev_x,dev_time,dev_geometry=scenes(dev_source,863201,.13)  # known development, never opened for this optimization
+        dev_final=rollout(dev_x,dev_time,dev_geometry,False).detach().cpu().numpy()
+        trained=parameter.detach().clone()
+        with torch.no_grad():parameter.copy_(initial)
+        dev_initial=rollout(dev_x,dev_time,dev_geometry,False).detach().cpu().numpy()
+        with torch.no_grad():parameter.copy_(trained)
+        def metrics(x,amplitude=.23):
+            values=x[:,-10:,0].mean(1); delta=values[1:]-values[0]
+            target=.01*amplitude/.23
+            return dict(mean_turn=values.tolist(),relative_turn=delta.tolist(),
+                signed_directions_correct=bool(delta[0]>0 and delta[1]<0),
+                target_mse=float(np.mean((delta-np.array([target,-target]))**2)))
+        path=run/'geometry-visual-boundary.pt'
+        torch.save(dict(schema='flybrain.experimental.synthetic_geometry_yaw_boundary.v1',
+            model=model.view_context.projection.state_dict(),fit_texture_seeds=fit_seeds,reference_window='last3_of_first11',actor_qualified=False),path)
+        before=np.stack([x.cpu().numpy() for x in baselines])
+        np.savez_compressed(run/'outputs.npz',fit_before=before,fit_after=np.stack(final),
+                            dev_before=dev_initial,dev_after=dev_final,fit_times=fit_data[0][1],dev_times=dev_time)
+        result.update(status='completed_synthetic_visual_yaw_last3_fit',optimizer_updates=30,
+            training_loss=losses,fit_before=[metrics(x) for x in before],fit_after=[metrics(x) for x in final],
+            dev_before=metrics(dev_initial,.13),dev_after=metrics(dev_final,.13),
+            parameter_change_norm=float((trained-initial).norm().cpu()),
+            checkpoint_sha256=sha256(path),outputs_sha256=sha256(run/'outputs.npz'),
+            peak_gpu_bytes=int(torch.cuda.max_memory_allocated()),development_used_to_fit=False, development_previously_examined=True,
+            checkpoint_actor_qualified=False,model_graph_frozen=True)
+    except Exception as e:
+        result.update(error=type(e).__name__,reason=str(e))
+    finally:
+        write_json(run/'result.json',result)
+    print(json.dumps(result))
+    if result['status']=='failed':raise RuntimeError(result['reason'])
+
+
+if __name__=='__main__':
+    main()

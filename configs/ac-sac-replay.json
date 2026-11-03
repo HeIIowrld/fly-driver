@@ -1,0 +1,25 @@
+{
+  "scope": "offline privileged-teacher reconstruction on published recorded states; no fly training or game control",
+  "seed": 780101,
+  "profile": "legacy_20241008",
+  "legacy_source_revision": "a90db0a8b164164e11412857b396bf6874462976",
+  "current_source_revision": "ef0fa502bdd257fc2affad9361c02b3dbdfe1632",
+  "recipe_root": "assets/external/acgym-teacher-recipe-20261027",
+  "record_path": "assets/external/acgym-lap-sample-20261027/raw_data.pkl",
+  "record_sha256": "d56fd041796899dbee8b086f01fb7f889486b16d6bfdcdf366bf99375d510adf",
+  "checkpoint": "assets/external/acgym-sac-teacher-20261027/policy_net.pth",
+  "checkpoint_sha256": "3f30cbb1b88ea221bf686c28b74d531ababe843da2e9529dc89a8a47aa157e84",
+  "legacy_control_max_delta": [0.13333333333333333, 0.48, 0.48],
+  "legacy_control_bounds": [-1, 1],
+  "legacy_product_dtype": "float32",
+  "ctrl_hz_source_proposal": 25,
+  "thresholds": {
+    "observation_max_absolute_error": 1e-12,
+    "reference_max_absolute_error": 1e-12,
+    "action_numpy_torch_max_absolute_error": 1e-5,
+    "recorded_relative_codec_max_absolute_error": 1e-6
+  },
+  "training_run_exact_configuration_available": false,
+  "teacher_game_driving_verified": false,
+  "actor_stream_created": false
+}

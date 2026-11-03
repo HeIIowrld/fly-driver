@@ -1,0 +1,37 @@
+{
+  "schema": "flybrain.flight_initial_training.v1",
+  "spec": "configs/flight-circuit-training-v3-20261029.json",
+  "scene_replay": "runs/ac-flyvis-continuous-camera-replay-20261029-t1029",
+  "body_replay": "runs/ac-virtual-body-sealed-replay-20261029-t1028",
+  "teacher_dataset": "runs/ac-local-launch-sealed-20261029-t1005",
+  "raw_recording": "runs/ac-local-launch-trial-20261029-t1002",
+  "train_label_observations": [
+    815,
+    1392
+  ],
+  "validation_label_observations": [
+    1392,
+    1537
+  ],
+  "training_replay_start": 0,
+  "training_replay_stop": 1392,
+  "validation_replay_start": 0,
+  "validation_replay_stop": 1543,
+  "glutamate_sign": -1,
+  "sign_policy": "predeclared central inhibitory convention, audit 0/+1 after training; never choose best sign from validation",
+  "epochs": 6,
+  "chunk_observations": 64,
+  "adapter_learning_rate": 0.001,
+  "readout_learning_rate": 0.01,
+  "gradient_norm_limit": 1.0,
+  "seed": 863070,
+  "task_goal": [
+    0,
+    0.2
+  ],
+  "scene_motion_estimate_valid": false,
+  "motor_scale_quantile": 0.95,
+  "neutral_calibration_steps": 200,
+  "checkpoint_selection": "last fixed epoch, no best-validation selection",
+  "scope": "single-episode offline initialization; no positive brake or independent course validation, no driving promotion"
+}

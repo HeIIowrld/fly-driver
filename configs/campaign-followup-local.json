@@ -1,0 +1,95 @@
+{
+  "purpose": "local CPU functional pilot; separate from remote CUDA performance",
+  "device": "cpu",
+  "seed": 3001,
+  "start_x_range": [
+    3.0,
+    80.0
+  ],
+  "policy": "gru",
+  "num_envs": 2,
+  "torch_threads": 1,
+  "horizon": 128,
+  "updates": 8,
+  "epochs": 4,
+  "checkpoint_interval": 4,
+  "learning_rate": 0.0003,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "clip": 0.2,
+  "environment": {
+    "mode": "V",
+    "max_steps": 4000,
+    "image_size": 32,
+    "control_dt": 0.01,
+    "physics_dt": 0.001,
+    "camera_hz": 30,
+    "road": {
+      "length": 100.0,
+      "width": 6.0,
+      "grade": 0.02,
+      "hill_amplitude": 0.6,
+      "hill_period": 70.0,
+      "bank_degrees": 6.0,
+      "turn_amplitude": 2.0,
+      "turn_period": 70.0,
+      "bump_height": 0.03,
+      "flattened": false
+    }
+  },
+  "target_kl": 0.03,
+  "campaign": {
+    "seeds": [
+      3001
+    ],
+    "arms": [
+      {
+        "name": "a_restart",
+        "overrides": {
+          "collector_restart": true
+        }
+      },
+      {
+        "name": "b_continuous",
+        "overrides": {
+          "collector_restart": false
+        }
+      }
+    ],
+    "evaluation": {
+      "purpose": "paired deterministic 40-second tests; synthetic courses, no real-circuit claim",
+      "steps": 4000,
+      "cases": [
+        {
+          "name": "nominal_start",
+          "seed": 8001,
+          "start_x": 3.0
+        },
+        {
+          "name": "heldout_uphill_bank",
+          "seed": 8004,
+          "start_x": 3.0,
+          "road": {
+            "grade": 0.06,
+            "bank_degrees": -10.0,
+            "hill_amplitude": 1.2,
+            "bump_height": 0.06
+          }
+        },
+        {
+          "name": "heldout_downhill_turn",
+          "seed": 8005,
+          "start_x": 3.0,
+          "road": {
+            "grade": -0.06,
+            "bank_degrees": -10.0,
+            "hill_amplitude": 1.2,
+            "turn_amplitude": 3.0,
+            "turn_period": 60.0,
+            "bump_height": 0.06
+          }
+        }
+      ]
+    }
+  }
+}

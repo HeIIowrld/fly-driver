@@ -1,0 +1,22 @@
+{
+  "seed": 862953,
+  "workers": 3,
+  "dataset": "runs/ac-continuation-training-data-20261028-t444",
+  "experiments": [
+    {
+      "name": "anchor1",
+      "config": "configs/ac-continuation-anchor1-training.json",
+      "output": "runs/ac-continuation-anchor1-training-20261028-t458"
+    },
+    {
+      "name": "anchor3",
+      "config": "configs/ac-continuation-anchor3-training.json",
+      "output": "runs/ac-continuation-anchor3-training-20261028-t459"
+    },
+    {
+      "name": "anchor10",
+      "config": "configs/ac-continuation-anchor10-training.json",
+      "output": "runs/ac-continuation-anchor10-training-20261028-t460"
+    }
+  ]
+}

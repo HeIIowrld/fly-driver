@@ -1,0 +1,17 @@
+{
+  "scope": "Fixed biological-topology model component diagnosis, not an actor or physiology claim; no fitting",
+  "training": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1361-v2-visual-boundary-training",
+  "spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1360-v2-flight-episode-cache",
+  "seed": 863431,
+  "steering_current_levels": [0, 0.25, 0.5, 0.75, 1],
+  "common_power_current_levels": [0, 0.25, 0.5, 0.75, 1],
+  "baseline": "Frozen trained scene mean, TRAIN-only per-feature median valid body values, invalid functional visual6 as original cache, task30kmh; original model currents/state warmed1sec",
+  "warmup_seconds": 1,
+  "sample_times_seconds": [0, 0.04, 0.1, 0.25, 0.5, 1, 2],
+  "gradient_epsilon": 0.005,
+  "gradient_absolute_tolerance": 0.003,
+  "gradient_relative_tolerance": 0.01,
+  "range_policy": "Observed finite constant-command grid under one baseline, never a global reachability bound. Report conditional target projection only; no clipping original training labels or inference outputs.",
+  "goal_achieved": false
+}

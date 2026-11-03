@@ -1,0 +1,22 @@
+{
+  "seed": 862931,
+  "workers": 3,
+  "dataset": "runs/ac-longer-brake-correction-data-20261028-t397",
+  "experiments": [
+    {
+      "name": "matched_csr",
+      "config": "configs/ac-gpu-fixed-csr-training.json",
+      "output": "runs/ac-gpu-fixed-csr-training-20261028-t412"
+    },
+    {
+      "name": "readout_gain",
+      "config": "configs/ac-gpu-parallel-readout-training.json",
+      "output": "runs/ac-gpu-parallel-readout-training-20261028-t413"
+    },
+    {
+      "name": "joint_gain",
+      "config": "configs/ac-gpu-parallel-joint-training.json",
+      "output": "runs/ac-gpu-parallel-joint-training-20261028-t414"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1434-body21-flight-cache",
+  "preview": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1443-visual-preview-information",
+  "variants": ["coarse_dense64", "front8_shared8_dense64"],
+  "epochs": 200,
+  "seed": 863449,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "normalization_floor": 0.00001,
+  "target_scale_floor": [0.005, 0.0001],
+  "feature_clip": 5,
+  "pool8": {"columns": 8, "rows": 8, "sigma_image_uv": 0.09},
+  "policy": "Six leave-one-whole-original-TRAIN-history-out folds, both fixed architectures; no development/evaluation arrays opened. Five fit histories only for feature/target moments and optimization. Last fixed epoch, no validation selection. Feedforward probes, not fly actors. Original masks, labels, roles, times and neural responses unchanged."
+}

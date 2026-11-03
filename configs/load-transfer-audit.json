@@ -1,0 +1,30 @@
+{
+  "scope": "mechanical sanity checks in synthetic MuJoCo; not AC, not learned driving",
+  "seed": 770101,
+  "environment": {
+    "mode": "O",
+    "actuation_mode": "off",
+    "control_dt": 0.01,
+    "physics_dt": 0.001,
+    "max_steps": 1500,
+    "road": {"length": 100, "width": 36, "flattened": true, "turn_amplitude": 0}
+  },
+  "cases": [
+    {"id": "rest", "segments": [[2, 0, 0]], "window_seconds": [1, 2]},
+    {"id": "acceleration", "segments": [[2, 4, 0]], "window_seconds": [0.1, 0.8]},
+    {"id": "braking", "segments": [[3, 4, 0], [1.5, 0, 0]], "window_seconds": [3.05, 3.5]},
+    {"id": "left", "segments": [[3, 3, 0], [5, 3, 0.12]], "window_seconds": [5, 7]},
+    {"id": "right", "segments": [[3, 3, 0], [5, 3, -0.12]], "window_seconds": [5, 7]}
+  ],
+  "checks_declared_before_run": {
+    "static_weight_relative_error_max": 0.01,
+    "linear_momentum_rms_residual_over_weight_max": 0.02,
+    "angular_momentum_rms_residual_over_weight_wheelbase_max": 0.02,
+    "minimum_longitudinal_acceleration_magnitude_mps2": 0.2,
+    "minimum_lateral_acceleration_magnitude_mps2": 0.2,
+    "minimum_front_rear_load_shift_N": 5,
+    "minimum_left_right_load_shift_N": 5,
+    "left_right_mirror_load_relative_error_max": 0.05,
+    "unexpected_contact_count_max": 0
+  }
+}

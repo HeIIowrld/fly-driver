@@ -1,0 +1,29 @@
+{
+  "schema": "flybrain.flight.fresh_teacher_corpus.v1",
+  "seed": 863200,
+  "prerequisite_study": "runs/flight-fast-physical-yaw-study-resumed-20261029-t1284",
+  "required_yaw_iae_gate_passed": true,
+  "duration_seconds": 30,
+  "speed_hint_kmh": 30,
+  "ai_steer_multiplier": 0.9,
+  "shared_transport": true,
+  "image_format": "bmp",
+  "retina_config": "configs/ac-csp-yaw-retina.json",
+  "require_aid_off": true,
+  "continue_from_current_position": true,
+  "session_restarts_between_records": 0,
+  "episodes": [
+    {"index": 0, "role": "train"},
+    {"index": 1, "role": "train"},
+    {"index": 2, "role": "development"},
+    {"index": 3, "role": "train"},
+    {"index": 4, "role": "train"},
+    {"index": 5, "role": "evaluation"}
+  ],
+  "role_policy": "Whole original episodes assigned before recording or inspecting new labels. No role reassignment, favourable slicing, normalization or fitting from evaluation arrays.",
+  "braking_policy": "Measure actual corner deceleration and braking coverage. Do not turn API cleanup braking into road-situation labels or claim longitudinal learning when positive braking is absent.",
+  "failure_policy": "Stop after a failed original recorder or unverified idle teardown. Keep all completed and failed originals; no timeout-based replacement or automatic replay.",
+  "execution": "Verified immutable local source snapshot; original NAS working directory and data paths. Local recording and durable requests, checksum archival after termination, retain local originals.",
+  "scope": "New engine-AI teacher collection, not fly-policy driving, training, physiology or lap qualification. Existing30kmh/30s API envelope and controls unchanged. All camera pixels, native bytes, masks, source clocks and gaps retained. Game remains in background; no desktop input.",
+  "goal_achieved": false
+}

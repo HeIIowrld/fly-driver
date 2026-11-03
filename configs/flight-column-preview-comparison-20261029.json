@@ -1,0 +1,42 @@
+{
+  "schema": "flybrain.column_preview_comparison.v1",
+  "readout_batch": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1536-intermediate-visual-readout",
+  "preview_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1533-spatial-preview-dataset",
+  "reference_data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1537-retinotopic-preview-dataset",
+  "scene_spec": "configs/flight-circuit-visual-v6-20261029.json",
+  "conditions": [
+    "intensity_fixed",
+    "intensity_learned",
+    "neural_fixed",
+    "neural_learned"
+  ],
+  "epochs": 200,
+  "batch_size": 256,
+  "seed": 863543,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "feature_scale_floor": 1e-05,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "preregistered_candidate": "neural_learned",
+  "actor_inputs": "Four original views, image-derived intensity or actual14 neural channels at721 registered positions; no pose/body/clock/labels as input",
+  "normalization": "Original TRAIN-only channel calibration, fixed initial-Gaussian TRAIN-only pooled moments; no development fitting",
+  "learned_spatial": "Engineering shared16x721 unconstrained readout initialized to original Gaussian; not anatomical change",
+  "control": "Intensity is original image-derived sampled grayscale upstream of author neurons, padded13zero channels; not RGB CNN",
+  "updates": "One gradient accumulation across all original TRAIN rows per epoch; 200 fixed last per condition; no best checkpoint",
+  "development": "Same known2 development; terminal reporting only; not independent final evaluation",
+  "source_sha256": {
+    "scripts/train_column_preview_comparison.py": "abe68e9dda496f7953cec71f54d47f3660715a02c159ccef9d3f3ecccbc63038",
+    "scripts/train_spatial_preview_boundary.py": "84ebb226ed1d9be98707df77d6e1c2373301885cf9664df1a24b00102e031bea",
+    "scripts/build_retinotopic_preview_dataset.py": "1d314d111754039c640eacad9c140c14d3d2ae0195c9f7dd8825c5d20dd886c3",
+    "src/flybrain_drive/flight_circuit.py": "ea8c6ce537c3ea41f23ce192a932ea081572eeb181f368acb9e83fd92f715eca"
+  },
+  "student_deployed": false,
+  "goal_achieved": false
+}

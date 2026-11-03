@@ -1,0 +1,19 @@
+name: Offline contracts
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  offline-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install -e . pytest scipy pillow
+      - run: python -m pytest tests/test_graph.py tests/test_racing_goal.py tests/test_camera_body_alignment.py tests/test_unified_flight_sensorimotor.py -q

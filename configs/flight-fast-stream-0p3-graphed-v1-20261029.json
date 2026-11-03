@@ -1,0 +1,21 @@
+{
+  "schema": "flybrain.fast_flight_stream.v1",
+  "parent_config": "configs/flight-stream-batched-v1-20261029.json",
+  "parent_verification": "runs/flight-stream-batched-replay-20261029-t1132",
+  "prototype_plan": "configs/flight-fast-haltere-prototype-v1-20261029.json",
+  "motor_reference": "runs/flight-fast-haltere-reference-20261029-t1259/reference-candidates.json",
+  "numerical_audit": "runs/flight-fast-haltere-refinement-audit-20261029-t1261",
+  "original_history_verification": "runs/flight-fast-haltere-original-replay-20261029-t1262",
+  "hypothesis": "contact_gap_0p3",
+  "task_speed_kmh": 6,
+  "fine_neuron_tolerance": 0.001,
+  "selection": "Middle nonzero coupling for initial integration; not an automatic best-case choice. No new physical outcome used for selection.",
+  "scope": "Component control only; original visual/command weights, explicit motor reference and inferred electrical current. No physiology/navigation qualification. Nominal10ms identical kernel captured; original fractional intervals eager, no retiming.",
+  "goal_achieved": false,
+  "parent_config_sha256": "e2f9dd97f8be710672e9053fcc24056be03b82550219e8aeb49b1be44ccbe6cb",
+  "prototype_plan_sha256": "0721e85ca4fef5a6324512ae52358466f8584834d00e7116d2086cf844e33c70",
+  "motor_reference_sha256": "f416935bad8242029a46671da9be94a00e3a79e58d623d53706758baaf81b64a",
+  "numerical_audit_result_sha256": "242820882bc93c4e892b8b133a11f50c1e5d31f3d776cf5b85a644ddebab9a15",
+  "original_history_verification_result_sha256": "945445c646671a38b452d96a16a47bb054d60b96a008a047eaf41538c3330875",
+  "fast_neural_backend": "graphed_fast_haltere"
+}

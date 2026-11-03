@@ -1,0 +1,38 @@
+{
+  "schema": "flybrain.speed60.prospective_calibration.v1",
+  "source_role": "calibration",
+  "fit_allowed": false,
+  "teacher_hint_kmh": 60,
+  "external_actor_ceiling_kmh": 80,
+  "actor_goal_contract": "flybrain.flight.racing_goal.v1",
+  "student_actor_running": false,
+  "source_old_task_reinterpretation_allowed": false,
+  "prerequisites": [
+    "Original t1473 PID40084/session31336 terminal and development result archived",
+    "Fresh paused/offline CSP AI/camera/probe-off/native stationary full brake",
+    "Back up and atomically deploy new Lua; verify same engine, new app generation and60 capabilities",
+    "At least40GB local free and device released"
+  ],
+  "stages": [
+    {
+      "command": "expert-motion-speed60",
+      "seconds": 3,
+      "displacement_guard_m": 80,
+      "hard_speed_kmh": 80,
+      "meaning": "finite motion preflight, not proof60 reached"
+    },
+    {
+      "command": "expert-collect30-speed60",
+      "seconds": 30,
+      "displacement_guard_m": 720,
+      "hard_speed_kmh": 80,
+      "required_observed_peak_kmh": 50,
+      "meaning": "higher-speed teacher diagnostic, not student/racing success"
+    }
+  ],
+  "raw_audit_required": true,
+  "source_times_gaps_and_failures_preserved": true,
+  "ui_automation": false,
+  "concurrent_gpu_training_or_replay": false,
+  "task_note": "Nominal teacher60 is not a map-derived actor speed command. External ceiling80 is declared now, not inferred from future curve labels."
+}

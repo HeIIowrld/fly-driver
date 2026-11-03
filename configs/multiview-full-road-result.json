@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "condition": "teacher_reference",
+      "case": "full-road-base",
+      "seed": 820301,
+      "steps": 1675,
+      "reason": "completion",
+      "completion": true,
+      "progress_delta_m": 96.74166793084324,
+      "lateral_rms_m": 0.027934613272374124,
+      "steering_rms": 0.038306042167080015
+    },
+    {
+      "condition": "normal",
+      "case": "full-road-base",
+      "seed": 820301,
+      "steps": 355,
+      "reason": "track_exit",
+      "completion": false,
+      "progress_delta_m": 18.54688481467779,
+      "lateral_rms_m": 0.8296855666176606,
+      "steering_rms": 0.3428136872866659
+    },
+    {
+      "condition": "vision_missing",
+      "case": "full-road-base",
+      "seed": 820301,
+      "steps": 414,
+      "reason": "track_exit",
+      "completion": false,
+      "progress_delta_m": 22.677873024598668,
+      "lateral_rms_m": 1.2553265358681902,
+      "steering_rms": 3.192531117511947e-09
+    }
+  ],
+  "closed_loop_evaluated": true,
+  "AC_ready": false,
+  "goal_achieved": false,
+  "note": "Surviving this short segment is not a completed circuit lap",
+  "date": "2026-10-27",
+  "scope": "complete open model road; not a closed circuit lap or native AC",
+  "student_completed": false,
+  "collected_verified_files": 249,
+  "report": "docs/ac-native-physics-20261027.md",
+  "next_training": "whole-route expert coverage and DAgger labels at student-induced recovery states"
+}

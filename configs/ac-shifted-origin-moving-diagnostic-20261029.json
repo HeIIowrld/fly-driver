@@ -1,0 +1,19 @@
+{
+  "schema": "flybrain.camera.origin.diagnostic.v1",
+  "role": "diagnostic_only",
+  "source_snapshot": "C:/Users/jeff4/AppData/Local/flybrain/execution-snapshots/20261029-t1352",
+  "prerequisite": "20261029-t1354-shifted-paired-camera-pipeline",
+  "duration_seconds": 3,
+  "speed_hint_kmh": 30,
+  "ai_steer_multiplier": 0.9,
+  "shared_transport": true,
+  "image_format": "bmp",
+  "camera_origin": "Same-update independent getSim.originShift before/after; graphics camera position equals world position plus recorded origin; no offset inferred from matrices",
+  "original150ms_motion_camera_guard_unchanged": true,
+  "original110ms_consumer_age_unchanged": true,
+  "geometry_tolerance_changed": false,
+  "native_ai_ownership_qualification_claimed": false,
+  "student_policy_applied": false,
+  "failure_policy": "Keep original failure, stop, no automatic replay or UI fallback",
+  "goal_achieved": false
+}

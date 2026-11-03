@@ -1,0 +1,21 @@
+{
+  "schema": "flybrain.native_ownership.reset_only_recovery.v1",
+  "role": "diagnostic",
+  "fit_allowed": false,
+  "recovery_only": true,
+  "actual_video_path": "C:\\Users\\jeff4\\OneDrive - 엔시스코리아\\문서\\Assetto Corsa\\cfg\\video.ini",
+  "expected_actual_video_sha256": "a7c8b16c459355f4f713785ac7196f33d1c538a10c58d64b643949b3ec01448d",
+  "prepared_video": "C:\\Users\\jeff4\\OneDrive - 엔시스코리아\\문서\\Assetto Corsa\\cfg\\video.ini",
+  "prepared_video_sha256": "a7c8b16c459355f4f713785ac7196f33d1c538a10c58d64b643949b3ec01448d",
+  "reason": "One recovery-only engine reinitialization after t1748 advancing physics packet2133727 retained native AI true while CSP AI was off. No video/publisher/settings changes. No driving ownership granted.",
+  "failure_policy": "Observe same original process and same intent once; never resend unknown restart intent.",
+  "fresh_conflict_evidence": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261030-t1748-v2-native-preflight/fresh-admission",
+  "source_sha256": {
+    "scripts/reset_ac_engine_framecap.py": "ff84c802a3b2eebdc50a6f7e1eebf2aae447e155fb9981d8c38d926ca19d17c0",
+    "src/flybrain_drive/ac_teacher_status.py": "07668a3fadd1e29734388ea9ea71909c055685d8011b0c9b02ea356e1d414f83",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "src/flybrain_drive/win_process_receipt.py": "8b200e2667b48ee4cb43f83875d8f0824951bf48d14056103d43bc8d58987622",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "b6d87d2708a13b37e858bf6cfe87f362540bf645514223e18e2c870fbd66e1f7",
+    "integrations/ac/flybrain_telemetry/flybrain_telemetry.py": "b7c6f3ee24dc251fdfea4895dea593ab4cb15f56b2b4d4ac43df1d41bffcaa7a"
+  }
+}

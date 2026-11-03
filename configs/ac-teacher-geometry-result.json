@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-27",
+  "run": "runs/ac-teacher-geometry-timing-20261027-t43c",
+  "result": {
+    "rows": 234,
+    "max_gap_absolute_error": 7.105427357601002e-15,
+    "max_ray_absolute_error": 1.1546319456101628e-13,
+    "all_recorded_features_matched": true,
+    "teacher_observation_max_absolute_error": 7.147060721024445e-16,
+    "teacher_action_max_absolute_error": 4.112720489501953e-06,
+    "teacher_recomputed_rows": 231,
+    "single_observation_compute_seconds": {
+      "p50": 0.000294700002996251,
+      "p95": 0.0005233500050962903,
+      "p99": 0.0006224799988558515,
+      "max": 0.0007073000015225261
+    },
+    "sequential_batch_action_max_error": 0.0,
+    "timing_scope": "offline recorded pose -> geometry ->125obs ->SAC only; excludes game, capture and transport; one CPU thread, not hard real-time",
+    "reconstruction_checks_passed": true,
+    "actor_truth_inputs_added": false,
+    "teacher_game_driving_verified": false,
+    "goal_achieved": false
+  },
+  "report": "docs/ac-teacher-geometry-20261027.md",
+  "game_teacher_driving_verified": false,
+  "student_driving_verified": false,
+  "geometry_configuration": {
+    "track_csv": "assets/external/ac-teacher-geometry-20261027/monza.csv",
+    "reference_csv": "assets/external/acgym-teacher-recipe-20261027/legacy/assetto_corsa_gym/AssettoCorsaConfigs/tracks/monza-racing_line.csv",
+    "track_sha256": "adfbf94c3625c872507b406d02b6e375274901427db77555f7899121a2d1c414",
+    "reference_sha256": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4",
+    "source_profile": "legacy_20241008",
+    "actor_input": false
+  }
+}

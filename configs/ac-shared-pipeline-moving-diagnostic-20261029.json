@@ -1,0 +1,17 @@
+{
+  "schema": "flybrain.camera.pipeline.diagnostic.v1",
+  "purpose": "Check copy-all-before-ack camera transport in the existing bounded moving teacher envelope before new corpus collection.",
+  "role": "diagnostic_only_no_training_or_evaluation_assignment",
+  "duration_seconds": 3,
+  "speed_hint_kmh": 30,
+  "ai_steer_multiplier": 0.9,
+  "image_format": "bmp",
+  "shared_transport": true,
+  "source_snapshot": "C:/Users/jeff4/AppData/Local/flybrain/execution-snapshots/20261029-t1329",
+  "prerequisite_paired_pixel_reference": "20261029-t1330-shared-paired-reference",
+  "prerequisite_stationary_300_frames": "20261029-t1331-shared-stationary-stream",
+  "original_camera_age_guard_seconds": 0.15,
+  "change_to_lua_or_motion_envelope": false,
+  "failure_policy": "Preserve original failure and stop. No automatic retry or foreground UI fallback.",
+  "goal_achieved": false
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "flybrain.exterior_preview_dataset.v1",
+  "sensor_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors",
+  "collection": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1633-spatial-native-corrected-completion",
+  "audits": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1634-spatial-complete-raw-audit",
+  "camera_config": "configs/ac-csp-exterior-front-v3-retina.json",
+  "scene_spec": "configs/flight-exterior-preview-pooling-20261029.json",
+  "types": [
+    "L1",
+    "L2",
+    "Mi1",
+    "Tm3",
+    "Tm1",
+    "Tm9"
+  ],
+  "channel_scale_floor": 1e-05,
+  "source_sha256": {
+    "scripts/build_exterior_flight_preview.py": "192012c7f021705a8c040e93086ae1f16e84cce78e65c2cd0a5ebb0a6e5eb2ab",
+    "scripts/build_retinotopic_preview_dataset.py": "1d314d111754039c640eacad9c140c14d3d2ae0195c9f7dd8825c5d20dd886c3",
+    "src/flybrain_drive/teacher_path_preview.py": "8bd6a95396430f87c6a58318e6b7500dcf66e94bd972d09d78113ed58c5ec878",
+    "src/flybrain_drive/retinotopic_feature_scaling.py": "5a797dd10964f2da53052cf66ec23b7870bf93ee298ec7f41315c19de75ba71a",
+    "src/flybrain_drive/flight_circuit.py": "ea8c6ce537c3ea41f23ce192a932ea081572eeb181f368acb9e83fd92f715eca",
+    "configs/flight-exterior-preview-pooling-20261029.json": "7fc5d995e843ffa4ee8feb629eac8b3c971ce195a0766186f921e18e6029092d",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-04-train\\vision\\retina-registration.npz": "a909539b7e5db2269b51f959c06f0a04875a104dfeb972f1ebe75913ded593e2",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1625-spatial-publisher-async-corpus\\episode-04-train\\control\\api-receipt.json": "a9c416761356710a4d53c65cb67559be00ff1487732d534d0c3e7ccfeeefa030",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-05-train\\vision\\retina-registration.npz": "a909539b7e5db2269b51f959c06f0a04875a104dfeb972f1ebe75913ded593e2",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1625-spatial-publisher-async-corpus\\episode-05-train\\control\\api-receipt.json": "e8f2f1e062fd3f0de57b23779f5bf0f5e5dc831f9e3ea3c1151d82dd31933abe",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-06-train\\vision\\retina-registration.npz": "a909539b7e5db2269b51f959c06f0a04875a104dfeb972f1ebe75913ded593e2",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1625-spatial-publisher-async-corpus\\episode-06-train\\control\\api-receipt.json": "e461937b53a011902a49debb4a72653d82e4fee89cd30f13d294c88b24c36a81",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-04-development\\vision\\retina-registration.npz": "a909539b7e5db2269b51f959c06f0a04875a104dfeb972f1ebe75913ded593e2",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1633-spatial-native-corrected-completion\\episode-04-development\\control\\api-receipt.json": "dcc19266a8b779bb4330ebc5be8e77e706c6e5ab38d862d27b95616a91499708",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\result.json": "ca411340690725150d3125cb126221ad81b63fee8724f3a402927f90bcd592e6"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "updated_at": "2026-10-27",
+  "timezone": "Asia/Seoul",
+  "target": "original Assetto Corsa",
+  "steam_app_id": 244210,
+  "official_store": "https://store.steampowered.com/app/244210/Assetto_Corsa/",
+  "installation_status": "installed_executables_and_launcher_observed; practice_session_unverified",
+  "evidence": {
+    "user_reply": "아직 설치하지 않음",
+    "current_steam_ui": "installation completed; Steam StateFlags=4 and acs.exe found",
+    "ownership_in_other_accounts": "unknown",
+    "latest_user_reply": "게임 조작 다시 해봐 근데 이거 전체화면으로 놓지 말고 뭐 백그라운드에서 돌릴 수 있는 방법이 없나?",
+    "game_path": "C:/Program Files (x86)/Steam/steamapps/common/assettocorsa",
+    "read_only_app_deployed": true,
+    "read_only_app_enabled_in_config": true,
+    "window_mode_prepared": [1280, 720],
+    "window_mode_receipt": "runs/ac-window-mode-20261027-121952/prepared-settings.json",
+    "latest_UI_activation_error": "GetCursorPos access denied 0x80070005"
+  },
+  "required_next_step": "restore UI access; verify window mode and launch a practice session",
+  "then": [
+    "verify installed acs.exe and rendering",
+    "deploy read-only telemetry app",
+    "record 100 raw sensor samples and 10 RGB acquisitions",
+    "calibrate units, axes, clocks and camera before actor integration"
+  ],
+  "actual_game_driving_verified": false,
+  "blocks": "AC runtime calibration and evaluation only; source pretraining continues independently"
+}

@@ -1,0 +1,124 @@
+{
+  "scope": "DAgger recovery and whole-route coverage; fixed-speed MuJoCo curvature proxy only; not native AC control",
+  "seed": 830101,
+  "data_seed": 830201,
+  "source_checkpoint": "runs/multiview-photometry-20261027-t27/runs/training/checkpoint.pt",
+  "source_checkpoint_sha256": "a9baddb6413c77948f292a2882ff5ad098fb3990aa606b36165b9259f3aa2262",
+  "view_maps": "runs/multiview-20261027-t25c/runs/multiview-component/view-maps.json",
+  "view_maps_sha256": "c0818787de8e6516a5a0b360ed794c641b501091461103ee1d049e86535d0bf9",
+  "source_config": "configs/sensory-anatomical-eye-pilot.json",
+  "scalar_calibration": "configs/vehicle-scalar-organs.json",
+  "control_dt_seconds": 0.04,
+  "brain_ticks_per_decision": 4,
+  "source_size": 96,
+  "period_decisions": [
+    1,
+    2,
+    2,
+    2
+  ],
+  "fixed_speed_mps": 1.5,
+  "action_profile": "mujoco_curvature_proxy_only",
+  "trainable": "local multi-view retinal transduction only; recurrent graph and body adapters fixed",
+  "epochs": 6,
+  "chunk_length": 32,
+  "learning_rate": 0.0001,
+  "target_initial_steering_rms": 0.15,
+  "max_steering_gain": 100000000,
+  "training_episodes": [
+    {
+      "name": "dagger-free-origin",
+      "start_x": 3,
+      "steps": 512,
+      "teacher_mixture_beta": 0
+    },
+    {
+      "name": "dagger-recovery-00",
+      "start_x": 3,
+      "steps": 256,
+      "lateral_offset": 0.6,
+      "heading_offset_degrees": 6
+    },
+    {
+      "name": "dagger-recovery-01",
+      "start_x": 15,
+      "steps": 256,
+      "lateral_offset": -0.6,
+      "heading_offset_degrees": -6
+    },
+    {
+      "name": "dagger-recovery-02",
+      "start_x": 27,
+      "steps": 256,
+      "lateral_offset": 0.4,
+      "heading_offset_degrees": -4
+    },
+    {
+      "name": "dagger-recovery-03",
+      "start_x": 39,
+      "steps": 256,
+      "lateral_offset": -0.4,
+      "heading_offset_degrees": 4
+    },
+    {
+      "name": "dagger-recovery-04",
+      "start_x": 51,
+      "steps": 256,
+      "lateral_offset": 0.6,
+      "heading_offset_degrees": -6
+    },
+    {
+      "name": "dagger-recovery-05",
+      "start_x": 63,
+      "steps": 256,
+      "lateral_offset": -0.6,
+      "heading_offset_degrees": 6
+    },
+    {
+      "name": "dagger-recovery-06",
+      "start_x": 75,
+      "steps": 256,
+      "lateral_offset": 0.4,
+      "heading_offset_degrees": 4
+    },
+    {
+      "name": "dagger-recovery-07",
+      "start_x": 87,
+      "steps": 256,
+      "lateral_offset": -0.4,
+      "heading_offset_degrees": -4
+    }
+  ],
+  "evaluation": {
+    "steps": 2000,
+    "cases": [
+      {
+        "name": "full-road-base",
+        "seed": 830301,
+        "start_x": 3,
+        "lateral_offset": 0,
+        "heading_offset_degrees": 0
+      },
+      {
+        "name": "full-road-new-curve",
+        "seed": 830302,
+        "start_x": 3,
+        "lateral_offset": 0,
+        "heading_offset_degrees": 0,
+        "road": {
+          "turn_period": 85,
+          "turn_amplitude": 2.5
+        }
+      }
+    ],
+    "conditions": [
+      "normal",
+      "vision_missing"
+    ]
+  },
+  "AC_ready": false,
+  "photometric_normalization": null,
+  "teacher_mixture_beta": 0.5,
+  "condition_steering_gain": false,
+  "episodes_per_batch": 4
+}

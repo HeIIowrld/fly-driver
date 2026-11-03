@@ -1,0 +1,143 @@
+{
+  "schema": "flybrain.flight.embodiment_v2_component_proof_contract.v1",
+  "scope": "Machine contract for a separate actual v2 component; not an execution plan or permission.",
+  "fit_allowed": false,
+  "actual_execution_registered": false,
+  "proof_schema": "flybrain.flight.matched_mn_anchor_qualification.v1",
+  "proof_status": "completed_matched_cpu_gpu_mn_anchor_qualification",
+  "registration_schema": "flybrain.flight.matched_mn_anchor_registration.v1",
+  "readout_state_schema": "flybrain.flight.frozen_quiet_readout_state.v1",
+  "required_artifacts": [
+    "cpu_reference",
+    "cpu_readout_state",
+    "matched_reference",
+    "cpu_repeat_0",
+    "cpu_repeat_1",
+    "gpu_repeat_0",
+    "gpu_repeat_1",
+    "qualification_manifest",
+    "registration"
+  ],
+  "artifact_record": {
+    "path": "original actual file path",
+    "sha256": "exact original file SHA256",
+    "bytes": "positive original byte count"
+  },
+  "four_repeat_trace_paths_must_be_distinct": true,
+  "required_model_sources": [
+    "src/flybrain_drive/flight_embodiment.py",
+    "src/flybrain_drive/flight_circuit.py",
+    "src/flybrain_drive/flight_commands.py",
+    "src/flybrain_drive/flight_maneuver.py",
+    "src/flybrain_drive/flight_maneuver_trial.py",
+    "src/flybrain_drive/vehicle_circuit.py",
+    "src/flybrain_drive/flight_actuator.py",
+    "src/flybrain_drive/actuator_codec.py"
+  ],
+  "original_spec_and_checkpoint_also_required": true,
+  "exact_true_fields": [
+    "gpu_qualified",
+    "gpu_used",
+    "cpu_repeat_bitwise_exact",
+    "gpu_repeat_passed",
+    "all_fixed_parameters_unchanged",
+    "cpu_private_readout_installed_on_gpu",
+    "all_original_clocks_and_synthetic_masks_preserved",
+    "quiet_encoded_pedals_zero"
+  ],
+  "exact_false_fields": [
+    "fit_allowed",
+    "teacher_labels_used"
+  ],
+  "exact_zero_fields": [
+    "optimizer_updates",
+    "live_api_calls",
+    "mmf_opens",
+    "control_messages",
+    "intermediate_state_resets"
+  ],
+  "exact_counts": {
+    "cases": 30,
+    "observations_per_case": 68,
+    "original_intervals_per_case": 67
+  },
+  "finite_nonnegative_metric_maxima": {
+    "maximum_raw_parity_error": 2e-06,
+    "maximum_state_parity_error": 2e-06,
+    "maximum_decoded_brake_parity_error": 0.0001,
+    "quiet_raw_max_abs": 2e-06,
+    "quiet_v2_brake_max": 0.0001
+  },
+  "common_uncertainty_metric": "maximum_common_power_numerical_uncertainty",
+  "span_gate": "max(1e-6,.05*p0,100*maximum_common_power_numerical_uncertainty)",
+  "matched_reference": "Full EmbodimentReference JSON artifact; same CPU p0/anchor/readout neutral and CPU quiet/anchor state hashes, numerical_scope matched_cpu_gpu; uncertainty/parity match proof metrics.",
+  "cpu_reference": "Original CPU reference artifact, numerical_scope cpu_repeat; may not alone qualify GPU.",
+  "readout_state": {
+    "schema": "flybrain.flight.frozen_quiet_readout_state.v1",
+    "cpu_reference_sha256": "original CPU reference SHA",
+    "source_checkpoint_sha256": "original checkpoint SHA",
+    "readout_state": "Complete exact CPU post-quiet readout state dictionary, including gains/mix/ports/neutral buffers."
+  },
+  "registration": {
+    "schema": "flybrain.flight.matched_mn_anchor_registration.v1",
+    "fit_allowed": false,
+    "optimizer_updates": 0,
+    "proof_contract_sha256": "SHA of this file",
+    "input_sha256": "Must pin every required actual model source/spec/checkpoint."
+  },
+  "manifest": "Standard begin_run manifest: config.plan equals registration JSON content; config.program_sha256 equals qualification_program.sha256.",
+  "qualification_program": {
+    "path": "actual original qualifier .py path",
+    "sha256": "exact current source SHA"
+  },
+  "clock_and_mask": "historical_clock_sha256 equals CPU reference original clock fingerprint; synthetic_mask_sha256 hashes bool shape(68,21) with columns[0,1,4,16] true, same fingerprint algorithm as qualification.",
+  "live_initialization": "Validate all files/status/gates/links before parent init. Parent quiet100x.01 happens once; install exact qualified CPU neutral buffers only, preserve gains/mix/ports/graph/body/state. Actual raw<=2e-6, v2brake<=1e-4 and projected pedals exactly0 before acquisition; unchanged steering<=2e-6, no deadband.",
+  "per_sample": "Parent request exactly once; reconstruct same-state rawintent/MN6 float32; pure CPU decoder. canonical_request is actual returnedv2/schema; canonical_v1_request retains parentv1. Caller exact-links returned control to metadata before separate codec/vJoy.",
+  "no_task_pid_or_direct_axis_residual": true,
+  "qualification_scope": "Matched numeric/source qualification, not live vehicle braking, physiology, learned driving, optimal coactive imitation, valid lap or laptime proof.",
+  "proof_required_top_level_fields": [
+    "schema",
+    "status",
+    "numerical_scope",
+    "contract_file",
+    "contract_sha256",
+    "artifacts",
+    "current_source_sha256",
+    "qualification_program",
+    "historical_clock_sha256",
+    "synthetic_mask_sha256",
+    "gpu_qualified",
+    "gpu_used",
+    "cpu_repeat_bitwise_exact",
+    "gpu_repeat_passed",
+    "all_fixed_parameters_unchanged",
+    "cpu_private_readout_installed_on_gpu",
+    "all_original_clocks_and_synthetic_masks_preserved",
+    "quiet_encoded_pedals_zero",
+    "fit_allowed",
+    "teacher_labels_used",
+    "optimizer_updates",
+    "live_api_calls",
+    "mmf_opens",
+    "control_messages",
+    "intermediate_state_resets",
+    "cases",
+    "observations_per_case",
+    "original_intervals_per_case",
+    "maximum_raw_parity_error",
+    "maximum_state_parity_error",
+    "maximum_decoded_brake_parity_error",
+    "quiet_raw_max_abs",
+    "quiet_v2_brake_max",
+    "maximum_common_power_numerical_uncertainty"
+  ],
+  "component_inputs_schema": "flybrain.flight.embodiment_v2_component_inputs.v1",
+  "component_input_artifact_fields": [
+    "cpu_reference_file",
+    "cpu_reference_sha256",
+    "gpu_qualification_file",
+    "gpu_qualification_sha256",
+    "readout_state_file",
+    "readout_state_sha256"
+  ]
+}

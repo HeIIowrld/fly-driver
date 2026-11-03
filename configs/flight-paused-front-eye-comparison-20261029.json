@@ -1,0 +1,26 @@
+{
+  "schema": "flybrain.paused.front_eye_comparison.v1",
+  "frames": 1,
+  "period_seconds": 0.1,
+  "deadline_seconds": 4,
+  "static_pre_seconds": 0.6,
+  "motion_seconds": 1.2,
+  "conditions": [
+    {
+      "index": 0,
+      "scene": "full_scene",
+      "yaw_left_rad_s": 0.0
+    },
+    {
+      "index": 1,
+      "scene": "full_scene",
+      "yaw_left_rad_s": 0.0,
+      "front_mount": "bmw_z4_gt3_bumper_v1"
+    }
+  ],
+  "scope": "Static full-scene virtual-eye placement comparison, not actor input or learned control",
+  "source_sha256": {
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "515d680e87d957b341077c1d28355e845496471f358766bd92447a5176920db4",
+    "scripts/record_ac_camera_motion_probe.py": "b3217af1ecf2d0390cea60348272b4ac370bd376891c92328aa92e9a86809cc9"
+  }
+}

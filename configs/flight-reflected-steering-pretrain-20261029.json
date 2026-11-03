@@ -1,0 +1,17 @@
+{
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1434-body21-flight-cache",
+  "preview": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1443-visual-preview-information",
+  "reflected": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1471-mirrored-author-vision",
+  "conditions": ["original_only", "original_plus_reflected"],
+  "seed": 863472,
+  "epochs": 200,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "feature_scale_floor": 0.00001,
+  "target_scale_floor": [0.02, 0.005, 0.005, 0.005],
+  "objective": "Half equal-left/right/neutral original steering MSE, half equal-three-distance preview-bearing MSE, standardized by fitting TRAIN targets only",
+  "checkpoint": "Fixed last200, no development-based choice",
+  "scope": "Pretrain a high-level engineering visual boundary from frozen author retinal/T4/T5 responses; no direct actuator driver. Motor calibration through measured fly circuit remains required.",
+  "roles": "Original train6/development2 unchanged; reflected sequences are derived TRAIN augmentation, not new physical episodes. No development/evaluation fitting.",
+  "racing_scope": "Source physical data were30kmh. Not a racing-speed qualification or new fixed30kmh objective. External racing ceiling semantics must not reinterpret old model checkpoints."
+}

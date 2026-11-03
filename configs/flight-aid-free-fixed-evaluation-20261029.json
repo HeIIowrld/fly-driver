@@ -1,0 +1,19 @@
+{
+  "seed": 863157,
+  "training": "runs/flight-visual-guarded-training-20261029-t1103",
+  "checkpoint_sha256": "fbd91c1f04102d2794fe8b25fd4021cd88855bab969cfcd8bb2927f7014de6b6",
+  "data_spec": "configs/flight-circuit-speed-goal-v4-20261029.json",
+  "raw_audit": "runs/flight-aid-free-expert30-raw-audit-20261029-t1110",
+  "vision_audit": "runs/flight-aid-free-expert30-vision-audit-20261029-t1115",
+  "episode": {
+    "recording": "runs/flight-aid-free-expert30-recording-20261029-t1109",
+    "scene_replay": "runs/flight-aid-free-expert30-vision-20261029-t1112",
+    "body_replay": "runs/flight-aid-free-expert30-body-20261029-t1111",
+    "teacher_dataset": "runs/flight-aid-free-expert30-sealed-20261029-t1114",
+    "teacher_episode": "episode-00-00.npz",
+    "desired_speed_kmh": 30,
+    "role": "evaluation"
+  },
+  "criterion": "whole history and after3s left-turn RMSE must beat new-scene removal, all-vision removal and original training-speed mean; no refit",
+  "scope": "new aid-OFF recorded driving, fixed candidate and fixed old train-only normalization; not blind track, physiological verification or closed-loop student driving"
+}

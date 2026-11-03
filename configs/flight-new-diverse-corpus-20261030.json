@@ -1,0 +1,252 @@
+{
+  "schema": "flybrain.prospective_diverse_corpus.v1",
+  "status": "CPU_contract_ready_collector_and_profiles_not_implemented_or_qualified",
+  "actual_project_root": "\\\\hyunjin\\homes\\hjpark\\02_Personal\\01_\ud559\uad50\\20.\ud65c\ub3d9\\\uac1c\uc778\ud504\ub85c\uc81d\ud2b8\\flybrain",
+  "intended_engine_pid": 45604,
+  "generation_must_be_fresh_not_assumed": "37294426ULL:0.0003399",
+  "car": "bmw_z4_gt3",
+  "track": "monza",
+  "historical_roles_changed": false,
+  "actor_world_or_profile_oracle_input": false,
+  "known_development_regions": [
+    [
+      0.2,
+      0.25
+    ],
+    [
+      0.67,
+      0.84
+    ],
+    [
+      0.94,
+      1.0
+    ]
+  ],
+  "evaluation_regions": [
+    [
+      0.08,
+      0.125
+    ]
+  ],
+  "historical_training_observed_envelopes": [
+    [
+      0,
+      0.080314
+    ],
+    [
+      0.125048,
+      0.204573
+    ],
+    [
+      0.294137,
+      0.541609
+    ],
+    [
+      0.859926,
+      0.947926
+    ],
+    [
+      0.992674,
+      1.0
+    ]
+  ],
+  "regions": [
+    {
+      "name": "train_central_corners",
+      "role": "train",
+      "spline_interval": [
+        0.275,
+        0.54
+      ],
+      "maximum_histories": 4,
+      "profiles": [
+        "train_60_100_60_brake12"
+      ]
+    },
+    {
+      "name": "train_first_chicane",
+      "role": "train",
+      "spline_interval": [
+        0.13,
+        0.195
+      ],
+      "maximum_histories": 2,
+      "profiles": [
+        "train_60_80_40_brake8"
+      ]
+    },
+    {
+      "name": "train_late_corner",
+      "role": "train",
+      "spline_interval": [
+        0.85,
+        0.93
+      ],
+      "maximum_histories": 2,
+      "profiles": [
+        "train_60_100_60_brake12"
+      ]
+    },
+    {
+      "name": "new_geographic_validation",
+      "role": "independent_validation_geography",
+      "spline_interval": [
+        0.55,
+        0.65
+      ],
+      "maximum_histories": 2,
+      "profiles": [
+        "validation_80_60_100_brake12"
+      ],
+      "claim": "unseen_geography_straight_or_gentle_bend_only",
+      "historical_broad_train_reservation": [
+        0.27,
+        0.63
+      ],
+      "reservation_refinement": "No priorcapturedTRAINhistoryorlabelendpointreassigned; unusedgeographyreservedbeforefirstnewcapture"
+    },
+    {
+      "name": "new_condition_validation",
+      "role": "independent_validation_condition",
+      "spline_interval": [
+        0.275,
+        0.54
+      ],
+      "maximum_histories": 2,
+      "profiles": [
+        "validation_80_60_100_brake12"
+      ],
+      "geometry_seen": true,
+      "profile_seen_in_fit": false,
+      "claim": "new_independentlyrecordedheldoutprofileordering_onseengeometry_notunseenroad"
+    }
+  ],
+  "profiles": {
+    "train_60_100_60_brake12": {
+      "duration_seconds": 12,
+      "hard_speed_kmh": 120,
+      "hard_displacement_m": 500,
+      "speed_schedule": [
+        {
+          "after_seconds": 0,
+          "speed_hint_kmh": 60
+        },
+        {
+          "after_seconds": 4,
+          "speed_hint_kmh": 100
+        },
+        {
+          "after_seconds": 8,
+          "speed_hint_kmh": 60
+        }
+      ],
+      "brake_intervention": {
+        "api": "physics.setAIStopCounter",
+        "requested_seconds": 0.4,
+        "after_seconds": 8.25,
+        "speed_window_kmh": [
+          45,
+          110
+        ],
+        "attempts_maximum": 1
+      },
+      "natural_ai_braking_label": false
+    },
+    "train_60_80_40_brake8": {
+      "duration_seconds": 8,
+      "hard_speed_kmh": 120,
+      "hard_displacement_m": 500,
+      "speed_schedule": [
+        {
+          "after_seconds": 0,
+          "speed_hint_kmh": 60
+        },
+        {
+          "after_seconds": 3,
+          "speed_hint_kmh": 80
+        },
+        {
+          "after_seconds": 5.5,
+          "speed_hint_kmh": 40
+        }
+      ],
+      "brake_intervention": {
+        "api": "physics.setAIStopCounter",
+        "requested_seconds": 0.4,
+        "after_seconds": 5.75,
+        "speed_window_kmh": [
+          35,
+          90
+        ],
+        "attempts_maximum": 1
+      },
+      "natural_ai_braking_label": false
+    },
+    "validation_80_60_100_brake12": {
+      "duration_seconds": 12,
+      "hard_speed_kmh": 120,
+      "hard_displacement_m": 500,
+      "speed_schedule": [
+        {
+          "after_seconds": 0,
+          "speed_hint_kmh": 80
+        },
+        {
+          "after_seconds": 4,
+          "speed_hint_kmh": 60
+        },
+        {
+          "after_seconds": 8,
+          "speed_hint_kmh": 100
+        }
+      ],
+      "brake_intervention": {
+        "api": "physics.setAIStopCounter",
+        "requested_seconds": 0.4,
+        "after_seconds": 4.25,
+        "speed_window_kmh": [
+          35,
+          90
+        ],
+        "attempts_maximum": 1
+      },
+      "natural_ai_braking_label": false
+    }
+  },
+  "maximum_total_histories": 12,
+  "maximum_transit_leases": 24,
+  "transit_speed_hint_kmh": 60,
+  "minimum_free_local_bytes": 40000000000,
+  "admission": "Assignentirehistorybeforecapture; allbefore/driving/stopping/afterroutesmuststaydeclaredregion/samelap/ontrack; rejectwholecrossinghistory,noslicing/relabeling/retryselect. Transitneverfit. Requirefullraw/camera/bodyauditandoriginalclock/maskpreservationbeforefit.",
+  "independent_validation_policy": "Roles/profilefixednow; fit/selectonlyTRAIN. Noindependentvalidationpredictionsoroutcomesforselection; lockcandidate/checkpointhashbeforefirstscore. Integrityauditonlyuntilthen; knownDEVremainknowndiagnosticandneverTRAIN.",
+  "coverage_gates_before_learning": {
+    "native_moving_brake_rows_speed_gt20_brake_ge02": 10,
+    "native_speed_at_least70_rows": 100,
+    "native_speed_at_least90_rows": 25,
+    "native_moving_gear_transitions": 2,
+    "preview20m_entry_rows_left": 10,
+    "preview20m_entry_rows_right": 10,
+    "preview20m_exit_rows_left": 10,
+    "preview20m_exit_rows_right": 10
+  },
+  "coverage_gate_meaning": "Preregisteredcorpuscapabilitygates; predictions,nativebrake,gears,entry/exitmustbemeasured. Hintchangesarenotactualbraking. Ifbudgetexpiresgatefailed,noclaimorfavorablehistoryselection.",
+  "tyre_setup_scope": "ObserveoriginalnativewheelLoad/temperature/wheelslip/wheelratesandactualgears. Controlledtyrecompound/setupvariationnotimplementedandnotclaimed; latertaskrequiresseparatecontract.",
+  "required_implementation": {
+    "collector": "Newv5orseparatecollectorneedsprofiles/8or12seconds/validationroles, freshengine45604/cameraqualifiedpredecessor; oldv4hard60/3TRAIN+1DEV/.13estimatecannotrunthisplan",
+    "recorder": "Addprofileargument/mappingand8/12duration, speed100choices, profile-bearingmanifest; preserveexistingMMF/persistenceandnoUI/nativeguards",
+    "control": "Distinctprofilecapability/command/receiptvalidation; requestexactstages+oncebrakewindow+120hardbound/500mdiagnosticenvelope; nooldboundsreinterpretation",
+    "lua": "Newexpertcorpuscommand validatesexactprofiles, speedstagesonce/tokensbeforeeachsideeffect, labelledAIStopCounterpulse, originaltelemetry+cleanup; unknownoutcomenoretry, freshnativeAIoffaftercleanup",
+    "labels": "Useoriginalrawnativeprefixgear@16/rpm@20 andactualnativebrake; teacherhint/interventionrequestdistinctfromapplied, actornooracle"
+  },
+  "source_sha256": {
+    "src/flybrain_drive/prospective_corpus.py": "84bbd5a4ba9ccccb2c90723c5cf1c708a33ba3411b36780592fee5719143c9b6",
+    "scripts/collect_spatial_flight_teacher.py": "21b77ab0d2577b879ed70e430ee844ffdd0c35628e42314c680ee6931070a76b",
+    "src/flybrain_drive/spatial_teacher_plan.py": "bb46d5b0459372920e2b7126d71b376b33e2e9819cbd87c2654c248c9bd9ad14",
+    "scripts/record_ac_engine_ai_probe.py": "9dd662917610b7eef65ea575b71b5728c9e02ee0ed4b003d3792a37959380ad8",
+    "scripts/control_ac_session.py": "9eac00cbbd5c414cb411aab8cd3864c2134513441c4e6212bafcc1944810da82",
+    "integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua": "7902ec4756a1b3e2d64e96440010ea8b7cc1716cf123f2b9ffb44bd4a6be52b2",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1633-spatial-native-corrected-completion/result.json": "7a843b56d0d04fe53035723ebb8266bb76f93426cfb526cc654728d6c978a703",
+    "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1393-v2-route-coverage-audit/result.json": "d0136e4e92a36664e497a5174d45faf4c273c6fd6621a1f911d377530bb00dc5",
+    "assets/external/acgym-teacher-recipe-20261027/legacy/assetto_corsa_gym/AssettoCorsaConfigs/tracks/monza-racing_line.csv": "227f21ed4058ac70caae943a764da4bbdc3b0ac885aec43b0c05abf18e36b9b4"
+  }
+}

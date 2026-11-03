@@ -1,0 +1,78 @@
+{
+  "schema": "flybrain.ac.low_speed_maneuver_plant.v1",
+  "calibration": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\result.json",
+  "program": [
+    [
+      "baseline",
+      0.0,
+      0.0,
+      1.0,
+      0.2
+    ],
+    [
+      "launch",
+      0.0,
+      0.15,
+      0.0,
+      1.2
+    ],
+    [
+      "steering_positive",
+      0.05,
+      0.04,
+      0.0,
+      0.4
+    ],
+    [
+      "center",
+      0.0,
+      0.0,
+      0.0,
+      0.2
+    ],
+    [
+      "steering_negative",
+      -0.05,
+      0.04,
+      0.0,
+      0.4
+    ],
+    [
+      "coast",
+      0.0,
+      0.0,
+      0.0,
+      0.2
+    ],
+    [
+      "braking",
+      0.0,
+      0.0,
+      1.0,
+      0.6
+    ]
+  ],
+  "scope": "Diagnostic vehicle input response only, not fly actor driving. Source same new engine and verified AI-off. Single gear-up only if native neutral; no repeats.",
+  "hard_speed_kmh": 12,
+  "hard_displacement_m": 8,
+  "request_limits": {
+    "steering_abs": 0.05,
+    "throttle": 0.15,
+    "brake": 1.0
+  },
+  "final_brake_deadline_seconds": 3,
+  "world_position": "Privileged displacement safety bound/diagnostics only; never road following or actor input",
+  "source_date": "2026-10-30",
+  "model_action_requests": 0,
+  "actor_input": false,
+  "input_sha256": {
+    "scripts/probe_ac_maneuver_plant.py": "6ad8f32d4ebfed30ddd82251339255dcbced188005fd8d70dd5987d99b8f1268",
+    "scripts/calibrate_ac_sdk_steering.py": "7fee785fb105dffc58e35c2f73bcfd9bb44f1c7b76d7d0253913a96e323805a2",
+    "src/flybrain_drive/ac_vjoy.py": "d5d9fb74300bb502bc3faa183f2492ed70977e5802106823a46b91e6f14e7be4",
+    "src/flybrain_drive/ac_native_physics.py": "faac5c8091296698c354533999e02bea99c0fa4d838d7dba89d7f6209cc97a37",
+    "src/flybrain_drive/ac_teacher_status.py": "07668a3fadd1e29734388ea9ea71909c055685d8011b0c9b02ea356e1d414f83",
+    "configs/ac-axis-probe.json": "1df2d1fc5dfe767c93eacb33b429561641c809821f3eb29d291ea44ac268158c",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\result.json": "035f68ce1c7933c3d32d48e007255a7e93734e808db7ea676a9f60d4f215a9ae",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261030-t1671-small-steering-calibration\\samples.jsonl": "56710bb4528a225830102083ca6d26493309d714f5a27169d87ba522d1739a05"
+  }
+}

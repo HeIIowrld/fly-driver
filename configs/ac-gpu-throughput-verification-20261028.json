@@ -1,0 +1,99 @@
+{
+  "measured_utc": "2026-10-28T13:32:32.668143+00:00",
+  "status": "benchmarked",
+  "hardware": "AMD Radeon RX 9070 XT",
+  "model_source": "runs/ac-engine-ai-coast-representation-training-20261028-t751",
+  "dataset": "runs/ac-engine-ai-lateral-speed20-merged-20261028-t746",
+  "episodes_per_batch": 6,
+  "trainable_groups": [
+    "visual",
+    "organs",
+    "readout"
+  ],
+  "workers": 1,
+  "selected_chunk_length": 128,
+  "rationale": "Retain existing 128-step gradient horizon. 64 is only 2.4 percent faster in short measurements; 256 allocates 1.84x memory without higher throughput. Not a full-epoch comparison.",
+  "measurements": [
+    {
+      "chunk_length": 64,
+      "run": "runs/ac-resource-sixclip-chunk64-20261028-t794",
+      "status": "completed",
+      "sparse_backend": "cached_csr_gpu",
+      "parameter_devices": [
+        "cuda:0"
+      ],
+      "gradient_devices": [
+        "cuda:0"
+      ],
+      "gradients_finite": true,
+      "seconds": [
+        0.44260720000602305,
+        0.43259429998579435,
+        0.43051880001439713
+      ],
+      "median_seconds": 0.43259429998579435,
+      "loss": 0.01844014599919319,
+      "prediction_max_error_from_cpu": null,
+      "valid_decisions": 321,
+      "valid_decisions_per_second": 742.0347425071044,
+      "device_name": "AMD Radeon RX 9070 XT",
+      "peak_allocated_bytes": 945466880
+    },
+    {
+      "chunk_length": 128,
+      "run": "runs/ac-resource-sixclip-chunk128-20261028-t792",
+      "status": "completed",
+      "sparse_backend": "cached_csr_gpu",
+      "parameter_devices": [
+        "cuda:0"
+      ],
+      "gradient_devices": [
+        "cuda:0"
+      ],
+      "gradients_finite": true,
+      "seconds": [
+        0.8734704999951646,
+        0.8844442999979947,
+        0.8955057999992277
+      ],
+      "median_seconds": 0.8844442999979947,
+      "loss": 0.012409588322043419,
+      "prediction_max_error_from_cpu": null,
+      "valid_decisions": 641,
+      "valid_decisions_per_second": 724.7488620837438,
+      "device_name": "AMD Radeon RX 9070 XT",
+      "peak_allocated_bytes": 1634426880
+    },
+    {
+      "chunk_length": 256,
+      "run": "runs/ac-resource-sixclip-chunk256-20261028-t793",
+      "status": "completed",
+      "sparse_backend": "cached_csr_gpu",
+      "parameter_devices": [
+        "cuda:0"
+      ],
+      "gradient_devices": [
+        "cuda:0"
+      ],
+      "gradients_finite": true,
+      "seconds": [
+        1.7787637000146788,
+        1.7814255999983288,
+        1.8226945999776945
+      ],
+      "median_seconds": 1.7814255999983288,
+      "loss": 0.007347349543124437,
+      "prediction_max_error_from_cpu": null,
+      "valid_decisions": 1281,
+      "valid_decisions_per_second": 719.0870053743483,
+      "device_name": "AMD Radeon RX 9070 XT",
+      "peak_allocated_bytes": 3012208640
+    }
+  ],
+  "optimizer_updates": 0,
+  "actuator_messages_sent": 0,
+  "dedicated_adapter_bytes_before_and_after": 10821533696,
+  "dedicated_adapter_bytes_sample_during_128": 13357522944,
+  "instantaneous_gpu_utilization_measured": false,
+  "automatically_promoted": false
+}

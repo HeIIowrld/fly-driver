@@ -1,0 +1,75 @@
+{
+  "status": "DAgger fixed-speed model-road 2/2; native AC images and raw body recorded; native driving pending",
+  "date": "2026-10-27",
+  "hypothesis": "compound-eye local directional and temporal coding plus a shared connectome recurrent circuit can improve multi-view visual fusion",
+  "views": [
+    "front",
+    "mirror_left",
+    "mirror_right",
+    "mirror_rear"
+  ],
+  "primary_training_task": "joint multi-view visual and body-sensory fusion inside the recurrent neural circuit",
+  "front_only_role": "component test and ablation baseline, not a replacement goal",
+  "fusion_location": "shared visual and central recurrent connectivity after view-local transduction",
+  "preserved_view_metadata": [
+    "source_id",
+    "ray_direction",
+    "ray_origin",
+    "calibration_sha256",
+    "exposure_time_if_verified",
+    "acquisition_interval",
+    "age",
+    "validity"
+  ],
+  "input_adapter_constraint": "each local receptive field reads only its declared source view; no external learned cross-view action bottleneck",
+  "current_implementation": "source-specific retinal projection, independent exposure/contrast/age packing, view-local MeTu inputs and shared recurrent circuit; actual AC mirror calibration missing",
+  "component_evidence": "docs/multiview-circuit-20261027.md",
+  "latest_component_checkpoint": "runs/multiview-20261027-t25c/runs/multiview-component/multiview-initialized.pt",
+  "latest_component_checkpoint_sha256": "7831c051d3294eb3b7753d179da9477d5696536ae68a08dfcd33b9eee395d994",
+  "driving_trained": true,
+  "current_model_is_full_optic_lobe": false,
+  "comparison_groups": [
+    "same multi-view inputs with ordinary recurrent model",
+    "degree-preserving rewired circuit",
+    "front-only versions of each model"
+  ],
+  "tests_required": [
+    "view removal",
+    "left/right swap",
+    "reflection calibration error",
+    "per-view frame delay",
+    "occlusion",
+    "held-out driving conditions"
+  ],
+  "efficiency_metrics": [
+    "training samples and interactions",
+    "end-to-end latency",
+    "compute and state memory",
+    "success at matched budgets",
+    "robustness to missing or delayed views"
+  ],
+  "biological_motivation": "https://www.nature.com/articles/s41586-025-09276-5",
+  "multi_view_advantage_verified": false,
+  "AC_multi_view_driving_verified": false,
+  "report": "docs/compound-eye-camera-plan-20261027.md",
+  "training_scope": "fixed-speed MuJoCo curvature proxy only; not native AC steering/pedals",
+  "learning_report": "docs/multiview-photometry-20261027.md",
+  "useful_visual_control_verified": true,
+  "latest_learning_checkpoint": "runs/multiview-dagger-fast-20261027-t29b/runs/training/checkpoint.pt",
+  "latest_learning_checkpoint_sha256": "14c8b79ac124ddfe9b704480aae8c6501e8e70d4315437bd0cfe707da7235f87",
+  "latest_learning_result": "configs/multiview-dagger-result.json",
+  "useful_visual_control_scope": "two open fixed-speed model roads, one unseen geometry; 2/2 normal versus 0/2 vision missing; not AC or a closed circuit",
+  "latest_driving_evaluation": "configs/multiview-dagger-result.json",
+  "full_model_road_completed_by_student": true,
+  "general_driving_verified": false,
+  "native_sensor_result": "configs/ac-native-physics-result.json",
+  "next_training": "calibrate native AC camera/body/action domains and collect compatible teacher sequences; native pedals remain unsupervised",
+  "native_capture_result": "configs/ac-wgc-result.json",
+  "priority_revision_20261029": {
+    "user_selected_body_control": "flight-derived",
+    "mechanism_plan": "configs/fly-flight-mechanism-plan-20261029.json",
+    "current_AC_model_is_full_motion_visual_circuit": false,
+    "current_AC_model_is_flight_motor_controller": false,
+    "next_action": "Mechanistic visual and flight virtual-body module response validation before additional driving-only training"
+  }
+}

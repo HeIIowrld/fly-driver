@@ -1,0 +1,47 @@
+{
+  "schema": "flybrain.body_registered_preview_learning.v1",
+  "data": "C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261029-t1649-body-registered-preview-data",
+  "conditions": [
+    "image_grid",
+    "registered",
+    "registered_level"
+  ],
+  "epochs": 200,
+  "seed": 863650,
+  "learning_rate": 0.001,
+  "weight_decay": 0.01,
+  "target_scale_floor": [
+    0.005,
+    0.0001,
+    0.005,
+    0.0001,
+    0.005,
+    0.0001
+  ],
+  "body_contract": "configs/ac-virtual-navigation-body-v2.json",
+  "body_route_indices": [
+    0,
+    1,
+    4,
+    16
+  ],
+  "preregistered_candidate": "registered",
+  "neural_features": 896,
+  "support_features": 128,
+  "neural_normalization": "TRAIN3 only mean/std floor1e-5 then clip5",
+  "support_normalization": "Original binary ray-plane support bits pass through as0/1; never tiny-variance scaled",
+  "architecture": "Identical1024to128 plus42to16 body,144to64to6 tanh; identical seed/initial parameters, fixed last200 per representation",
+  "candidate_gate": "All3 DEVELOPMENT bearings beat both mean/zero; standardized6-head MSE improves by at least1percent over each neural-feature-mean and retinal-neural-mean control and beats matched image_grid. Posture effect separately requires improvement over registered_level. Multi-view evidence separately requires front and at least one side/rear mean intervention to worsen by1percent.",
+  "known_development_has_informed_hypothesis": true,
+  "independent_final_validation": false,
+  "objective": "Original equally weighted6 standardized TRAIN-valid MSEs, no class rebalance in this comparison",
+  "source_sha256": {
+    "scripts/train_body_registered_preview.py": "91ae7de64839e35bfef96810c2c2a3a342c9096068a7cfb2f9e034850d873091",
+    "scripts/train_visual_body_preview.py": "589ea836fce4db65a5adf90f7eb5fcdf0ff7527f02e465a81c33f1c059865f87",
+    "scripts/train_column_preview_comparison.py": "abe68e9dda496f7953cec71f54d47f3660715a02c159ccef9d3f3ecccbc63038",
+    "src/flybrain_drive/body_retinal_plane.py": "399ba73af4bd8df3d44a75188723ebae8f24c5ab6b5a4219bad821b3f65e899c"
+  },
+  "author_weights_changed": false,
+  "flight_motor_transfer": false,
+  "actor_deployed": false
+}

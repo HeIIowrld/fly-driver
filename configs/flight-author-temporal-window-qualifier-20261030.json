@@ -1,0 +1,50 @@
+{
+  "schema": "flybrain.author_temporal_window_qualifier.v1",
+  "sensor_replay": "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors",
+  "train_episode": "episode-04-train",
+  "original_intervals": 64,
+  "prefix_chosen_before_execution": true,
+  "optimizer_window_intervals": 8,
+  "optimizer_updates": 0,
+  "arms": [
+    {
+      "name": "detach2_ordinary",
+      "detach_intervals": 2,
+      "recompute": false
+    },
+    {
+      "name": "detach2_recompute",
+      "detach_intervals": 2,
+      "recompute": true
+    },
+    {
+      "name": "detach8_recompute",
+      "detach_intervals": 8,
+      "recompute": true
+    }
+  ],
+  "diagnostic_objective": "fixed weighted mean squared local neuron activity",
+  "objective_claim": "Fixed diagnostic scalar on declared local neuron activity; no future target or pretrained allTRAIN readout used, no prediction/learning/generalization claim",
+  "recomputation_contract": "torch checkpoint(use_reentrant=False) for each original interval; same author _next_state and exact original internal dt tail; detached subchunks preserve numerical state, no hidden optimizer or resets",
+  "model_dir": "assets\\external\\flyvis-pretrained-20261029\\unpacked\\results\\flow\\0000\\000",
+  "cache_root": "C:/Users/jeff4/AppData/Local/flybrain-bio-20261029/flyvis-data-windows-v1",
+  "development_arrays_allowed": false,
+  "seed": 8681685,
+  "reference_absolute_tolerance": 2e-06,
+  "gradient_relative_tolerance": 5e-05,
+  "gradient_absolute_tolerance": 5e-07,
+  "maximum_peak_gpu_tensor_bytes": 14000000000,
+  "input_sha256": {
+    "scripts/probe_flyvis_temporal_window.py": "7d42496e17c7df3ca666ad21a6d1c475b47cae8014b65aae2beb8bfd3c5298e7",
+    "src/flybrain_drive/flyvis_camera.py": "6c26afb43f07dc45860d7f1b8d630e53cdce80ca1220079e674ae2427be6a0c2",
+    "src/flybrain_drive/flyvis_compat.py": "12e3e0671c9ca03401a93c28fb1f852fd8d3f7bdfc72f125b944856aabbb58ee",
+    "src/flybrain_drive/episode_storage.py": "e53dd663b7781a8f2dfc6fa1ba7ff757f78424480e700882f62039292702f63c",
+    "configs/flight-preview-train-only-temporal-plan-20261030.json": "b436a986f9b8b0af8da572293718b8dd0c5d75840a1f07466c76bf1326ddbc04",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\result.json": "ca411340690725150d3125cb126221ad81b63fee8724f3a402927f90bcd592e6",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\manifest.json": "e6b7628c72c89d8693942060da86fcb5a25d6a0b74e9a18f4ea208a9c039257f",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-04-train\\vision\\retina-registration.npz": "a909539b7e5db2269b51f959c06f0a04875a104dfeb972f1ebe75913ded593e2",
+    "assets\\external\\flyvis-pretrained-20261029\\unpacked\\results\\flow\\0000\\000\\best_chkpt": "d8a57a022aa18ca338599be713af9db29b89cde4b00098ffe42b78f0d583e46a",
+    "assets\\external\\flyvis-pretrained-20261029\\unpacked\\results\\flow\\0000\\000\\_meta.yaml": "2aa8a9505324c82bbb4011ee2f7c375b5f8b1bddde1a5281e038baecf91fc5dd",
+    "C:\\Users\\jeff4\\AppData\\Local\\flybrain\\runtime-runs\\20261029-t1635-spatial-exterior-sensors\\episode-04-train\\vision\\responses.npz": "9d925489ada804b2821ed8bc2fba4c55e61c0554c93d55de503fb360b184bd42"
+  }
+}

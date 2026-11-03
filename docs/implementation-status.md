@@ -1,0 +1,2244 @@
+# 구현 현황 — 사실과 계획의 구분
+
+> **2026-11-03 계획 반영·미구현:** [ROADMAP.md](ROADMAP.md)에 시각 전달/공간·예측 경로 진단, 다중 트랙, 실제 학생 완주, 차량/셋업·변속 적응, 라인/랩타임 최적화의 단계와 통과 기준을 추가했다. 아래 기존 학습 결과는 유지하며, 계획 추가를 새 기능 구현·학생 완주·범용성 검증으로 승격하지 않는다.
+
+> **2026-11-02 완료 — 정합 적격 교사 시연으로 실제 오프라인 학습:** 700만 SAC의 독립3시연 **1:52.515 /1:52.314 /1:52.455**, 전체 랩 이탈0·100%라벨 coverage·bounded 카메라/몸 정합을 확인했다. 첫2시연5621라벨 학습/세 번째2812라벨 봉인 평가, **4epoch·실제 optimizer13064회**. 평가 가중MSE **.04230**, 학습평균 상수 .08679 대비 **51.3% 낮음**. 독립 감사가 고정 모델 상태45개/haltere 보존·저장 지표를 확인했다. 시각clamp +4.8%·몸clamp 2.91배로 몸 의존성이 강하고 시각 기여는 작다. 체크포인트를 저장했고 차량은paused·camera/AIoff·제어권 반환 상태다. 정확한GPU노출·학생 자율완주·전체생리·차종/셋업/변속 일반화는 아직 미검증이다. [결과·한계·원본](teacher-synchronized-learning-20261102.md).
+
+> **2026-11-02 교사 완주와 수집 경로 수정 검증:** 50Hz TCP/10Hz 호환 파일 publisher, 원 receipt를 유지하는 연속 수신·유한 원본 보관, source 20~80ms/receipt ≤50ms의 실제 표본 선택, 40ms 절대 결정 deadline과 조작 직전 신선도 gate, 유한 비동기 이벤트 writer·오류 고정·종료 검증을 구현했다. 관련 검사 37개 통과. 700만 SAC BMW/Monza의 무제한 최종 단계 1:52.449·1:52.490 및 최종 목표 220 제한 1:57.191·1:57.232를 독립 raw 감사로 유효 전체 랩 확인했다. 후자는 정상 종료했고 전체 랩 내 바퀴 이탈 0이나 초기 부분 구간은 최대 2개였다. 실제 80°C 출발의 540만 live-08은 전체 랩 0·3바퀴 이탈이며 lap-audit-03에서 정지와 제어권 반환을 확인했다. 무제한 반복의 조향 진동·이탈과 host 수신 지터는 남았다. 카메라 물리 동기·학습 시연 적격성·초파리 학생 자율 완주·차종 일반화는 이 결과로 입증하지 않는다. 새 자료는 카메라 꺼짐·학습 부적격·학생 optimizer 0. [상세 및 원본 경로](teacher-recovery-20261102.md), `runs/teacher-recovery-20261102/lap-audit-01/`, `lap-audit-02/`.
+
+> **2026-11-02 교사 카메라/원본 주기 병목 시험 및 기준 셋업 주행:** 타이어 설정은 그대로 유지했다. 12초 정지·무카메라 SDK 원본 수신 509개는 source 간격 중앙 20.88ms·최대 62.20ms·80ms 초과 0이었다 (`D:/CodexResearchRuns/flybrain-teacher-cadence-idle-20261102-02/`). 같은 정지 차량에서 기존 네 방향 PNG 카메라를 켠 6초는 112개, 중앙 59.70ms·최대 119.83ms·초과 9회였다 (`D:/CodexResearchRuns/flybrain-teacher-cadence-camera-20261102-01/`). 공유 텍스처/비동기 BMP 저장 후보는 248개, 중앙 20.95ms·최대 85.05ms·초과 2회였다 (`D:/CodexResearchRuns/flybrain-teacher-cadence-shared-20261102-01/`). 독립 시점의 짧은 시험으로 카메라 경로가 부하의 중요 요인이라는 증거이나 다른 시스템 부하를 완전히 통제한 인과 실험은 아니다. 기존 카메라·교사·공유 텍스처 검사 67개 통과. 완료/실패 결과가 오래전에 기록됐으나 CPU를 사용하던 과거 실행 6개는 결과 해시/명령 확인 후 해당 프로세스만 종료하고 영수증을 보존했다 (`D:/CodexResearchRuns/flybrain-terminal-process-cleanup-20261102-01/`).
+>
+> 공유 카메라를 붙인 교사 시험에서 50/50결정을 완료하고 최대 19.82km/h, 측정 gap 2.507→1.668m, 트랙 이탈 0을 기록했다 (`D:/CodexResearchRuns/flybrain-teacher-shared-live-20261102-01/`). 다음 장기 시험은 시작 시 GPU 복사 제한에 걸려 교사 조작 전 중단했고 (`...-02/`), 재시험은 교사 요청 61회/피드백 60회, 최대 19.91km/h, gap 1.432→-0.306m, 트랙 이탈 0 후 source 간격 81.48ms로 자동 중단했다 (`...-03/`). 각 원시 이벤트 해시와 수치를 별도 감사했다 (`D:/CodexResearchRuns/flybrain-teacher-shared-audit-20261102-01/`). 두 시험의 복사 실패 추적에서 40ms 복사 예산 중 약 44ms 대기/스케줄링이 관찰됐으나 원인을 GPU·OS 중 하나로 단정할 수 없다. 별도 35ms 제어 후보 역시 카메라 복사 제한으로 출발 전 중단했으며 효과는 미검증 (`D:/CodexResearchRuns/flybrain-teacher-shared35-live-20261102-01/`). 모든 시험은 종료 브레이크와 카메라 종료를 기록했다. 50결정 완료는 랩·코너 검증이 아니며 물리 노출/몸 감각 동기가 입증되지 않아 training_admissible=false, 학생 optimizer 0이다. 다음은 격리 카메라/producer 원본 수집 경로와 실제 노출·몸 시각 증거를 검증해 긴 교사 구간을 얻고 에피소드 분리 학습·평가한다. 이전 단락의 미해결·미주행 서술은 당시 상태다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다. 변속·셋업 적응도 목표다.
+
+> **2026-11-02 교사 기준 셋업·제어 재시험:** 현재 BMW Z4 GT3/Monza의 기존 타이어 설정(종류 값 1, 압력 네 바퀴 16)을 변경하지 않고 기준으로 사용했다. 원 학습 셋업과 제조 기본값 여부는 미확인이다. CSP restart/start 후 native/CSP AI 상태가 59/59 모두 false로 일치했지만 과거 불일치의 근본 원인은 미확인이다 (`D:/CodexResearchRuns/flybrain-ai-status-after-restart-20261102-01/`). 정지 조향을 점진적으로 바꾸는 별도 보정으로 기존 속도 안전 기준을 유지하면서 32개 샘플과 ±270 SDK 반응을 확인했고 (`D:/CodexResearchRuns/flybrain-teacher-steering-ramped-20261102-01/`), 가속 없이 1단 전환을 확인했다 (`D:/CodexResearchRuns/flybrain-teacher-first-gear-20261102-01/`). 네 방향 카메라의 설치 Lua는 기존 수집기의 기대 버전과 달라 실행이 차단됐고, 기존 설치물을 유지하며 실제 운영 버전의 SHA를 고정한 별도 시험 후보로 카메라를 연결했다. 제한속도 시험 `D:/CodexResearchRuns/flybrain-teacher-baseline-live-20261102-03/`은 교사 요청 1회(조향 -0.0773, 가속 0.0574, 제동 0.7615)를 전송한 후 원본 감각 주기 92ms가 80ms 한도를 초과해 중단하고 정지·장치 해제했다. 드라이버 수락과 게임 적용 검증은 구분한다. 네 시야 26묶음을 기록했으나 물리 노출 동기 미검증·training_admissible=false이며 유효 학습이나 주행 검증이 아니다. 원 주기 한도를 완화하지 않았고 정지 구간의 초기 이력만 제한적으로 재시도한다. 다음은 SDK 생산/카메라/교사 추론의 지연을 분리 계측하고 시간 기준을 보존하는 수집 경로를 검증해 연속 시연을 확보한 뒤 에피소드 분리 학습·평가한다. 겹눈/운동 시각과 비행 유래 균형·운동 회로를 단일 회로로 차량 몸에 연결하고 차체 기울기·회전·하중·타이어 상태를 되먹임해 조향·가감속·변속·셋업 적응과 빠른 레이싱 라인/랩타임을 학습하는 목표는 유지한다.
+
+> **2026-11-02 SAC 교사 관측·라벨 범위 추가 확인:** 기존 SAC 속도 제한 실행 기록의 봉인 데이터 200결정을 원본 hash와 replay-only 상태 그대로 감사했다 (`scripts/audit_sac_teacher_training_readiness.py`, 계획 `D:/CodexResearchRuns/flybrain-sac-data-readiness-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-sac-data-readiness-20261102-01/`). 네 시야 관측 형상은 200×4×1709×3이고 세 조작 마스크는 각 200개 유효이나 라벨은 제한속도 과제의 실행 요청이다. |조향|>0.05는 93개, 가속>0.05는 27개, 제동>0.05는 3개뿐이며 한 짧은 이력이다. 이 기록은 `experimental_offline_replay_only=true`, 원본 `training_admissible=false`, camera exposure 동기 미검증이므로 현재 비행 유래 단일 회로의 실제 학생 학습에 자동 편입하지 않았다. 공개 SAC 수치 재현·차종/서킷·설정 대조는 직전 단락 참고. native AI=true/CSP=false 불일치가 계속돼 신규 교사 차량 조작·teacher-labelled 학습은 아직 개시하지 못했고 optimizer/actor/차량 제어 0이다. 다음은 제어권/시각·몸 동기를 우선 검증하고 같은 조건에서 직선·좌우 코너·가감속의 교사 시연을 더 확보해 학습/평가를 에피소드 단위로 분리한다. 학생의 경로 판단에는 전후좌우 영상과 허용된 몸 감각만 사용하고 교사/평가의 pose·지도는 입력하지 않는다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 사용자 요청 교사·차량 설정 및 모방학습 준비 확인:** 공개 AssettoCorsaGym Monza/BMW Z4 GT3 SAC 교사 checkpoint `3f30cbb1…157e84`와 현재 native static car/track이 BMW Z4 GT3/Monza로 일치한다. 같은 체크포인트의 숫자 입력/출력 재구성을 231개 공개 상태에서 재실행해 입력/코덱 오차 0, Torch/NumPy 최대 오차 3.63e-6을 확인했다 (`D:/CodexResearchRuns/flybrain-sac-teacher-reconstruction-20261102-01/`). 정확한 원 학습 manifest·차량 셋업은 없어 타이어/연료/차량 세부 설정까지 같다고 할 수 없다. 교사 입력은 pose·경로·미래 곡률을 사용할 수 있지만 학생 actor에는 영상과 허용된 몸 감각만 제공한다. 같은 차·트랙의 과거 교사 75결정 실주행에서는 최대 속도 79.79km/h, 변위 35.81m, 타이어 이탈 0, 경로 gap -0.473~+0.321m였으나 전체 랩이나 독립 고속 일반화는 검증하지 못했다. 현재 controls.ini와 당시 프로필은 파일 해시가 다르지만 INI의 모든 section/key 값은 같으며 실제 실행 엔진이 그 파일을 로드했는지는 미검증. assists.ini에는 stability_control=100, auto_shifter=1 등이 기록돼 있으나 현재 엔진 적용 여부는 미확인 (`D:/CodexResearchRuns/flybrain-teacher-compatibility-20261102-01/`). 예전 SAC 수집 200결정 자료는 지도/교사 요청 재현에 사용할 수 있으나 원본은 `training_admissible=false`, 데이터셋은 `experimental_offline_replay_only=true`, 노출 동기 미검증이며 현재 비행 유래 단일 회로의 실제 주행 학습에 적격으로 승격하지 않았다. native AI=true와 CSP AI=false의 불일치도 남아 사용자의 요청에도 새 교사 차 조작/실제 학습을 개시하지 못했다. 다음은 제어권 상태/카메라·몸 시각/조작 부호와 세션 설정을 검증한 뒤 동일 조건의 교사 롤아웃을 수집하고, 경로·pose는 교사/평가에만 두어 겹눈·비행 유래 단일 회로의 조향·가감속을 학습하고 분리된 코너/랩으로 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 native/CSP AI 상태 읽기 전용 동시 구간 확인:** 현재 session heartbeat를 native 420바이트 같은 복사본 앞뒤에서 각각 읽는 3초 진단을 차량·세션 변경 없이 수행했다 (`scripts/probe_ai_status_readonly.py`, 계획 `D:/CodexResearchRuns/flybrain-ai-status-bracket-plan-20261102-01/`, 원본 `D:/CodexResearchRuns/flybrain-ai-status-bracket-20261102-01/`, 해시 감사 `D:/CodexResearchRuns/flybrain-ai-status-bracket-audit-20261102-01/`). 동일 session generation에서 59개 서로 다른 native packet 전부 heartbeat 전/후 `ai_controlled=false`, native byte 416의 디코드 값 true였다. heartbeat는 독립적인 physics tick이 아니고 파일 갱신 주기/전달 지연이 있어 앞뒤 읽기만으로 정확히 같은 물리 시점이나 어느 쪽의 권한 상태가 진실인지 증명하지 않는다. 과거 정지 shadow 원본 2340개에서는 byte 416이 0이었다. 현재 Lua는 `ac.getCar(0).isAIControlled`을 기록하며 설치된 CSP SDK는 이 필드를 AI/자동운전 제어 여부로 설명한다. 두 인터페이스가 불일치하므로 양쪽 동의 검사 유지, actor/차량/lifecycle 변경 0. 다음은 검증된 원본 native ABI·버전과 실제 상태 전이의 원인을 확인하고 안전한 기준을 확보하기 전에는 통합 주행을 시작하지 않는다. 이어 동일 50ms 정지 shadow, 움직이는 시각·몸 정합, 단일 회로 조향·가감속·변속·셋업 및 유효 완주/라인·랩타임을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 process sampler 실시간 통합 시도 보류 — AI 상태 불일치:** 기존 8초 정지 camera→FlyVis→단일 회로 shadow의 native sampler만 별도 프로세스 adapter로 바꾼 후보 (`src/flybrain_drive/native_process_rows.py`, `scripts/record_native_process_unified_shadow.py`)를 만들고 관련 프로세스/이력/guard 검사 15개를 통과했다. 첫 실제 시도 `D:/CodexResearchRuns/flybrain-native-process-shadow-20261102-01/`은 기존 CSP lifecycle API로 pause 후 native `isAIControlled` 검사에서 true가 나와 시작 전에 중단했고 회로 worker는 정상 정지했다. 세션 heartbeat의 `ai_controlled`는 false여서 두 권한 자료가 불일치한다. 본 작업이 pause했던 상태는 검증된 API로 원래 unpaused/live 상태로 복구했으며 receipt `D:/CodexResearchRuns/flybrain-native-process-shadow-restore-20261102-01/`, camera inactive·actor/차량 제어 0이다. 앞선 실제 native 프로세스 읽기 80건과 추가 읽기 80건에서 native AI flag는 모두 true (`D:/CodexResearchRuns/flybrain-native-process-live-20261102-01/`, `...-02/`); 이 관측만으로 어느 자료가 실제 권한을 제대로 나타내는지 단정하지 않는다. 두 번째 후보 `scripts/record_native_process_unified_shadow_v2.py`는 native 검사를 pause 전으로 이동했다. 시도 `D:/CodexResearchRuns/flybrain-native-process-shadow-20261102-02/`는 같은 flag로 pause 전 중단하고 worker 정상 종료, 세션은 unpaused/live 그대로였다. 이 두 시도는 실제 process sampler와 카메라/단일 회로의 결합 성능을 검증하지 못했으며 권한 체크를 우회하지 않았다. 다음은 native 420바이트 ABI와 CSP `car.isAIControlled`의 관측 대상·시각·상태 전이를 읽기 전용으로 대조해 불일치를 해결하거나 원인을 분리한다. 이후 같은 50ms guard로 정지 shadow→움직이는 시각·몸 정합→단일 회로 조향·가감속·변속·셋업 및 유효 완주/라인/랩타임을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 실제 native 공유 메모리 독립 프로세스 읽기 전용 확인:** 기록 바이트 오프라인 통합 뒤 기존 `Local\acpmf_physics` 420바이트 매핑을 새 수집 프로세스에서 조작 없이 읽는 짧은 진단을 수행했다 (`scripts/probe_native_process_live_readonly.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-native-process-live-plan-20261102-01/`, 원본·결과 `D:/CodexResearchRuns/flybrain-native-process-live-20261102-01/`). 두 번 같은 복사본 기반 80건을 host receipt 순서대로 받고 서로 다른 packet 80개, 최대 host receipt 간격 6.343ms, 자식 exit 0 및 terminal count 80을 확인했다. 5ms 수집 설정의 짧은 읽기 전용 검사는 실제 camera 노출/physics 원천 시간·지속 부하·기존 회로 결합·차량 제어의 검증이 아니다. lifecycle 요청·desktop 입력·actor·차량 제어 0. 다음은 같은 process sampler와 body-history bridge를 기존 단일 회로 shadow에 연결해 정지 상태에서 50ms guard, 큐/작업 종료와 장시간 부하를 검증하고, 움직이는 시각·몸 정합 및 단일 회로 조향·가감속·변속·셋업, 유효 완주/라인·랩타임을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 프로세스 수집→기존 몸 이력/guard 오프라인 통합:** `src/flybrain_drive/process_body_history_bridge.py`를 추가해 별도 프로세스 샘플을 기존 `OnlineBodyShadow`의 원본 바이트 해시·copy receipt·패킷 검사를 거쳐 같은 `PerViewBodyHistory`에 넣는다. sampler stale/sequence/큐 오류나 원본 복사 오류 발생 시 기존 `UnifiedHostGuard.failed`를 고정하며 명시적 재시작 전 더 읽지 않는다. 실제 spawn 자식이 합성 420바이트 패킷을 전달한 뒤 원래 host receipt가 몸 관측까지 유지되고 guard가 첫 출력을 억제하는지, 계산 중 원래 receipt가 50ms를 넘으면 출력이 거부·실패 고정되는지 검사했다. sampler stale 및 queue full에서도 이력이 늘지 않고 guard가 실패하는지 확인했다. 관련 process·bridge·원래 guard·native ABI 검사 26개 통과 (`tests/test_process_sampler_guard_integration.py`, `tests/test_native_process_sampler.py`, `tests/test_unified_host_guard.py`, `tests/test_ac_teacher_physics.py`, 해시/테스트 기록 `D:/CodexResearchRuns/flybrain-process-history-guard-tests-20261102-01/`). 소형 합성 회로·입력과 합성 host receipt의 오프라인 통합이며 실제 GPU 회로·원본 shared memory·동시 IPC/지연·물리 시각 및 실제 운전은 미검증이다. 새 bridge는 기존 production ticker에 연결하지 않았고 actor/차량 제어 0. 다음은 실제 원본 native shared memory에 대한 읽기 전용 process와 기존 ticker의 종단 간 정지 shadow에서 같은 50ms 기준·누락/종료·시계/지연을 측정한 뒤, 움직이는 시각·몸 정합과 단일 회로 조향·가감속·변속·셋업 및 유효 완주/라인/랩타임을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 native 별도 프로세스 수집 후보:** `src/flybrain_drive/native_process_sampler.py`에 읽기 전용 native 420바이트 공유 메모리 수집 후보와 기록 바이트 전용 테스트 경로를 추가했다. 독립 프로세스가 두 번 같은 복사본을 사용하고 host 복사 시각·원본 authority 기록을 유지한다. 큐는 유한 크기이며 포화 시 명시적 생산자 오류를 고정하고, 소비는 연속 sequence와 50ms 이내 host receipt를 요구하며 오래되거나 미래인 샘플 및 sequence 오류 이후 계속 읽기를 차단한다. 종료 marker 없는 자식 종료도 오류다. Windows 파이프 정상 종료 후 `BrokenPipeError`를 처리하도록 첫 테스트 실패를 수정했다. 실제 spawn 자식의 정상 복사·stale 오류 고정·큐 포화 오류 고정·정상 종료·강제 종료 및 기존 native ABI 관련 검사 19개 통과 (`tests/test_native_process_sampler.py`, `tests/test_ac_teacher_physics.py`). 큰 큐 포화 후 생산자 feeder가 대기하지 않도록 실패 시 버퍼를 폐기하고 오류를 고정하며 실제 자식 종료를 검사했다. 기존 shadow의 기록 바이트 80개를 정확한 순서와 해시로 전달했고 자식 종료 코드 0/terminal count 80을 확인했다 (`scripts/probe_native_process_sampler_recorded.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-native-process-recorded-plan-20261102-03/`, 결과 `D:/CodexResearchRuns/flybrain-native-process-recorded-20261102-03/`). 02 성공 후 큐 포화 종료 처리를 보강하고 모듈 해시 고정 03을 다시 실행했다. 첫 01 실행은 module 해시를 계획에 적었으나 프로그램이 대조하지 않아 별도로 보존하고, 해시 검사 추가 후 02에서 다시 실행했다. 이 후보는 기록 바이트/합성 시각만 검증했으며 실제 shared memory·ticker/기존 guard 통합, actor 및 물리 시각 검증이 아니다. 기존 production 경로는 변경하지 않았고 차량 제어 0. 다음은 기존 guard와 offline 결합하여 입력 수집 시각 보존, 큐 지연·누락·종료 시 fail-closed를 검증한 뒤 실제 정지 shadow의 read-only 수집을 계측한다. 이어 움직이는 시각·몸 정합, 단일 회로 조향·가감속·변속·셋업 및 유효 완주/라인/랩타임을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 기록 native 바이트의 프로세스 간 전송 시험:** 실제 정지 shadow 기록의 native 420바이트 원본 160개를 해시 고정해 offline 재생하고, spawn 프로세스에서 각 바이트 해시·패킷 ABI를 검사한 후 용량 128 FIFO로 전달했다 (`scripts/probe_recorded_native_ipc.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-native-ipc-plan-20261102-01/`, 결과/개별 행 `D:/CodexResearchRuns/flybrain-native-ipc-20261102-01/`). 소비측에서 순번·바이트 해시·패킷을 재검사한 결과 160개 모두 순서대로 보존, 생산자 정상 종료, 생산 receipt 최대 간격 2.88ms였다. 20개 수신 후 소비측을 인위적으로 150ms 멈추자 전달 나이 최대 147.67ms였고 50ms 초과 40개는 실험의 명시적 판정에서 거부, 이후 60번째 시퀀스부터 다시 신선했다. 분리된 생산이 계속돼도 소비측 지연 시 오래된 데이터가 누적되므로 신선도를 재검사해야 한다. 이는 기록 바이트를 현재 시각으로 재생한 synthetic IPC이며 실제 shared memory 접근·전송 손실·source 물리 시각·기존 production guard 연결은 증명하지 않는다. actor/실제 차량 제어 0. 다음은 생산 중 중단/큐 포화·시퀀스 및 종료 오류를 명시적으로 시험하고 프로세스 수집 후보를 실제 guard와 결합한 오프라인 통합 검증 후, 실제 정지 shadow에서 동일 50ms 기준과 지연 원인을 계측한다. 이후 움직이는 시간 정합·단일 회로 조향·가감속·변속·셋업 및 유효 완주/라인/랩타임을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 센서 수집 스레드의 인위적 GIL 경쟁 실험:** 실제 `NativeCopySampler`와 body ticker가 같은 Python 프로세스의 별도 스레드임을 확인했다. 게임·센서에 접근하지 않는 새 실험에서 2ms 간격 수집 스레드와 별도 프로세스 수집을 동시에 실행하고, 150ms 순수 Python 바쁜 루프를 동일 프로세스에 가했다 (`scripts/probe_sampler_gil_isolation.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-sampler-gil-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-sampler-gil-20261102-01/`). Python 전환 간격 5ms에서 부하와 겹친 최대 간격은 스레드 19.12ms, 별도 프로세스 2.86ms였다. 인위적으로 250ms로 늘리면 스레드 150.09ms, 프로세스 2.73ms였다. 이 실험은 GIL 경쟁이 비슷한 공백을 만들 수 있음을 보이는 합성 재현이지, 기존 실제 150ms 지연의 원인이나 native 센서 IPC·프로세스 전달 지연의 증거가 아니다. 별도 프로세스로 샘플을 받아도 제어 계산이나 본 프로세스가 멈추면 오래된 출력 문제가 자동 해결되지 않는다. 실험은 simulator/actor/차량 제어·optimizer 0. 다음은 실제 sampler 경계에 맞는 독립 프로세스의 기록·시간·종료·누락·IPC 지연을 오프라인에서 검증하고, 50ms 거부 기준을 유지한 채 실제 정지 shadow의 운영체제/GC/스레드 계측으로 원인을 확인한다. 이어 움직이는 시각·몸 동기와 단일 회로 조향·가감속·변속·셋업, 유효 완주/라인/랩타임을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 실제 정지 shadow의 실행 지연 감사 및 우선순위 전환:** 최근 합성 투영 후보들은 코너 쌍 개선 기준에 반복 미달했다. 단순 유사 튜닝 반복을 중단하고 실제 센서→단일 회로의 신선도와 지속 실행을 우선한다. 과거 142 카메라 그룹의 정지 shadow 원본 네 파일 SHA를 고정해 486 정상 출력과 종료된 1회 신선도 거부를 감사했다 (`scripts/audit_shadow_stall.py`, 계획 `D:/CodexResearchRuns/flybrain-shadow-stall-audit-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-shadow-stall-audit-20261102-01/`). 정상 계산 p50/p95/max 4.52/6.63/7.53ms, 정상 출력 시 몸 receipt 나이 p50/p95/max 6.68/9.44/11.83ms, 처리 대기 p95 0.219ms였다. 거부된 한 결정은 계산 150.11ms, 출력 몸 receipt 나이 151.00ms로 50ms 제한 초과다. 그 결정 중 native 복사 receipt 3개 사이에 최대 145.72ms 간격이 있었고, 기록된 카메라 처리 구간은 이 구간과 겹치지 않았다. 이는 host 관측 시점과 한 번의 사후 분석이며 OS·스레드·GIL·장치 중 원인이나 노출/물리 tick 시점을 입증하지 않는다. 안전 기준 완화·actor/차량 제어 0. 세 과거 진단의 결과 파일은 저장됐으나 해당 핸들은 여전히 살아 있고 프로세스 CPU 시간은 증가해 종료된 것으로 취급하지 않았다. 다음은 센서 수집과 회로 worker의 scheduler/GIL/GC/디바이스 대기를 계측하는 재현 가능한 오프라인 시험을 먼저 만들고, 실제 정지 shadow에서 같은 신선도 기준으로 지연 원인과 개선을 검증한다. 이후 움직이는 시각·몸 시각 정합, 단일 회로 조향·가감속/변속·셋업, 유효 완주와 라인·랩타임 검증을 순서대로 진행한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 공통 조향을 억제한 코너 쌍 방향 — screen 실패:** 후보 FlyVis와 단일 재귀 회로에서 학습 합성 장면의 좌우 코너 출력차 기울기를 공통 출력 기울기에 직교화하고 원소 변화 최대 0.02의 단일 방향을 적용했다 (`scripts/fit_t4d_orthogonal_pair.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-t4d-orthogonal-pair-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-orthogonal-pair-20261102-01/`). 이는 optimizer 갱신 0회지만 공간 투영은 실제 변경한 후보이며 actor 적격이 아니다. 학습 장면을 별도 전체 이력으로 재생하면 쌍 차는 0.00292918→0.00293046 (+1.289e-6), 공통 출력 변화는 +1.86e-9였다 (`D:/CodexResearchRuns/flybrain-t4d-orthogonal-fit-audit-20261102-01/`). 다른 질감이지만 이미 본 합성 평가에서 공통 변화 +1.17e-6, 여섯 쌍 5% 이상 악화 없음, 평균 쌍 오차 개선은 0.00334%로 사전 1% 미달 및 screen 실패 (`D:/CodexResearchRuns/flybrain-t4d-orthogonal-pair-audit-20261102-01/`). 공통 출력을 유지하는 제한 방향이 존재하지만 이 방향의 코너 구분 개선은 작고 일반적 원인이나 실제 폐루프 성능을 증명하지 않는다. 학습 장면 감사 결과 파일은 저장됐으나 실행 핸들은 확인 시 살아 있으며 이전 두 추적 프로세스도 여전히 살아 있다. 후보 미채택·실제 차량 제어 0, 합성 고정 몸·생리 미검증. 다음은 실효 방향과 동역학을 더 넓은 장면에서 확인하고 시간·몸 감각 정합 및 주행 학습을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 코너별 공간 변화와 회로 상태 추적:** 직전과 같은 후보/기준 및 고정 몸 이력의 합성 좌우 코너에 대해 41결정의 공간 투영, 적용 전류, 회로 상태, intent를 기록했다 (`scripts/trace_t4d_differential_state.py`, 계획 `D:/CodexResearchRuns/flybrain-t4d-differential-trace-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-differential-trace-20261102-01/`, 감사 `D:/CodexResearchRuns/flybrain-t4d-differential-trace-audit-20261102-01/`). 조향은 직전 저장 재생과 기준·후보 모두 일치했다. 후보 변화의 좌우 평균 RMS와 좌우 차이의 RMS는 공간 포트 각각 1.4874e-4/1.5643e-5, 회로 상태 전체 9.3580e-7/1.2070e-7, intent 두 축 2.4640e-6/2.5579e-7이다. 서로 다른 크기·단위의 신호이며 전류와 상태 RMS는 9728원소 전체를 포함하므로 단계 간 전달률로 비교하지 않는다. 이 두 이력에서 후보 변경이 좌우를 구분하는 성분보다 공통 성분을 크게 만들었음을 보이나 근본 원인·일반성을 입증하지 않는다. 결과 파일은 저장됐으나 이 프로세스와 직전 포화 검사의 프로세스는 확인 시 여전히 살아 있어 종료 여부를 별도 추적한다. 실제 생리·주행 미검증, optimizer/actor/차량 제어 0. 다음은 학습 손실의 쌍 차이 기울기가 공통 성분을 줄이고 코너별 차이를 키울 수 있는지 제한된 공간 포트 방향을 별도로 검증하고 신규 장면 및 폐루프에 연결한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 공간 투영 포화 검사:** epsilon 대조의 기준·후보 투영을 동일 단일 재귀 회로와 기존에 본 합성 평가 질감의 zero-yaw 직선/양 코너 세 이력에 적용하고 공간 projection의 tanh 전 출력을 기록했다 (`scripts/trace_t4d_spatial_saturation.py`, 계획 `D:/CodexResearchRuns/flybrain-t4d-spatial-trace-plan-20261102-01/`, 기록 `D:/CodexResearchRuns/flybrain-t4d-spatial-trace-20261102-01/`, 감사 `D:/CodexResearchRuns/flybrain-t4d-spatial-trace-audit-20261102-01/`). 저장 결과는 직전 평가 조향과 기준·후보 모두 최대 차 0, tanh 입력 절댓값 최대 0.9212, |입력|≥2 비율 0, 0.5×tanh의 최소 국소 미분 0.2361이다. 따라서 이 세 이력에서 해당 tanh가 강하게 포화돼 있다고 볼 근거는 없다. 후보의 tanh 이후 공간 포트 변화 RMS는 0.0001505이며, 최종 조향 변화는 세 조건 +4.30e-6~+4.46e-6로 거의 공통이고 좌우 코너 차 변화는 1.66e-7이었다. 이 수치는 차원이 달라 단계별 전달률로 단정할 수 없다. 원인은 후속 회로·상태·조건 및 공간 변화 방향의 공통 성분일 수 있으나 아직 분리되지 않았다. 실행 결과 파일은 완료 상태로 저장됐으나 실행 종료 핸들은 확인 시 여전히 살아 있어 종료 여부를 별도 확인해야 한다. optimizer/actor/차량 제어 0, 합성·세 이력·고정 몸이며 생리·실제 주행 미검증. 다음은 동일 몸 이력에서 좌우 코너 간 공간 포트 차이와 회로 내 반응을 직접 추적하고, 차별 신호와 공통 신호를 분리해 학습과 폐루프를 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 학습기 epsilon 대조 — 연결 변화 증가, screen 실패:** 동일 초기 단일 회로·전체 41결정 역전파·한 번 갱신과 공간 투영 상한 0.02를 유지하고 Adam epsilon만 1e-8에서 1e-12로 변경했다 (`scripts/train_t4d_adam_epsilon.py`, 계획 `D:/CodexResearchRuns/flybrain-t4d-adam-epsilon-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-adam-epsilon-20261102-01/`, 감사 `D:/CodexResearchRuns/flybrain-t4d-adam-epsilon-audit-20261102-01/`). 같은 초기 손실 0.000702569, 기울기 절댓값 중앙 1.431e-9로 기존 epsilon보다 작았다. 투영 갱신 L2는 0.04567→0.15445, 원소 최대값은 0.002502→0.003006으로 증가했다. 그러나 기존에 본 합성 평가 질감에서 쌍 평균 제곱오차 개선은 약 0.00741%에 그쳐 사전 1% 기준에 미달, 여섯 쌍 5% 이상 악화 제한은 통과했으나 전체 screen 실패다. 조향 쌍 변화가 매우 작아 epsilon만이 유일 원인이라 할 수 없다. 후보 미채택, optimizer 한 번, actor/차량 제어 0; 고정 몸 이력·생리·실제 주행 미검증이다. 다음은 공간 투영 전후 tanh 입력·포화와 회로 상태/출력의 실제 민감도를 인과적으로 측정하고, 유효 신호가 있는 조건에 학습을 연결해 새 질감과 폐루프에서 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 전체 이력 쌍 차이 학습 — screen 실패:** 이전과 같은 T4d 후보 시각·합성 코너×yaw 자료와 재귀 속도 경로에서, 각 독립 41결정의 숫자 상태를 유지하고 중간 gradient detach 없이 공간 투영만 한 번 갱신했다 (`scripts/train_t4d_fullhistory_paired.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-t4d-fullhistory-paired-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-fullhistory-paired-20261102-01/`). 여섯 합성 쌍의 공학 목표는 이전과 동일하며, 이미 본 평가 질감에서 평균 쌍 제곱오차는 약 0.00378% 개선돼 사전 1% 기준에 미달했다. 각 쌍 5% 이상 악화는 없었으나 전체 screen 실패 (`D:/CodexResearchRuns/flybrain-t4d-fullhistory-paired-audit-20261102-01/`). yaw 쌍은 최대 3.13e-6, 코너 쌍은 최대 5.24e-7 변화했다. 한 번의 갱신과 이전 두 번의 잘린 갱신은 직접적인 동량 비교가 아니며, 전체 이력 기울기만으로 이 후보의 방향 문제를 해결하지 못했다. 합성 고정 이력, 이미 본 평가 질감·가설 목표이며 생리·독립 일반화·실제 폐루프는 미검증, actor/차량 제어 0, 후보 미채택이다. 다음은 공간 투영에서 회로 출력까지의 포화·전달과 정규화/동역학을 추적하고, 새로운 시각·몸 폐루프에서 실제 기여를 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 재귀 코너 쌍의 잘린 기울기와 전체 이력 비교:** 직전 공간 투영 학습의 동일 합성 zero-yaw 좌우 코너 쌍에서, 전방 계산을 유지하고 36번째 결정까지 매번 기울기만 절단한 자동미분을 계산했다 (`scripts/audit_t4d_recurrent_pair_gradient.py`, 결과 `D:/CodexResearchRuns/flybrain-t4d-pair-gradient-20261102-01/`). 학습/추론 쌍 출력 차는 0, 투영 기울기 L2 1.027e-6이고 최대 원소로 정규화한 방향의 잘린 방향 미분은 8.004e-6이다. 같은 파라미터 방향을 ±0.01/±0.02 바꿔 전체 재귀 이력을 각각 재실행한 중심 유한차분은 6.370e-5/5.928e-5로 잘린 값의 약 7.96/7.41배였다 (`D:/CodexResearchRuns/flybrain-t4d-pair-gradient-20261102-02/`, 교차 감사 `D:/CodexResearchRuns/flybrain-t4d-pair-gradient-crosscheck-20261102-01/`). 두 방법은 기울기 절단 이력과 유한 변화량이 달라 일치해야 한다는 뜻은 아니며, 한 합성 쌍·한 방향·float32 비교로 일반적인 유일 병목이나 실제 주행을 증명하지 않는다. 02 계획의 program_sha256에는 원래 스크립트 해시가 남았고 실제 별도 래퍼 해시는 manifest에 기록됐다; 래퍼 변경은 계획 경로뿐이나 계획의 프로그램 해시와 실행 일치를 주장하지 않는다. optimizer/actor/차량 제어 0. 다음은 전체 이력에서 메모리를 제한하는 구간별 재계산 또는 유한차분 학습을 사전 설계하고 코너·회전 쌍 및 새 질감·폐루프 효과를 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 T4d 후보·재귀 속도 경로의 쌍 차이 학습 실패:** 합성 코너×yaw 자료와 후보 FlyVis 출력을 사용해 단일 회로의 실제 기존 `experimental_recurrent_speed_training_decision` / 평가 경로를 맞췄다 (`scripts/train_t4d_paired_recurrent.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-t4d-paired-recurrent-fit-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-paired-recurrent-fit-20261102-01/`). 조향 기준을 고정하고 공간 투영만 2회 갱신하며 세 코너에 대한 ±yaw 출력 차 목표 +0.024, 세 yaw에 대한 양 코너 차 목표 +0.04를 손실에 직접 넣었다. 이는 합성 공학 가설이지 생리·실제 차량 정답이 아니다. 이미 본 다른 질감의 여섯 쌍에서 사전 지정 평균 제곱오차 개선은 약 0.00177%로 요구 1% 미달, 각 쌍 5% 악화 제한은 충족하여 전체 screen 실패 (`D:/CodexResearchRuns/flybrain-t4d-paired-recurrent-audit-20261102-01/`). 코너 차는 대략 +0.005325/+0.006613/+0.010563에서 최대 2.34e-7만 변했고 yaw 차도 최대 9.32e-7 변했다. 공간 투영은 2678개 요소가 바뀌고 최대 변화 0.001610이므로 단순히 갱신이 0인 것은 아니지만, 작은 출력 영향의 정확한 원인은 아직 분리되지 않았다. 후보 미채택·actor/차량 제어 0, 합성 고정 이력·기존 노출 장면이며 독립 생리·실제 주행은 미검증이다. 다음은 실제 재귀 경로에서 코너 쌍 출력에 대한 공간 투영 기울기·포화와 목표 범위/동역학을 진단하고 인과적으로 유효한 변경을 찾은 뒤 새로운 질감·폐루프에서 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 T4d 후보 포함 코너 보존 학습 — 좁은 screen 통과, 반응 개선 미확인:** 합성 코너×회전 3×3 장면 두 질감의 저장 retina를 원본 및 T4d 후보 FlyVis로 재생했다 (`scripts/replay_t4d_candidate_road_yaw.py`, 계획 `D:/CodexResearchRuns/flybrain-t4d-road-yaw-retina-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-road-yaw-retina-20261102-01/`). 원본 신경 이력은 기존 저장값과 최대 4.33e-7 이내다. 기존 단일 회로 공간 투영 및 조향 참조만 제한 학습하며 합성 목표 0.02×bend−0.1×yaw와 zero-yaw 코너 출력 보존 항을 사용, 두 번 갱신했다 (`scripts/train_t4d_corner_yaw_candidate.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-t4d-corner-yaw-fit-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-corner-yaw-fit-20261102-01/`). 다른 질감이지만 과거에 이미 본 합성 평가 장면에서 목표 MSE가 0.0036962→0.0035420 (4.17% 개선), zero-yaw 출력 변화는 최대 0.001316으로 사전 1%/0.002 screen 충족 (`D:/CodexResearchRuns/flybrain-t4d-corner-yaw-fit-audit-20261102-01/`). 그러나 9조건 출력이 모두 음수이고 후보 변화가 거의 일정한 +0.001312~+0.001317이며 좌우 코너 차이 변화는 최대 2.21e-6, 회전 차이 변화는 최대 4.93e-6이다. 따라서 통과의 대부분은 공통 출력 치우침 보정이며 질감에 따른 방향 반응 개선이나 주행 향상을 보여주지 않는다. 학습/평가는 `sensory_decision` 경로로 직전 회전 실험의 `experimental_recurrent_speed_decision`과도 다르다. 후보 actor 미적격·실제 제어 0, 생리·독립 일반화·폐루프 미검증. 다음은 공통 편향과 별도로 코너 및 회전의 짝 차이에 직접 손실과 평가를 두고 실제 사용할 동일 재귀 경로와 새로운 질감에서 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 T4d 후보에서 공간·운동 투영 인과 개입:** 앞선 두 질감×두 회전 속도 동일 후보 시각과 고정 몸 이력에서 상대운동 투영, 공간 대비 투영을 각각·동시에 0으로 한 16개 조건을 실행했다 (`scripts/ablate_t4d_candidate_factorial_yaw.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-t4d-factorial-ablation-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-factorial-ablation-20261102-01/`). 개입 없는 후보 출력은 직전 저장 결과와 네 조건 모두 최대 차 0 (`D:/CodexResearchRuns/flybrain-t4d-factorial-ablation-audit-20261102-01/`). 마지막 5결정의 -yaw와 +yaw 조향 차는 질감 879601의 속도 0.13/0.23에서 기본 -0.003262/-0.004343, 운동 투영 차단 -0.005526/-0.009028, 공간 투영 차단 +0.002923/+0.005586, 둘 다 차단 +0.000785/+0.001003이다. 질감 879602에서는 각각 +0.003087/+0.004443, +0.001274/+0.001053, +0.002115/+0.004058, +0.000294/+0.000690이다. 이 네 조건에서 공간 투영 차단은 질감 간 부호 불일치를 없애며, 운동 투영만 차단하면 불일치가 남는다. 이는 해당 공간 투영이 불일치에 인과적으로 기여함을 보이지만, 투영 차단은 비생리적이고 공간 경로는 코너 선행 정보에도 관여하므로 제거를 정당화하지 않는다. 이미 본 합성 질감·고정 몸 이력, 생리·독립 일반화·실제 폐루프 미검증, actor/optimizer/차량 제어 0. 다음은 코너 정보 보존을 명시적으로 제약하면서 질감에 따른 잘못된 yaw 반응을 줄이는 같은 단일 회로의 학습과 새로운 질감 및 폐루프 평가를 수행한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 T4d 후보의 질감×회전 속도 교차 비교:** 기존 합성 구면 장면의 두 질감 879601/879602와 두 회전 속도 ±0.13/±0.23rad/s를 교차한 4개 입력을 동일 원본·후보 FlyVis로 재생하고 4시야 신경 이력을 단일 회로에 각각 넣었다 (`D:/CodexResearchRuns/flybrain-t4d-yaw-factorial-retina-plan-20261102-01/`, `D:/CodexResearchRuns/flybrain-t4d-yaw-factorial-retina-20261102-01/`, `D:/CodexResearchRuns/flybrain-t4d-factorial-unified-plan-20261102-01/`, `D:/CodexResearchRuns/flybrain-t4d-factorial-unified-20261102-01/`). 원본 신경 이력은 이전 원본과 부동소수점 오차 내 일치하며 원본 단일 회로 출력은 과거 factorial 정상 조건과 네 조건 모두 최대 차 0 (`D:/CodexResearchRuns/flybrain-t4d-factorial-unified-audit-20261102-01/`). 마지막 5결정의 -yaw와 +yaw 조향 intent 차는 질감 879601에서 원본 -0.001262/-0.000289, 후보 -0.003262/-0.004343, 질감 879602에서 원본 +0.005108/+0.009572, 후보 +0.003087/+0.004443 (순서 속도 0.13/0.23)이다. 같은 속도에서도 질감별 부호가 다르므로 두 장면에서 속도 차이만이 원인은 아니며 T4d 후보도 불일치를 해소하지 못했다. 이미 검토한 두 합성 질감과 고정 몸 이력으로 질감의 어떤 특징이 원인인지, 생리·실제 주행 일반화는 증명하지 않는다. 후보 actor 미적격, optimizer/차량 제어 0. 다음은 기존 공간/운동 경로의 인과 분해를 후보에도 적용하고 코너 정보 보존과 독립 장면, 실제 시각·몸 시각 정합을 확인한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 T4d 후보의 단일 회로 반사실 비교:** 앞서 조향 부호가 달랐던 합성 회전 장면 879604/879605의 저장된 동일 전후좌우 retina를 원본 000과 비음수 보간 후보에 각각 넣고 시야별 상태를 매 경우 초기화해 전체 시간을 재생했다 (`scripts/replay_t4d_candidate_yaw_retina.py`, 계획 `D:/CodexResearchRuns/flybrain-t4d-yaw-retina-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-yaw-retina-20261102-01/`). 원본 신경 출력의 과거 저장값 대비 최대 오차는 각각 3.58e-7/3.73e-7, 후보-원본 신경 출력 RMS 차이는 0.1611/0.1563이다. 동일 단일 비행/몸 회로·고정 몸 이력·독립 recurrent reset으로 두 시각 출력을 재생했다 (`scripts/compare_t4d_candidate_unified_yaw.py`, 계획 `D:/CodexResearchRuns/flybrain-t4d-unified-yaw-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-t4d-unified-yaw-20261102-01/`, 저장 결과 감사 `D:/CodexResearchRuns/flybrain-t4d-unified-yaw-audit-20261102-01/`). 원본 회로 출력은 기존 재생 저장값과 최대 차 0이다. 마지막 5결정의 -yaw와 +yaw 조향 intent 차는 879604에서 +0.005538→+0.004123, 879605에서 -0.010909→-0.011803으로, 후보에서도 질감 간 반대 부호가 유지됐다. 두 장면은 속도와 질감도 다르므로 단일 원인·물리적 정답·생리 일반화를 결론 내릴 수 없고, 이미 본 합성 입력·고정 몸 이력은 폐루프 주행이 아니다. 후보 actor 미적격, 실제 차량 제어·optimizer 0. 다음은 같은 질감과 속도를 교차해 후보 효과의 원인을 분리하고 시각/몸 동기와 생리 기능 및 통합 폐루프를 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 전체 flash 이력 학습과 사후 보간:** 비음수 T4d 입력 10개에 전체 1초 flash 이력의 저자 지표로 유한차분 25회와 제한 선탐색을 적용했다 (`D:/CodexResearchRuns/flybrain-t4d-fullhistory-fit-20261102-01/`). T4d 지수는 전체 -0.3120→+0.0798, 학습에 넣지 않은 radius6 -0.3119→+0.0793이었지만 T4c radius6 변화 0.101000으로 사전 상한 0.1을 넘어 15/16, 후보 미채택 (`D:/CodexResearchRuns/flybrain-t4d-fullhistory-flash-gate-20261102-01/`). 이를 본 뒤 두 비음수 후보를 0.9 비율로 보간한 탐색 후보는 원본 대비 strength 10개만 바뀌고 최대 변화 0.006425, 음수 0개다 (`D:/CodexResearchRuns/flybrain-t4d-interpolation-exploratory-20261102-01/`). 같은 flash 재검사에서 T4d 전체 +0.07067, radius6 +0.07014, T4c radius6 변화 0.09382로 16/16 (`D:/CodexResearchRuns/flybrain-t4d-interpolation-flash-gate-20261102-01/`), 저자/독립 numpy 지표 최대 차 0. 두 반경은 이미 관찰한 결과를 반영해 선택한 탐색 자료이므로 독립 일반화·생리 검증이 아니다. 저자 이동 경계 144조건 및 8세포×6속도 원본 비교를 완료했다 (`D:/CodexResearchRuns/flybrain-t4d-interpolation-edge-20261102-01/`, 분석 `D:/CodexResearchRuns/flybrain-t4d-interpolation-analysis-20261102-01/`, 비교 `D:/CodexResearchRuns/flybrain-t4d-interpolation-comparison-20261102-01/`). T4d의 기대 밝기 부호는 0/6→6/6, 최대 방향 오차 9.55°→3.67°, 최소 방향 선택성 0.061→0.181이다. 나머지 7세포는 밝기 부호 6/6을 유지했으나 최대 방향 오차는 T5a 6.66°→12.18°, T5b 12.78°→19.38° 등 일부 악화했다. 합성 부품 반응으로 실측 생리·주행 검증이 아니며 후보의 독립 일반화와 단일 회로 영향은 미검증이다. 실제 AC 주행·actor/optimizer 배포는 하지 않았다. 다음은 움직이는 경계의 방향·밝기별 반응과 다른 세포 보존을 원본과 비교하고 독립 자극 및 단일 회로 통합을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+
+> **2026-11-02 정정 및 비음수 제약 T4d 재학습:** 기존 000 설정은 `edges_syn_strength`에 `non_negative`를 요구한다. 앞선 두 후보를 원본 state dict와 대조한 결과 첫 bounded 후보는 strength 1개(인덱스 375, -0.003727), peak 후보는 2개(199/375, 최솟값 -0.000993)가 음수였다. `edges_sign` 텐서가 고정돼도 음수 strength는 유효 시냅스 부호를 뒤집을 수 있으므로 앞선 ‘연결 부호 보존’ 설명을 철회한다. 두 결과·checkpoint는 실패 원본으로 보존하고 생물학적 적격/actor 사용 금지다. 원래 000의 strength 음수는 0개. 이후 후보마다 비음수·유한·원래 대비 bound를 명시적으로 적용하고 평가 전에 검사하는 공통 경계를 추가했다 (`src/flybrain_drive/flyvis_parameter_integrity.py`, `scripts/probe_flyvis_nonnegative_checkpoint.py`, 테스트 `tests/test_flyvis_parameter_integrity.py` 5개 통과). 원본에서 T4d 진입 10개 strength만 첫 40 flash frame의 peak 차이를 목표로 10회 재학습했다 (`scripts/fit_flyvis_t4d_nonnegative_candidate.py`, 계획 `D:/CodexResearchRuns/flybrain-t4d-nonnegative-fit-plan-20261102-01/`, 실행 `D:/CodexResearchRuns/flybrain-t4d-nonnegative-fit-20261102-01/`). 학습 창 ON-OFF peak 차는 -0.1703→-0.0346으로 개선됐으나 음수였다. 후보 state dict는 원본 대비 지정 10개 strength만 다르고 최댓값 변화 0.00491, 음수 strength 0개다. 전체 600 frame 저자 flash 및 미학습 radius6 사전 gate에서 T4d index는 -0.3120→-0.0474, radius6 -0.3119→-0.0496으로 여전히 음수; 다른 7세포×2 반경은 기준을 만족해 전체 14/16 실패 (`D:/CodexResearchRuns/flybrain-t4d-nonnegative-flash-gate-20261102-01/`). 전 실험의 6회 peak 학습은 초기 후보보다 손실/실제 index가 악화했으며 그 후보 역시 음수 strength 위반이라 무효다 (`D:/CodexResearchRuns/flybrain-t4d-peak-fit-20261102-01/`, `D:/CodexResearchRuns/flybrain-t4d-peak-flash-gate-20261102-01/`). 모든 결과 보존, 후보 미채택, 생리·실제 AC·actor 미검증. 다음은 nonnegative 제약하 전체 이력 목표의 안정적 최적화와 별도 moving-edge 자극 검증이다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 FlyVis 000 T4d 입력 연결 제한 학습 — 전체 flash 검증 실패:** 기존 공개 000 네트워크의 구조·edges_sign 텐서와 T4d 이외 연결을 고정하고(후속 감사에서 음수 strength에 따른 유효 부호 반전 발견) T4d로 들어가는 10개 shared synapse strength만 최대 절대 변화 0.05로 제한해 전체 화면 ON/OFF 합성 flash의 onset 이후 40 frame에서 3회 Adam 갱신했다 (`scripts/fit_flyvis_t4d_contrast_candidate.py`, 계획 `D:/CodexResearchRuns/flybrain-t4d-bounded-fit-plan-20261102-01/`, 결과/후보 `D:/CodexResearchRuns/flybrain-t4d-bounded-fit-20261102-01/`). 1초 steady 및 200 frame grey를 no-grad로 연속 warm하고 onset에서만 gradient를 절단했다. 학습 창 평균 ON-OFF 차이는 -0.3105→+0.0965였지만 갱신 전 손실은 0.1027→0.8241→0.0350으로 비단조였다. 후보 state dict를 원본과 별도 비교해 `edges_syn_strength`의 10개 값만 변했고 최대 변화 0.02656임을 확인했다. 동일 저자 전체 600 frame flash, 학습에 쓰지 않은 radius6를 포함해 사전 정한 부호·비대상 보존 기준을 검증했다 (`scripts/probe_flyvis_declared_checkpoint.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-t4d-full-validation-plan-20261102-01/`, 원본 `D:/CodexResearchRuns/flybrain-t4d-bounded-flash-20261102-01/`, 감사 `D:/CodexResearchRuns/flybrain-t4d-bounded-flash-gate-20261102-01/`). T4d flash index는 전체 -0.3120→-0.0484, radius6 -0.3119→-0.0501로 개선됐으나 둘 다 잘못된 음수였다. 나머지 7개 세포×2반경은 사전 부호·변화량 상한을 만족해 14/16, 전체 gate 실패다. 저자와 독립 numpy 계산 차 0. 사전 계획대로 이동 경계/actor/차량 통합 미진행, 기존 000 checkpoint 무변경, 합성 전용·생리/실제 주행 미검증이다. 다음은 truncated onset 손실과 전체 이력 index 불일치 원인을 반영해 생리 지표를 직접 포함하는 제약 학습을 설계하고, 비대상/보류 자극·원래 단일 회로 유지 검증을 수행한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 물리 통과 이벤트와 그래픽/native 보간 대조:** 직전 4개 물리 통과 이벤트의 원본 프레임, AI 진단 progress 이력, native 복사·CSP/host 시계 자료의 SHA를 고정해 사후 분석했다 (`scripts/audit_physics_marker_native_bracket.py`, 계획 `D:/CodexResearchRuns/flybrain-physics-marker-native-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-physics-marker-native-audit-20261102-01/`). 그래픽 progress가 같은 표시 지점을 지난 시각을 인접 진단 표본으로 선형 보간하고 그래픽 `sim.time`으로 환산했을 때 물리 이벤트 시각과의 차이는 각각 -25.30/-22.88/-24.08/-23.38ms였다. 진행도 표본 간격은 38.30/42.95/37.42/38.68ms다. 그래픽 시각으로부터 추정한 host 구간을 전후 native 복사가 감싸는 간격은 7.68/4.86/7.24/7.51ms였으나 이 구간은 보간·clock 가정에 조건부이고 native 생성 시각의 증명은 아니다. 기존 -20ms host 가설과 수치상 가깝지만 양쪽 모두 graphics 측 영향을 공유하며 4개 연속 이벤트·같은 차/트랙의 사후 분석으로 독립 검증이나 카메라 노출·실제 물리 tick 동기화로 해석하지 않는다. route progress는 오직 비교 진단에만 사용하고 actor 입력 금지, optimizer/추가 차량 제어/배포 0. 다음은 physics event와 식별 가능한 native 또는 시각 표식을 연결해 원천 시각 불확실성을 제한하고 검증된 시간/감각에서 통합 학습을 수행한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 CSP 물리 스레드 통과 이벤트의 비제어 진단:** 설치된 CSP SDK는 `ac.onTrackPointCrossed`의 트랙 지정 지점 통과 시간이 물리 스레드에서 위치를 보간하고 `sim.time`과 같은 기준이라고 설명한다. 기존 차량 data를 수정하지 않고 요청 소유된 오프라인 AI motion3에만 적용되는 4개 임시 구독과 명시적 정리 후보를 만들었다 (`integrations/ac_csp/candidates/TrackPhysicsMarkerDiagnostic.lua`, `integrations/ac_csp/candidates/FlyBrainCamera-physics-marker-diagnostic-v1.lua`, 테스트 16개 통과). 출발 전 현재 정차 위치 앞 네 progress를 진단용으로 고정하고 제한 주행에서 4/4 이벤트가 발생했다 (`D:/CodexResearchRuns/flybrain-physics-marker-plan-20261102-01/`, 원본 `D:/CodexResearchRuns/flybrain-physics-marker-live-20261102-01/`, 해시 감사 `D:/CodexResearchRuns/flybrain-physics-marker-analysis-20261102-01/`). 이벤트 콜백에서 읽은 그래픽 sim.time과 물리 통과 시각 차이는 +9.929/-2.934/+14.081/-1.866ms였고, 콜백부터 최초로 이벤트가 포함된 휠 진단 프레임까지는 77.78/23.64/78.63/34.29ms였다. 그래픽 sim.time의 음수 차이는 콜백 지연을 직접 계산할 수 없음을 보여준다. 문서상 보간된 물리 통과 시각의 관측이지 원천 native packet ID/카메라 노출 시점이나 일반적인 물리 tick 정합의 증명은 아니다. track progress는 진단에만 사용하고 actor 경로 판단 입력이 아니다. 원래 Lua와 시작 전 비일시정지 상태를 복구했으며 파리 actor/optimizer/데스크톱 입력 0, 게임 제한 AI 진단만 수행했다 (`D:/CodexResearchRuns/flybrain-physics-marker-restore-20261102-01/`, `D:/CodexResearchRuns/flybrain-physics-marker-resume-20261102-01/`). 다음은 관측 이벤트에 대한 원본 native 신호 및 이미지 변화를 별도로 대조해 인과 시간 상한을 평가하고, 실패 시 정확한 동기 주장은 보류한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 실제 CSP 동일 Lua 영역 공유 구조 시험:** 설치 차량 중 풀린 data 폴더가 있는 차량은 0개였다. physics 스레드를 바꾸지 않고 기존 정차 진단 후보에 격리된 임시 공유 채널 시험을 추가하여 Lua 문법·마스크 관련 13개 검사를 통과했다 (`integrations/ac_csp/candidates/FlyBrainCamera-wheel-bridge-diagnostic-v1.lua`, `scripts/record_csp_bridge_diagnostic.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-csp-bridge-live-plan-20261102-01/`). 검증된 세션 API로 정차·오프라인 조건에서 pause, hash 고정 후보를 임시 배치하고 한 프레임에서 같은 카메라 Lua 영역의 `ac.connect` 참조 2개로 시험했다. 지정한 generation 73, sequence 11, 하중 값 [101.25,202.5,303.75,404]가 정확히 복원됐으며 원본 프레임 해시를 재확인했다 (`D:/CodexResearchRuns/flybrain-csp-bridge-live-20261102-01/`). 이는 실제 CSP typed shared 구조의 동일 영역 시험이지 physics/graphics 스레드 간 공유, 메모리 원자성, native packet ID·물리 tick·노출 시각이나 센서 적격성 증명이 아니다. 임시 키는 독립 ID이며 테스트 값만 사용했고 실제 차량 물리/조작값을 쓰지 않았다. 원래 Lua와 비일시정지 세션을 복구했다 (`D:/CodexResearchRuns/flybrain-csp-bridge-restore-20261102-01/`, `D:/CodexResearchRuns/flybrain-csp-bridge-resume-20261102-01/`). actor/optimizer/데스크톱 입력 0. 다음은 차량 data를 변경하지 않는 격리된 physics-rate 실행을 찾아 실제 서로 다른 스레드의 누락·재시작·원자성 및 native/시각 시간 관계를 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 physics→진단용 공유 구조 후보:** 설치된 CSP car-physics와 background SDK stub에 모두 `ac.connect`와 동일 layout을 통한 Lua 간 공유 선언이 있음을 확인하고 원본 SHA를 보존했다 (`D:/CodexResearchRuns/flybrain-physics-wheel-bridge-review-20261102-01/`). 진단 전용 `integrations/ac_csp/candidates/PhysicsWheelLatestBridge.lua`는 차량별 키, 명시적 generation, 상대 sample sequence/dt, 네 하중의 최신 값을 담고 쓰기 중 홀수·완료 시 짝수 commit으로 두 번 읽을 때의 일부 찢어진 읽기와 세대 불일치를 거부한다. `PhysicsTickWheelProbe`의 physics 값만 받는 후보이며 자동차의 물리 필드에 쓰지 않는다. Lua 모의에서 순서·세대 불일치·중간 변경·무효 하중·키 분리 등 관련 15개 테스트 통과 (`tests/test_physics_wheel_latest_bridge.py`). 두 번 읽기는 CPU 메모리 순서나 실제 공유 구조의 원자성을 증명하지 않으며 producer 독점·신선도·CSP context 간 동작·native packet ID·카메라 노출 연계도 미검증이다. 실제 게임에는 설치·실행하지 않았고 actor/optimizer/차량 제어 0. 다음은 기존 차량 data 보존 가능한 physics 실행과 격리된 consumer를 확보하고, 구조 일치·누락/재시작·원자성·시간 계약을 실제 측정해 합격 전 학습 입력으로 사용하지 않는다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 physics 주기 읽기 후보 준비:** CSP의 [차량 physics 스크립트 문서](https://cup.acstuff.club/docs/csp/cars/physics-scripts)는 확장 physics 활성화와 차량 data 폴더의 `script.lua`를 요구하고 `ac.accessCarPhysics()` 예시를 제공한다. 현재 BMW Z4 GT3는 `data.acd`가 있고 풀린 `data` 폴더가 없어 기존 차량 설정을 바꾸지 않고 이 API를 실행할 수 있다는 증거가 없다 (`D:/CodexResearchRuns/flybrain-physics-tick-probe-review-20261102-01/`). 차량 데이터나 게임 설정은 변경하지 않았다. 별도 실험 후보 `integrations/ac_csp/candidates/PhysicsTickWheelProbe.lua`는 허용된 호출에서만 `ac.accessCarPhysics()`의 네 native 순서 하중·속도·미등록 가속/회전을 읽고 최대 2048개의 상대 sequence와 누적 dt를 메모리에 보관하며 제어 쓰기·파일/네트워크 I/O를 하지 않는다. 잘못된 dt/하중·용량 초과 시 실패를 고정하고 명시적 reset이 필요하다. Lua 모의와 기존 관련 테스트 16개 통과 (`tests/test_physics_tick_wheel_probe.py`); 첫 테스트 실행은 의도적 Lua 오류 검사 중 Windows faulthandler 예외 덤프를 출력했으나 pytest exit 0/16 통과였고, faulthandler를 끈 재실행에서도 16개 통과했다. 이는 모의 검사이며 실제 physics callback·부하·전송 bridge는 미검증, 상대 sequence/dt는 native packet ID나 절대 물리 시간이 아니다. actor·optimizer·게임 설치/차량 제어 0. 다음은 기존 차량 data를 보존할 수 있는 physics 접근·격리와 비차단 전송 방법을 검증하고 native packet 및 시각 tick의 관계를 증명한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 CSP 시각 원천의 갱신 영역 확인:** 설치된 CSP SDK의 `ac.getCar()`와 `ac.getSim()` 선언은 둘 다 그래픽 프레임 단위로 갱신됨을 명시하며, `car.timestamp`는 물리 상태 기록 시각이라는 설명이 있어도 이를 읽는 구조는 그래픽 측 자료다. 별도의 car-physics SDK에는 `ac.accessCarPhysics()`가 있지만 현재 확인한 background SDK stub에는 없다. SDK 두 파일 SHA와 선언 근거 `D:/CodexResearchRuns/flybrain-local-csp-clock-semantics-20261102-01/`; API 선언만으로 실제 호출 가능성·native packet 대응·카메라 노출 시각은 입증되지 않는다. 따라서 앞선 165프레임의 `sim.time == car.timestamp`는 독립적인 physics/native tick 검증이 아니다. 기존 `UnifiedHostGuard`는 원래부터 physical_synchronization_verified=false와 actor_qualified=false를 유지했다. 새 wheel-clock 진단 후보 v2에는 상태와 sim의 갱신 영역이 `csp_graphics_frame`이며 native tick 연결은 미검증이라는 메타데이터를 명시했다 (`integrations/ac_csp/candidates/WheelGeometryClockDiagnostic.lua`, `integrations/ac_csp/candidates/FlyBrainCamera-wheel-clock-diagnostic-v2.lua`); 이전 실측 v1 결과와 후보는 보존했다. 진단 Lua와 기존 host guard 13개 테스트 통과, v2 설치·차량 조작·optimizer 0. 다음은 physics-rate read-only 접근의 실행 가능성/격리와 native packet 연결을 검증하며 그래픽 시각을 물리 시간으로 사용하는 것을 금지한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 CSP 시뮬레이터·차량 상태 시각 동시 관측:** 기존 read-only wheel 진단에 `sim.time`과 `car.timestamp`를 수집 전후에 읽는 별도 후보를 추가하고 Lua·진단 관련 12개 테스트를 통과했다 (`integrations/ac_csp/candidates/WheelGeometryClockDiagnostic.lua`, `integrations/ac_csp/candidates/FlyBrainCamera-wheel-clock-diagnostic-v1.lua`, 계획 `D:/CodexResearchRuns/flybrain-wheel-clock-plan-20261102-01/`). 검증된 세션 API로 일시정지, 임시 후보 배치 후 기존 제한 AI motion3를 실행하고 원본을 복구·기존 비일시정지 상태로 되돌렸다 (`D:/CodexResearchRuns/flybrain-wheel-clock-live-20261102-01/`, restore/resume `D:/CodexResearchRuns/flybrain-wheel-clock-restore-20261102-01/`, `D:/CodexResearchRuns/flybrain-wheel-clock-resume-20261102-01/`). 원본 해시 확인 결과 165프레임 전부 `sim.time - car.timestamp`가 0ms였고 동일 호출 전후에도 두 값 변화가 0이었다. 속도 ≥1m/s 후보 39프레임·최대 4.532m/s였다 (`scripts/audit_wheel_source_clock.py`, 결과 `D:/CodexResearchRuns/flybrain-wheel-clock-analysis-20261102-01/`). 같은 값은 공통/복사 시계일 수 있어 마지막 물리 상태의 실제 시점, native packet tick, 이미지 노출 동기화의 독립 증거가 아니다. -20ms 보정은 미등록, 실제 학습·배포 불허 유지. 게임 AI 진단만 수행했고 파리 actor·optimizer·데스크톱 입력 0. 다음은 native 쪽 원천 물리 tick/시간을 얻거나 별도의 사건 기반 상한을 검증하고, 단일 회로의 시각·몸 감각과 주행 학습을 이어간다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 CSP 물리 상태 시각의 상대 변화:** 설치된 CSP SDK는 `car.timestamp`를 마지막 물리 상태 기록 시각(ms, `sim.time`과 같은 기준)으로 설명한다. 이전 두 AI 진단의 모든 162/178프레임 원본 해시를 확인하고 이 값과 진단 호출 `os.preciseClock`의 진행을 비교했다 (`scripts/audit_csp_physics_timestamp_stability.py`, 계획 `D:/CodexResearchRuns/flybrain-csp-physics-time-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-csp-physics-time-audit-20261102-01/`). 두 timestamp는 프레임별 증가하고 시간 진행 기울기는 각각 1.000091/1.000030이었지만, 두 시각 차이의 범위는 38.26/37.86ms, 연속 프레임 간 차이 변화 절댓값의 95백분위는 4.22/3.80ms였다. 시계 원점·호출 타이밍·상태 기록 지연이 섞이므로 이것이 센서 지연 자체를 뜻하지 않는다. native packet과 동일 물리 tick을 식별할 증거는 없고 정적 -20ms를 실제 동기값으로 적용하지 않는다. 같은 차·트랙의 기존 기록 사후 분석, optimizer·actor·차량 제어 0. 다음은 CSP `sim.time`과 물리 timestamp를 같은 소스 호출에서 함께 기록하고 native packet 및 시각 노출의 원천 시간 계약을 확인해 유효 프레임만 학습·검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 하중 host -20ms 가설 별도 기록 재현:** 앞선 기록에서 선택한 -20ms를 새 데이터 전에 고정하고, 동일 차·트랙에서 기존 제한 AI motion3를 별도 실행했다 (사전 계획 `D:/CodexResearchRuns/flybrain-wheel-host-lag-repeat-plan-20261102-01/`, 원본 `D:/CodexResearchRuns/flybrain-wheel-lag-repeat-live-20261102-01/`). ≥1m/s인 38프레임을 순서대로 19/19로 나누어 무시차 대비 -20ms의 네 하중 평균 절대차를 비교했다. 전반은 20.690→4.179, 후반은 54.448→6.712로 각각 원래의 20.2%/12.3%이며 사전 지정 80% 이하 화면 진단 기준을 두 구간 모두 만족한다 (`D:/CodexResearchRuns/flybrain-wheel-lag-repeat-analysis-20261102-01/`, `D:/CodexResearchRuns/flybrain-wheel-lag-repeat-screen-20261102-01/`). 비교 기준은 host 수신시각이며 같은 차·트랙의 인접한 짧은 AI 주행과 시계 단위율 가정에 제한된다. 원천 physics tick/노출 시각이나 고정 지연이 검증됐다는 뜻이 아니므로 -20ms를 actor 정합에 적용하거나 실제 학습을 허용하지 않는다. 원래 카메라 Lua와 비일시정지 상태를 복구했다 (`D:/CodexResearchRuns/flybrain-wheel-lag-repeat-restore-20261102-01/`, `D:/CodexResearchRuns/flybrain-wheel-lag-repeat-resume-20261102-01/`). 파리 actor·optimizer·데스크톱 입력 0, 게임 제한 AI 진단만 수행했다. 다음은 독립 차/주행 조건과 source physics timestamp를 검증하고, 하중 순서·시간 계약이 충분해지면 기존 단일 회로의 하중 경로 성능을 평가한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 이동 중 하중 host 시차 탐색:** 직전 162프레임·5221 native 복사 원본의 해시와 각 패킷/프레임 해시를 검증하고, 속도 ≥1m/s인 39프레임에서 CSP 캡처 중간시각을 host 시계 경계의 중간으로 환산한 뒤 native 복사 시각을 -40~+40ms로 10ms 간격 비교했다 (`scripts/audit_wheel_host_lag.py`, 계획 `D:/CodexResearchRuns/flybrain-wheel-host-lag-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-wheel-host-lag-audit-20261102-01/`). 앞 19프레임에서 네 하중값 평균 절대차가 최소인 -20ms를 선택하자 평균 차는 무시차 106.80→22.80, 뒤 20프레임에서도 53.41→9.00이었다(원본 하중 단위). 같은 짧은 주행을 양분한 시간상 상관된 구간의 사후 탐색이며 CSP/source clock과 native 수신에 내재한 지연, 정수 프레임 및 smoothing 등이 섞일 수 있다. 일부 탐색 시차는 미래 패킷을 사용하므로 actor 입력이 아니며 -20ms를 고정 물리 tick 보정이나 동기 증거로 등록하지 않는다. 다른 속도·방향·차량의 독립 반복 및 원천 physics timestamp 확인 필요. 원본, 후보, 실패와 센서 계약을 보존했고 optimizer·추가 차량 제어·배포 0. 다음은 이 시차 가설을 사전 고정한 별도 기록에서 평가하고, 실제 물리 시각/바퀴 순서 등록 후 하중 감각의 폐루프 기여를 확인한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 제한 AI 이동 중 바퀴 기하·하중 대조:** 현재 설치된 원본 Lua에 기존 airflow 제한 진단과 바퀴 위치·하중 수집만 덧붙인 임시 후보를 만들고 원본 재구성 일치·Lua 및 관련 13개 테스트를 확인했다 (`integrations/ac_csp/candidates/FlyBrainCamera-wheel-motion-diagnostic-v1.lua`, `scripts/record_ac_wheel_timed.py`, 계획 `D:/CodexResearchRuns/flybrain-wheel-motion-plan-20261102-01/`). 검증된 lifecycle API와 기존 owned AI motion3 진단으로 오프라인에서 잠시 이동·정지했으며, 단일 회로 actor/학습/데스크톱 입력은 사용하지 않았다. 원본 162프레임, native 반복 복사 5221개, 화면 호출 648/648 host bracket을 보존했다 (`D:/CodexResearchRuns/flybrain-wheel-motion-live-20261102-01/`). 사후 해시 대조 후 CSP 진단 시작 이전의 host native 수신을 보수적으로 선택한 결과 162/162프레임이 시간상 짝지어졌고 최대 host age 6.085ms였다 (`scripts/audit_wheel_motion_geometry.py`, 결과 `D:/CodexResearchRuns/flybrain-wheel-motion-analysis-20261102-01/`). 162프레임 모두 바퀴 위치의 기하 분류가 FL/FR/RL/RR이었고 속도 ≥1m/s 프레임은 39개(최대 4.519m/s)다. CSP·native 하중 배열의 24개 순열 중 원래 [0,1,2,3]이 평균 절대차 33.03으로 가장 낮았고 다음 순열은 52.48이었다. 이동 39프레임만 보면 각각 72.12/117.60이며 동일 순서 차이 95백분위 311.83, 최대 467.48이었다. 이는 순서 일치의 추가 근거이나 값 차이가 커질 수 있고 host 수신은 물리 tick이나 노출 동기 증명이 아니다. 같은 차·같은 트랙의 짧은 AI 주행과 사후 선택된 분석이라 독립 생리·일반화·실제 학습 적격성은 없다. 원래 Lua SHA 78863113…와 시작 전 비일시정지 상태를 복원했다 (`D:/CodexResearchRuns/flybrain-wheel-motion-restore-20261102-01/`, `D:/CodexResearchRuns/flybrain-wheel-motion-resume-20261102-01/`). 다음은 물리 tick/하중 변화 차이를 독립적으로 해석하고 좌우·전후 자극과 다른 차량에 대한 순서 검증을 진행한 후, 기존 실패 하중 후보의 폐루프 효용을 재검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 정차 CSP 바퀴 위치·하중 대조:** 기존 설치 Lua 원본에서 진단 코드만 추가한 후보와 읽기 전용 모듈을 만들고 (`integrations/ac_csp/candidates/FlyBrainCamera-wheel-geometry-diagnostic-v1.lua`, `integrations/ac_csp/candidates/WheelGeometryDiagnostic.lua`), 차체 forward/up과 바퀴 좌표·outside 벡터로 원래 순서를 분류하는 독립 분석을 작성했다 (`src/flybrain_drive/wheel_geometry_diagnostic.py`). 모의 Lua·기하·기존 센서 관련 28개 테스트 통과, 후보에서 진단 부분을 제거하면 설치 원본과 텍스트 일치 (`D:/CodexResearchRuns/flybrain-wheel-geometry-candidate-review-20261102-01/`). 세션 API로 정차·오프라인·브레이크 조건에서 pause하고 hash 확인 후 임시 후보를 배치해 1프레임을 수집했다 (계획 `D:/CodexResearchRuns/flybrain-wheel-geometry-live-plan-20261102-01/`, 캡처 `D:/CodexResearchRuns/flybrain-wheel-geometry-live-20261102-01/`). 앞/뒤 중심 기준 좌표는 약 +1.255/+1.255/-1.255/-1.255m, 좌측 기준 좌표는 +0.810/-0.810/+0.833/-0.833m로 CSP 인덱스는 FL/FR/RL/RR 분류였고 outside 방향 정합은 0.9986 이상이다. CSP 하중과 native 동순서의 평균 절대차 0.143·최대차 0.561, 다음 순열 평균 11.818이었다. 캡처 전후 native packet ID는 같았지만 CSP timestamp와 native tick의 동시성은 검증되지 않았다. 한 차·한 트랙·정차 1프레임의 CSP geometry/하중 및 두 API 관계가 정확하다는 독립적 보장은 없으므로 바퀴 순서·물리 시각 등록이나 actor 적격을 아직 선언하지 않는다. 원래 카메라 source SHA 78863113…를 복구하고 자동 resume으로 기존 비일시정지 상태를 복원했다 (`D:/CodexResearchRuns/flybrain-wheel-geometry-restore-20261102-01/`, `D:/CodexResearchRuns/flybrain-wheel-geometry-resume-20261102-01/`). 데스크톱 입력·조향/가감속·optimizer 0. 다음은 다른 차량/재시작 및 독립 SDK 접지 위치·동적 좌우/가감속을 포함한 재현과 native 일치 검증 후에만 순서를 등록한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 정차 중 SDK/native 하중 순서의 읽기 전용 대조:** 실행 중인 AC의 기존 파일 텔레메트리 `ac.getCarState(Load)`와 native `wheelLoad[4]`를 같은 host에서 20회 비제어 수집하고 24개 인덱스 순열을 비교했다 (`scripts/audit_live_sdk_native_wheel_order.py`, 계획 `D:/CodexResearchRuns/flybrain-sdk-native-wheel-plan-20261102-02/`, 결과 `D:/CodexResearchRuns/flybrain-sdk-native-wheel-audit-20261102-02/`). SDK 게시 코드는 네 반환값에 FL/FR/RL/RR 이름을 붙이며, native 원래 순서 [0,1,2,3]가 최선으로 평균 절대차 0.144, 최대차 0.799, 두 번째 순열 평균 11.205다(원본 값 단위). 서로 다른 publisher step 20개, 파일 mtime 기준 최대 나이 36.6ms, 최대 native 속도 0.000118m/s다. 01은 서로 다른 Python 실행 환경의 perf_counter 기준점을 혼용해 유효 표본 0으로 실패했으며 02에서는 파일 갱신 시각과 증가 step을 사용했다. 본 대조는 publisher가 붙인 이름과 native 배열의 일치만 보인다. 게시 파일 해시는 현재 디스크 파일의 해시이고 실행 중 로드된 코드의 독립 증명은 아니며 두 경로가 같은 내부 데이터를 사용할 수 있다. 실제 바퀴 접지 좌표·시뮬레이션 tick·동적 조건을 독립 확인하지 못해 바퀴 순서 등록, 물리 동기 및 실제 학습 적격성은 여전히 거부한다. 옵티마이저·배포·차량 조작 0. 다음은 AC SDK의 타이어 접지 좌표/차체 기준 방향을 별도 읽기 진단으로 수집해 이름과 실제 위치를 검증하고, 기존 하중 후보의 동적 유용성을 재평가한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 실험용 하중 경계 부분 결측 수정:** 직전 `SyntheticLoadBodyFeedbackAdapter`는 새 load projection만 네 값 중 하나라도 결측일 때 차단했고, 기존 base projection의 하중 열이 0이 아닌 checkpoint에서는 나머지 부분 하중이 새어 들어갈 수 있었다. 기존 checkpoint의 하중 열이 0인 경우에는 드러나지 않는 결함이다. 이제 한 바퀴라도 결측이면 base와 새 projection의 하중값 4개를 모두 0으로 차단하면서 원래 각 바퀴 validity 표시·다른 몸 감각·가속도 경로는 유지한다 (`src/flybrain_drive/synthetic_load_feedback.py`). 네 값 모두 유효하고 새 projection이 0이면 이전 부모 출력은 bitwise 동일하지만, 일부 결측에 기존 하중 열이 0이 아닌 경우에는 안전한 차단을 위해 부모와 출력이 달라질 수 있다. 무작위 비영(非零) base 가중치에서 15개 불완전 mask 각각 하중 수치를 바꿔도 출력이 불변임을 추가했고 전체 관련 47개 테스트 통과 (`tests/test_synthetic_load_feedback.py`). 새 하중 가중치는 미학습·실제 바퀴 순서 및 몸 시각 동기 미검증, actor/차량 제어 0. 기존의 별도 하중 후보는 이미 합성 폐루프에서 유효한 개선을 입증하지 못했다. 다음은 좌우·전후 바퀴 순서의 독립 근거와 기존 후보/새 경계의 인과 성능을 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 하중 연구 이력 정정 및 실제 패킷 탐색:** 직전 설명은 기존 하중 실험을 충분히 반영하지 못했다. 별도의 기존 합성 하중 후보는 이미 6회 학습·실제 이력 대조·합성 폐루프를 거쳤으며, 폐루프 중심 오차 변화는 -0.065~+0.012mm로 유용한 개선을 증명하지 못해 미채택이었다 (`D:/CodexResearchRuns/flybrain-synthetic-load-fit-20261102-01/`, `D:/CodexResearchRuns/flybrain-synthetic-load-loop-20261102-01/`). 직전에 만든 별도 0 초기화 경계는 이를 대체하는 학습 완료 경로가 아니다. AC 공유 메모리 공개 원문 재게시본은 `wheelLoad[4]` 필드는 명시하나 인덱스 순서는 명시하지 않는다 ([공유 메모리 참조](https://www.assettocorsamods.net/threads/doc-shared-memory-reference.58/)). 저장된 native 패킷 3개 기록의 전체 원본 SHA와 개별 패킷 해시를 확인하고 0/1/2/3=FL/FR/RL/RR 가설에서 우-좌와 전-후 하중 비율을 같은 패킷의 미등록 native 가속도 축 0/2와 비교했다 (`scripts/audit_native_wheel_load_order.py`, 계획 `D:/CodexResearchRuns/flybrain-native-load-order-plan-20261102-03/`, 결과 `D:/CodexResearchRuns/flybrain-native-load-order-audit-20261102-03/`). 원래 사전 지정 속도 ≥5m/s에는 충분한 패킷이 없어 02는 실패했고, 0.5m/s로 내린 03은 사후 탐색이다. 세 기록의 상관은 우-좌 대비 축0 각각 +0.099/+0.041/+0.692, 전-후 대비 축2 각각 -0.878/-0.878/-0.859였다. 각 약 3초·1095/1094/94개 중복 제거 패킷은 시간 상관이 높고 같은 차량/환경이며, 가속 축·중력·물리 시각·좌우 독립 접지 기준이 미검증이다. 전후 가설과 일치하는 경향은 있으나 바퀴 순서·부호를 등록하거나 실제 학습에 쓰기에 부족하며 좌우는 일관되지 않다. 01은 긴 teacher prefix를 짧은 decoder에 전달해 실패했고 수정 후 02/03을 실행했다. actor/optimizer/차량 제어 0. 다음은 독립적인 좌·우 및 가감속 자극과 바퀴 위치의 별도 기준을 확보해 순서를 검증하고, 기존 실패 후보와 새 경계를 비교해 중복 학습을 피한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 실험용 하중 입력 경계 구현:** 기존 실제 기록에서 하중 projection 4열이 0인 문제에 대응해 `SyntheticLoadBodyFeedbackAdapter`를 추가하고, 기존 동일 `UnifiedFlightSensorimotor`가 명시적으로 이 실험용 경계를 받을 수 있게 했다 (`src/flybrain_drive/synthetic_load_feedback.py`, `src/flybrain_drive/unified_flight_sensorimotor.py`). 네 native 하중 fraction 전체가 유효할 때만 각 값의 균등 0.25 대비 차이를 별도 0 초기화 projection으로 기존 몸 감각 포트에 더한다. 부분 결측 시 새 하중 경로는 0, 완전 유효한 fraction이 음수·1초과 또는 합계 1과 1e-4 초과 차이면 오류다. 기존 속도/몸 및 합성 가속도 경로를 보존하며 네 하중이 모두 유효하고 신규 가중치가 0일 때 부모 출력은 bitwise 동일하다(부분 결측의 후속 수정은 최신 기록 참조). 바퀴의 좌우/전후 순서는 해석하지 않았으며 이 경계는 공학 가설이지 파리 수용기 생리나 실제 actor가 아니다. 단위·마스크·기존 출력 보존·native 순서 구분·gradient 및 같은 단일 회로 결합을 포함한 32개 관련 테스트 통과. 신규 하중 projection은 아직 0이고 학습/실제 감각 동기·하중 방향/물리/주행 검증은 수행하지 않았다. 다음은 가상 차량에서 하중의 원인과 좌우/전후 wheel registration을 근거로 고정하고, 교차축·결측·독립 폐루프 기준을 사전 지정해 새 경로만 학습한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 공개 FlyVis 003~006 사전 지정 검증:** 기존 000~002에 이어 연속 4개 ID를 결과 전에 지정하고 저자 flash 2반경×2밝기를 같은 GPU 조건에서 검사했다 (계획 `D:/CodexResearchRuns/flybrain-flash-prescreen-plan-20261102-01/`, 원본 `D:/CodexResearchRuns/flybrain-flash-prescreen-003-20261102-01/`부터 006, 분석 `D:/CodexResearchRuns/flybrain-flash-prescreen-analysis-20261102-01/`). 사전 기준인 T4 네 종류 ON 및 T5 네 종류 OFF가 두 반경 모두 부호 일치한 모델은 006만이었다. 003은 T5a/T5c, 004는 T4a/T5a/T5d, 005는 T5a/T5b/T5c에서 적어도 한 반경이 반대였다. 저자 flash 분석과 독립 numpy는 최대 차 0, 기존 001 분석 재현 최대차 0이다. 사전 계획대로 006에 저자 이동 경계 12방향×6속도×2명암 144조건을 추가 실행·분석했다 (`D:/CodexResearchRuns/flybrain-flash-prescreen-006-edge-20261102-01/`, `D:/CodexResearchRuns/flybrain-flash-prescreen-006-full-analysis-20261102-01/`). 006의 T4d는 기대 명암 6/6·최대 방향 오차 16.4°였지만 T5b는 기대 명암 0/6·최대 방향 오차 179.3°, T5a는 명암 6/6이나 최대 방향 오차 175.9°, T5d 명암 3/6·최대 오차 90°였다. 낮은 DSI 조건의 방향 각도는 불안정할 수 있으므로 원본별 DSI와 함께 해석한다. 006 역시 정상 방향 시각 또는 000 대체로 인증하지 않았고 가중치 교체·optimizer·actor·차량 조작 0이다. 제한된 공개 모델·인공 자극 검증이며 실제 생리/운전 일반화는 미검증이다. 다음은 원천 생리 불일치의 훈련/모델 원인과 사용자 목표에 맞는 통합 대안을 검토하고 검증된 모델만 회로에 연결한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 운동 특징으로 공간 회전 영향 보정하는 합성 탐침 실패:** 같은 단일 회로의 공간 시각 logits에서 합성 yaw로 생긴 차이를 운동 특징으로 예측하는 ridge 선형 보정기를 2개 기존 학습 질감의 360개 샘플로 적합했다 (`scripts/fit_motion_compensation_probe.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-motion-compensation-plan-20261102-01/`, 결과 `D:/CodexResearchRuns/flybrain-motion-compensation-probe-20261102-01/`). 입력은 에피소드 시작 대비 각 시야 운동 특징이며, 시간대가 같은 zero-yaw 장면은 오프라인 목표에만 사용했다. 이전에 살펴본 보류 질감 2개×양 방향의 보정 후/전 MSE 비율은 31.76/0.662/0.236/1.329로 사전 4개 모두 <0.8 기준에서 2/4 실패다. 별도 보류 도로 고정 이력에서 보정 logits RMS/기존 공간 logits RMS는 좌/직선/우 0.196/1.199/0.155로 직선이 사전 0.25 상한을 초과했다. 목표 자체가 아주 작은 조건에서는 상대 오차 비율이 커지므로 절대 MSE도 원본에 남겼다. 탐침 가중치는 회로에 적용하지 않았고 actor/차량 제어 0, 최적화는 해석적 ridge로 신경망 학습 아님. 이미 본 합성 질감·인위적 정지 기준·시각/몸 불일치로 실제 생리/차량·신규 환경이나 코너 보존을 입증하지 않는다. 다음은 시작 프레임 기준의 취약성과 000 모델의 T4d 불일치를 해결할 방향 선택성 및 몸-시각 시간 정합을 우선 재검토하고, 교차 장면에서 코너를 보존하는 단일 회로를 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 가중치 제한 공간 회전 후보 적합·순환 회로 평가 실패:** 이전 직교 투영의 최대 변화 32.38을 피하기 위해 공간 projection 변화량을 요소별 0.15로 제한하고, 합성 회전 특징 억제와 도로 특징 변화 벌점(10), 정규화(0.01)를 고정한 최소제곱 후보를 계산했다 (`scripts/fit_spatial_bounded_yaw.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-spatial-bounded-fit-plan-20261102-01/`, 후보 `D:/CodexResearchRuns/flybrain-spatial-bounded-fit-20261102-01/`). 최대 변화 0.15, 입력 단계 회전 projection norm 6.8159→6.7501, 도로 평균 특징 변화 최대 0.00581이었다. 이전에 본 학습/보류 합성 회전 6조건 및 두 도로 질감×직선/코너의 고정 몸 이력을 동일 단일 순환 회로에서 기준/후보 재생했다 (`scripts/evaluate_bounded_spatial_candidate.py`, 계획 `D:/CodexResearchRuns/flybrain-spatial-bounded-eval-plan-20261102-02/`, 실행 `D:/CodexResearchRuns/flybrain-spatial-bounded-eval-20261102-02/`, 감사 `D:/CodexResearchRuns/flybrain-spatial-bounded-eval-audit-20261102-01/`). 원래 출력은 이전 저장 재생과 최대차 0. 도로 12개 구간의 후보 조향 평균 절대 변화는 사전 상한 0.0002 이내, 최댓값 0.0000469였다. 하지만 회전 부호는 사전 6/6 기준 대비 3/6만 맞아 실패했다. 특히 기존 보류 질감 879605는 -0.010858로 여전히 역전한다. 후보 미채택·actor/실제 학습 불허다. 평가 스크립트 첫 01은 실행 전 들여쓰기 오류로 run이 생성되지 않아 구문 수정 후 02를 실행했다. 최소제곱은 실제 차량 학습이나 생리 신경망 재학습이 아니며 기존에 본 합성 영상·고정 몸 이력이고 폐루프/실제 동기/생리 미검증이다. 다음은 소규모 가중치 제한만으로 부호 문제를 해결하지 못한 사실을 반영해 공간·운동 정보 통합 구조와 원천 방향 선택성을 재검토하고, 코너 보존과 실제 센서 검증을 함께 설계한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 코너 특징 보존 가중치 해석적 수정 실패:** 합성 회전 ±0.13/±0.23rad/s의 2개 학습 질감과 합성 도로 질감 883901의 좌·우 코너 대 직선 공간 특징 4개 평균 차를 이용해, 같은 단일 회로의 공간 projection에서 도로 차이를 유지하면서 회전 특징 성분을 제거하는 최소 변화 직교 투영 후보를 계산했다 (`scripts/fit_spatial_yaw_invariance.py`, 사전 상한 최대 가중치 변화 0.15, 계획 `D:/CodexResearchRuns/flybrain-spatial-invariance-fit-plan-20261102-02/plan.json`). 계산상 도로 특징 제약 차 최대 4.67e-16이고 공간 회전 projection norm은 6.816→4.240이지만 최대 가중치 변화 32.38로 사전 상한을 크게 넘어 실패·후보 저장/적용/actor 배포 0 (`D:/CodexResearchRuns/flybrain-spatial-invariance-fit-20261102-02/`). 01 실행도 같은 제약 실패였으나 수치를 기록하지 못해 실패 원본을 보존하고 같은 상한에서 기록만 추가해 02를 재실행했다. 이는 지정한 선형 직교 투영이 실패했다는 결과이지 다른 비선형/제약 학습 불가능의 증명이 아니다. 입력 특징 수준의 4개 평균 제약으로 코너 예측이나 폐루프가 보존된다고 주장할 수 없다. 기존 학습 질감·인공 yaw·고정 몸, 실제 생리/주행·물리 시각 미검증, optimizer 0이다. 다음은 같은 회로 안에서 코너 보존과 회전 민감도를 함께 제한하는 정규화/제약 학습을 별도 후보로 설계하고, 기존과 보류된 질감·코너 이력·실제 데이터에 통과한 후에만 채택한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 동일 질감·속도 교차 및 시각 경로 차단:** 이전 학습에 사용한 합성 질감 879601/879602 각각에서 시각 yaw ±0.13/±0.23rad/s를 교차하고, 같은 단일 회로의 상대운동 projection과 공간 contrast projection을 각각 유지/0 차단하는 48회 이력(4 자극원×4 경로 조건×3 방향)을 재생했다 (`scripts/evaluate_unified_yaw_factorial.py`, 계획 `D:/CodexResearchRuns/flybrain-yaw-factorial-plan-20261102-01/plan.json`, 결과 `D:/CodexResearchRuns/flybrain-yaw-factorial-20261102-01/`; 저장 출력 사후 재계산 `D:/CodexResearchRuns/flybrain-yaw-factorial-audit-20261102-01/`). 마지막 5결정의 -yaw와 +yaw 조향 intent 차는 원래 회로에서 879601의 0.13/0.23에 -0.001262/-0.000289, 879602에 +0.005108/+0.009572였다. 상대운동만 차단하면 각각 -0.005450/-0.008789, +0.001301/+0.001111이고, 공간만 차단하면 +0.004982/+0.009641, +0.004153/+0.009191로 네 조건 모두 양수였다. 두 경로 모두 차단 시에도 +0.001056/+0.001365, +0.000302/+0.000748이다. 따라서 이 제한된 조건의 질감 간 부호 차이에 공간 경로가 인과적으로 관여한다. 공간 경로는 코너 시각에도 기여하므로 이 결과만으로 제거하거나 일반 주행 개선을 주장하지 않는다. 기존 학습 질감·인위적 차단·몸 yaw 고정이며 실제 생리/차량 동기·독립 일반화가 아니다. 원본 16행 수치 재계산 차 0, 자극 전 양 방향 출력 최대차 1.83e-7; 재계산은 회로 독립 재실행이 아니다. optimizer·actor·차량 제어 0. 다음은 공간 경로의 질감 의존성을 줄이되 코너 선행 정보를 보존하는 구조/학습을 설계하고 독립 질감·실제 데이터에서 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 현재 통합 회로의 통제 시각 yaw 진단 — 부호 불일치:** 과거 평가에 사용된 합성 질감 879604의 시각 yaw 0/±0.18rad/s와 질감 879605의 0/±0.13rad/s를 현재 단일 회로에 넣고 몸 속도 5m/s·yaw 0 등은 고정하여 각각 독립 recurrent reset으로 재생했다 (`scripts/evaluate_unified_controlled_yaw.py`, 계획 `D:/CodexResearchRuns/flybrain-unified-yaw-test-plan-20261102-02/`, 결과 `D:/CodexResearchRuns/flybrain-unified-yaw-test-20261102-02/`). 두 신호는 시각과 몸이 물리적으로 일치하는 주행이 아니다. 마지막 5결정의 조향 intent 평균에서 -yaw와 +yaw의 차는 각각 +0.005538과 -0.010909로 부호가 반대였다. 상대운동 projection 차단 시에도 +0.002982와 -0.012884로 반대였다. 자극 전 처음 11결정의 양 방향 출력 최대차는 각각 9.15e-8과 0이고 입력 retina는 동일하다. 두 질감과 속도가 동시에 달라 원인이 질감인지 속도인지 다른 상호작용인지 분리할 수 없다. 해당 실험은 이미 본 합성 장면의 사후 진단이며 생리·독립 일반화·실제 주행 검증은 아니다. 현재 통합 후보의 방향 일관성은 이 조건들에서 성립하지 않으므로 actor 적격으로 인정하지 않는다. 첫 실행 `D:/CodexResearchRuns/flybrain-unified-yaw-test-20261102-01/`은 CPU/GPU 입력 장치 불일치로 조건 재생 전 실패했고 원본 보존 후 수정해 02를 실행했다. optimizer·차량 제어 0. 다음은 같은 질감에 양 속도를 교차하고 상대운동·공간 경로를 분리해 부호 역전 원인을 규명한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 상대운동 projection 차단 인과 실험:** 이전의 동일 합성 장면·몸 이력에서 기준/좌·우 운동 특징 고정과 상대운동 projection 유지/출력 0을 교차한 36개 재생을 수행했다 (`scripts/ablate_opponent_projection_fixed_history.py`, 사전 계획 `D:/CodexResearchRuns/flybrain-opponent-ablation-plan-20261102-01/`, 실행 `D:/CodexResearchRuns/flybrain-opponent-ablation-20261102-01/`, 분석 `D:/CodexResearchRuns/flybrain-opponent-ablation-analysis-20261102-01/`). 차단 안 한 18개 출력의 이전 추적 대비 최대 차 0, 차단한 projection 출력 최대 0이다. 두 질감×세 도로 조건의 조향 intent 평균 절대 변화는 코너 전 x=9~11.5m에서 좌/우 운동 특징 고정 시 정상 0.00002385/0.00003351, 차단 시 0.00000430/0.00000126이다. 코너 후 x=13~16m에서는 정상 0.00004697/0.00004401, 차단 시 0.00002711/0.00000360이다. 시간별 차이의 차이 절대값 평균은 전 0.00002127/0.00003309, 후 0.00002371/0.00004572다. 상대운동 경로가 이 합성 장면의 운동 특징 민감도에 인과적으로 기여하지만, 경로 차단 자체가 기준 조향을 바꾸며(전 평균 절대 0.001243) 비선형 순환 효과와 인위적 혼합 입력이 포함된다. 뉴런별 생리 기능·방향 정확성·현실 주행 성능의 증명이 아니며 기존 장면의 사후 실험이다. optimizer·actor·차량 제어 0, 실제 동기와 가속도는 미검증. 다음은 방향·속도 통제 자극과 통합 회로 응답을 확인하고, 기능 결함을 수정해 독립 장면과 실제 센서에서 검증한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 좌우 운동 특징의 단일 회로 경로 추적:** 기존 합성 차체 이력과 보존 checkpoint를 사용한 두 질감×직선/좌우 코너×기준/좌·우 운동 특징 고정/좌·우 수용기 고정의 30개 재생에서, 운동 특징 입력·상대운동 projection·공간 projection·시각 포트·순환 상태·출력을 추적했다 (`D:/CodexResearchRuns/flybrain-side-motion-trace-20261102-01/`, 사후 감사 `D:/CodexResearchRuns/flybrain-side-motion-trace-audit-20261102-01/`). 모든 30개 intent는 앞선 독립 저장 재생과 최대 차 0이다. 코너 전 x=9~11.5m의 좌/우 운동 특징 개입에서 상대운동 projection 변화 RMS의 6조건 평균은 0.002016/0.005113, 시각 포트는 0.000118/0.000254, intent 전체는 0.0000189/0.0000282였다. 수용기 개입에서 상대운동 projection 변화는 0이고 운동 특징 개입에서 공간 projection 변화는 0이다. 신호는 해당 projection과 통합 회로 출력까지 존재하지만 단위와 차원이 달라 단계별 크기로 전달률이나 유일한 병목을 추론할 수 없다. 고정/갱신 혼합은 인공 입력이며 방향·속도를 통제한 자극, 실제 생리·차량 성능 검증이 아니다. optimizer·actor·차량 제어 0. 다음은 운동 방향·속도를 통제한 자극과 회로 경로별 인과 개입을 사용하고, 검증된 신호만 학습·실차 시뮬레이터로 연결한다. 초파리의 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결한다. 차체 기울기·회전·하중·타이어 상태를 몸 감각으로 되먹임하며 조향·가감속과 빠른 레이싱 라인/랩타임을 학습한다.
+
+> **2026-11-02 동일 몸 이력에서 좌/우·수용기/운동 특징 개입:** 첫 실행 `D:/CodexResearchRuns/flybrain-side-view-path-20261102-01/`은 시야 인덱스 변수와 유효 마스크 이름 충돌로 `UnboundLocalError`, optimizer 0으로 실패했으며 원본을 보존했다. 변수 이름만 고친 재생 `D:/CodexResearchRuns/flybrain-side-view-path-20261102-02/`은 두 질감×직선/좌우 × 8조건의 기존 단일 회로를 같은 몸 이력으로 각각 reset해 재생했고 기준 출력 원본 차 0, 양쪽 동시 고정 이전 실험과 최대 차 1.83e-7이었다. 좌·우 각각 전체 시야 고정, 수용기 1채널만 고정, T4/T5 8채널만 고정한 계산의 6조건별 조향 intent 평균 절대차를 비교했다 (`D:/CodexResearchRuns/flybrain-side-view-path-summary-20261102-01/`). 코너 전 x=9~11.5m 좌/우 전체 시야는 0.000317/0.000131, 수용기만 0.000313/0.000129, 운동 특징만 0.0000239/0.0000335였다. 코너 후 x=13~16m 좌/우 전체 0.000979/0.001707, 수용기만 0.000948/0.001732, 운동 특징만 0.0000470/0.0000440였다. 양쪽 동시 효과는 개별 합과 완전히 같지 않으며 최대 조건별 평균 상호작용 0.000698이다. 이는 이 두 합성 질감·단일 도로·현재 checkpoint에서 수용기 교체 효과가 운동 특징 교체보다 큼을 보일 뿐 운동 시각 회로의 일반적 무용성이나 정상 생리를 입증하지 않는다. 수용기/운동 특징을 따로 합친 입력은 자연 신경 상태에 없을 수 있고 화면 고정은 센서 결측이 아니다. optimizer·actor·차량 제어 0; 실제 동기/생리/주행 미검증. 다음은 운동 특징의 방향·속도 자극과 회로 내 전달을 실제 보존 checkpoint 기준으로 교란하고 결측 시 분리를 검증한다.
+
+
+> **2026-11-02 동일 몸 이력의 전·좌우·후 시야 고정 반사실:** 직전 합성 폐루프의 기준 차체 위치·속도·yaw 몸 이력을 그대로 고정하고 원래 단일 회로를 별도 reset해 기준/전방·좌우·후방 수용기 첫 프레임 고정으로 각각 재생했다 (`D:/CodexResearchRuns/flybrain-fixed-body-view-20261102-01/`, 분석 `D:/CodexResearchRuns/flybrain-fixed-body-view-analysis-20261102-01/`). 두 질감×직선/양 코너, 각 81결정이다. 전/좌우/후 고정 시 조향 intent 절대차의 조건별 평균을 다시 평균하면 코너 전 x=9~11.5m에서 0.001087/0.000349/0.000116, 코너 후 x=13~16m에서 0.005554/0.002419/0.000548이다. 좌우를 함께 고정했으므로 좌·우 개별 기여는 분리하지 못한다. 몸 이력 차 0, 고정 수용기 차 0, 나머지 시야 장면 최대차 1.05e-7, 기준 원본 intent 재생 최대차 1.84e-7. 같은 몸·같은 다른 시야에서 좌우 시야 시간 변화가 이 회로의 출력에 영향을 준다는 합성 반사실 증거이며, 폐루프 성공·방향 정확성·실제 AC/생리 기능을 뜻하지 않는다. 첫 프레임 고정은 카메라 결측과 다르고 고정 입력에도 FlyVis 내부 상태는 시간에 따라 변한다. optimizer·actor·차량 제어 0; 미검증 실제 동기·가속도 마스크는 유지. 다음은 좌·우 시야와 운동/공간 경로를 독립적으로 개입해 시간적 운동 시각 기여를 분리한다.
+
+
+> **2026-11-02 전/좌우/후 시야 시간 변화의 합성 폐루프 기여:** 새 질감 883901/883902 × 직선·좌/우 코너에서 동일 원래 단일 회로로 24개 합성 폐루프를 실행했다. 각 대조는 전방, 좌우, 후방 수용기 입력 중 하나의 그룹을 첫 프레임에 고정하고 나머지는 갱신하며 모든 시야는 유효로 표시한다 (`D:/CodexResearchRuns/flybrain-view-lesion-20261102-01/`, `D:/CodexResearchRuns/flybrain-view-lesion-analysis-20261102-01/`). x=16m에서 전방 고정은 네 코너의 절대 오차를 7.10~10.16mm 늘렸다(기준 오차 0.221~0.279m). 좌우 고정의 코너 오차 변화는 -0.55~+2.53mm이고 직선은 4.02~7.89mm 증가했다. 후방 고정 변화는 전체 -0.71~+1.07mm였다. x=10m 조향 최대 변화는 전방/좌우/후방 각각 0.000514/0.000254/0.0000878rad였다. 저장된 수용기 고정·초기 시야·차량 상태 연속성 차 0 (`D:/CodexResearchRuns/flybrain-view-lesion-integrity-20261102-01/`); 별도 신경망 재실행 검증은 아니다. 인위적 시야 고정과 폐루프에 따른 몸 상태 변화가 함께 존재하며 단일 합성 도로/두 질감 결과는 시야별 생리·실제 AC 정확도나 일반 성능 증명이 아니다. actor/실제 학습/조작 0. 전후좌우 겹눈·운동시각과 단일 비행 회로 목표는 유지하고, 다음은 좌우 시야의 변화를 회로가 약하게 사용하는 원인을 동일한 몸 상태·시야 교란으로 분리한다.
+
+
+> **2026-11-02 합성 가속도 경로의 약한 폐루프 효과·교란 검증:** 이전 x=16m 합성 궤적을 공통 x=8.5~15.5m에서 사후 비교했다 (`D:/CodexResearchRuns/flybrain-accel-loop-dynamics-20261102-01/`). 후보에 들어간 전후 가속도 절대값 중앙은 조건별 0.171~0.210m/s², 횡가속도는 0.0036~0.0578m/s²로 고정 이력 학습의 ±3m/s²보다 작았다. 같은 위치에서 기준 대비 최대 조향 차 2.33e-5~2.98e-5rad, 최대 속도 차 0.000189~0.000588m/s였으며 이 분포 차이는 작은 효과의 가능한 설명이지 유일한 원인 증명은 아니다.
+> 새 질감의 slip-free 합성 직선에서 3/6m/s×조향 외란 -0.08/0/+0.08rad(0.5초)×기준/후보/가속도 결측 18조건을 비교했다 (`D:/CodexResearchRuns/flybrain-accel-disturbance-20261102-01/`, 사전 계획 `D:/CodexResearchRuns/flybrain-accel-disturbance-plan-20261102-01/`). 가속도는 직전 실제 적용 조향·가감속에서 생성했다. 외란 4조건의 기준 x=16m 중심선 절대 오차는 약 0.218~0.329m였고 후보는 각각 0.117~0.449mm 악화해 사전 5mm 개선 기준에 실패했다. 결측과 기준 차는 최대 0.000036mm 이내. 한 합성 질감·단순 차량·인위적 조향 외란이며 실제 AC/생리 검증이 아니다. 가속도 후보 미채택·actor/실제 fit 불허. 다음은 단순 신호 확대/튜닝을 반복하지 않고 시각 선행과 비행 유래 몸 제어의 인과 기여, 고유한 회로 연결 및 다양한 동역학/실제 센서 근거를 우선한다.
+
+
+> **2026-11-02 가속도 경로 민감도·동시 입력·합성 폐루프:** 가속도 projection 0에서 같은 비행 회로의 전진/조향 출력에 대한 국소 미분을 계산한 결과 첫 합성 장면의 조향 gradient norm은 전진의 41.5배였지만 두 gradient cosine은 -0.0268로 거의 직교했다 (`D:/CodexResearchRuns/flybrain-accel-port-sensitivity-20261102-01/`). 첫 장면에서 전진 gradient를 조향 gradient에 직교화한 방향의 최대 가중치 크기를 0.15로 적용해 실제 회로를 재생했다 (`D:/CodexResearchRuns/flybrain-accel-orthogonal-eval-20261102-01/`). 기존에 본 보류 합성 장면 8조건에서 전후 가속도 반응은 전진 intent 약 ±0.00066, 조향 약 ±0.00018, 결측 차 0으로 사전 screen 통과. 이를 이전 미채택 후보의 좌우 가속도 열과 같은 단일 회로에 합쳐 전후×좌우 16조건을 재생한 결과 사전 기준 통과 (`D:/CodexResearchRuns/flybrain-accel-combined-eval-20261102-01/`); 비선형 상호작용과 결측도 범위 이내. 이것은 고정 합성 이력의 공학 목표이며 기존 방향은 사후 선택, 생리/실제 actor 적격성은 아니다.
+> 새 합성 질감·자전거 차량의 3/6m/s×좌/직선/우×기준/후보/결측 18폐루프에서 x=16m 오차를 비교했다 (`D:/CodexResearchRuns/flybrain-synthetic-accel-loop-20261102-01/`). 기존 절대 중심 오차는 코너 약 0.221~0.289m였고 후보 변화는 -0.162~+0.132mm 범위; 사전 요구 코너 5mm 개선 미달로 실패다. 결측 대비 기준 차 최대 0.0000962mm. 후보 실제 배포 불허, 물리/생리/실제 AC/가속도 등록 미검증. 시각 선행·차체/하중/타이어·전진/감속/변속·셋업·라인/랩타임 목표는 유지하며, 다음은 왜 열린 이력의 반응이 폐루프 성능에 기여하지 않는지 차량-회로 상호작용과 속도 지표를 확인한다.
+
+
+> **2026-11-02 교차축 제한 합성 가속도 학습: 기준 실패.** 기존 단일 회로의 합성 가속도 projection만 GPU에서 2회 갱신하고, 기존 0.02 대신 학습률 0.001, 보류 16조건의 목표 축 부호/크기와 다른 출력축 25% 상한을 사전에 지정했다 (`D:/CodexResearchRuns/flybrain-accel-decoupled-fit-20261102-01/`, 계획 `D:/CodexResearchRuns/flybrain-accel-decoupled-plan-20261102-01/`). 업데이트 전 손실 0.5→0.419; 보류 16조건 중 8개만 통과했다. 좌우 가속도에 대한 조향 intent는 평균 ±0.00103으로 목표 ±0.003의 약 34%였고, 전후 가속도의 불필요한 조향은 ±0.000274로 사전 교차축 상한 이내였으나 전진 intent 변화는 ±0.0000183으로 목표 ±0.002의 약 0.9%에 그쳐 전후 8조건이 실패했다. 결측 시 출력 차 0, base body projection 불변. 기존 GPU/CPU·학습률도 달라 이전 후보와의 차이를 단일 원인으로 단정하지 않는다. 보류 장면은 합성이며 이전 실험에서 이미 본 장면이다. 실패 후보 폐루프/배포 불허; 실제 가속도 마스크, 물리 시각, 생리·실제 AC 검증은 유지/미완료다. 다음은 전후 신호가 비행 회로 전진 출력에 미치는 기울기와 조향 교차 영향을 원인별 분리해 연결을 수정한다.
+
+
+> **2026-11-02 합성 가속도 단일 회로 경계·학습:** 기존 `CenteredSpeedBodyFeedbackAdapter`의 base projection을 보존하고 21차원 몸 입력의 가속도 3채널을 별도 마스크·초기 0 projection으로 같은 비행 회로 감각 포트에 더하는 실험 후보 `src/flybrain_drive/synthetic_acceleration_feedback.py`를 추가했다. 기존 출력의 bitwise 동일성, 결측 축 차단, 범위/비유한 검사 포함 관련 13개 테스트 통과. 실제 native 가속도는 여전히 invalid이며 후보는 생리 측정 회로가 아닌 공학 가설이다. 합성 장면 2개×좌우, 전후/좌우 ±3m/s²의 가설 안정화 목표로 새 projection만 2회 학습 (`D:/CodexResearchRuns/flybrain-synthetic-accel-fit-20261102-01/`). 학습 손실은 각 업데이트 전 0.5→1.713으로 증가했다. 보류 합성 장면의 16조건 모두 사전 지정 목표 부호·크기 10% 이상이었고 결측 출력 차 0으로 좁은 사전 screen은 통과했다. 그러나 사후 교차축 검사 (`D:/CodexResearchRuns/flybrain-synthetic-accel-crosstalk-20261102-01/`)에서 전후 가속도에 의도치 않은 조향 intent 약 ±0.00694가 발생했고 주목표 전진 intent는 약 ±0.000337이었다. 사전 screen이 교차축을 제한하지 못해 이 통과는 후보 품질 증명이 아니다. 후보 미채택·실제 actor/fit 불허, 생리·실제 시각 동기·폐루프 미검증. 다음은 교차축 억제를 사전에 포함하고 실제 물리/생리 근거와 합성 폐루프 개선을 검증한다.
+
+
+> **2026-11-02 정정 — 좌측 벡터 계산 오류 및 코너 원본 재검증:** 직전 world velocity 분석의 `cross(forward,up)`을 좌측으로 해석한 것은 오류였다. 같은 기록의 실제 좌측 카메라 시선은 `cross(up,forward)`에 일치한다. 잘못된 분석 원본을 보존하고, 좌측 카메라 시선과 내적≥0.99인지 매 프레임 확인하는 별도 정정 분석을 실행했다 (`D:/CodexResearchRuns/flybrain-corner-axis-corrected-20261102-02/`, `D:/CodexResearchRuns/flybrain-world-accel-corrected-20261102-02/`). 코너 두 기록 262/345프레임에서 native accG index0과 올바른 좌측 투영의 상관은 +0.996/+0.997이며, speed×native yaw 근사와도 +0.972/+0.987로 같은 방향이다. 앞서 보고한 좌우 부호 충돌은 본 분석의 좌표계 오류로 철회한다. 세 번째 프레임 위치를 쓰는 사후 yaw 대조는 native yaw와 카메라 방위 변화가 같은 부호임을 보였으나 시간/카메라 basis 조건이 남는다 (`D:/CodexResearchRuns/flybrain-corner-camera-yaw-sign-20261102-01/`). 정정 계산은 결과 확인 후 수행한 탐색적 분석이며 기존 회로/계약을 바꾸지 않았다. 기록된 3초 직선의 좌측 변화는 작고, 코너는 같은 차/트랙의 상관된 프레임이다. 경사·중력·미끄러짐·물리 시각·생리는 미검증이므로 가속도 입력은 0/invalid, 실제 fit/actor 불허를 유지한다.
+
+
+> **2026-11-02 당시 분석 — 좌측 외적 방향 오류, 후속 정정 참조:** 기존 움직임 진단 두 run에서 전방 콜백과 속도/3축 yaw-rate가 정확히 일치하는 고유 native 패킷을 찾고, 해당 패킷 앞뒤 150ms host 수신의 world velocity를 선형 미분해 기록된 카메라 forward, cross(forward,up), up으로 투영했다 (`D:/CodexResearchRuns/flybrain-world-accel-20261102-01/`, 사전 방법 `D:/CodexResearchRuns/flybrain-world-accel-plan-20261102-01/`). 각 run 전방 37프레임에서 native index2와 투영 전방 미분의 상관은 0.989/0.976이었다. 그러나 index0과 기하상 left 투영의 상관은 -0.666/-0.629로, 이전 speed×등록 yaw 근사와 index0의 양의 상관(0.970/0.987)과 부호가 충돌한다. 두 실험은 주행 기록·운동 범위와 참조가 달라 정확한 원인은 미확정이며 카메라/물리 좌표, yaw 부호·횡슬립을 재검증해야 한다. 이번 3초 데이터의 left 투영 표준편차가 0.028/0.031m/s²에 그쳐 상관이 불안정하다. index1과 up 투영 상관은 0.898/0.948이지만 up 변화도 작고 중력 분리 증거가 아니다. host 시간 미분에는 미래 샘플이 포함되고 콜백-패킷 수치 일치는 공통 물리 tick 증명이 아니다. 차체 world 방향은 오프라인 비교에만 사용했으며 actor 입력이 아니다. 가속도 axis 미등록·0/invalid, 실제 fit/actor/생리·물리 동기 미검증 유지. 다음은 같은 코너 원본에서 카메라·yaw·world velocity의 부호 및 좌표 관계를 비교한다.
+
+
+> **2026-11-02 실제 정지 native 가속도 관찰:** 처음 계획한 3초 이동 진단 원본에서는 첫 기록에 연속 1초의 고유 native 패킷 정지 창이 없어 해당 계획을 `insufficient_qualifying_stationary_windows`로 보존하고 중단했다 (`D:/CodexResearchRuns/flybrain-native-stationary-gravity-20261102-01/`). 이후 과거 정지 shadow 원본 `D:/CodexResearchRuns/flybrain-unified-process-live-20261102-02/`의 native 복사 해시를 검증하고 별도 계획으로 재분석했다 (`D:/CodexResearchRuns/flybrain-stationary-shadow-gravity-20261102-01/`). speed<0.1km/h·세 축 각속도<0.01rad/s·앞뒤 각 0.5초 호스트 수신 간격≤20ms 조건의 1,621개 고유 패킷은 accG 세 축이 모두 0이었다. 당시 pitch -0.007616~-0.007615rad, roll +0.003796~+0.003798rad로 기울기 변화가 거의 없다. 원래 shadow run은 stale로 `stopped_on_error`였고 이 분석으로 성공 처리하지 않는다. 차량 물리 sleep, 게임의 중력 처리, 필터링 및 실제 물리 시각을 구별하지 못하므로 0이 무중력 또는 중력 보정의 증거가 아니다. 가속도 축/중력 등록과 actor/실제 학습은 미허용이다. 다음은 다른 기울기와 더 다양한 회전 상태의 실측 대조를 확보한다.
+
+
+> **2026-11-02 실제 코너 진단의 횡방향 가속도 축 비교:** 기존 AI pace 원본 두 기록은 학습 불허를 유지하고 진단에만 사용했다. 첫 기록의 속도≥5m/s, |yaw|≥0.02rad/s 조건에서 speed×기존 body yaw(좌회전 양)를 횡방향 구심 가속도의 단순 근사로 삼아 native accG 3축과 비교했으며 절대 상관 최대인 index 0을 선택했다 (`D:/CodexResearchRuns/flybrain-native-lateral-axis-20261102-01/`, 사전 계획 `D:/CodexResearchRuns/flybrain-native-lateral-axis-plan-20261102-01/`). 첫/둘째 기록은 각각 3,685/4,801개 상관된 고유 패킷이고 좌우 yaw를 모두 포함했다. 선택 축과 근사의 상관은 첫 0.970, 둘째 0.987, 부호 일치 비율은 각각 99.6%/99.1%였다. 9.80665m/s²/g 가정이며 yaw와 속도의 native 수신 상태 및 작은 횡슬립/횡속도 변화 가정에 의존한다. 노면 기울기·중력·타이어 슬립·physically aligned 시각은 분리하지 못해 축 등록·생리·실제 주행 능력의 증거가 아니다. 두 run은 동일 차/트랙, 패킷은 서로 상관된다. 실제 가속도 입력은 계속 0/invalid이며 actor/실제 fit/차량 제어 0. 다음은 경사·정지·회전 조건에서 중력 및 횡미끄러짐 영향을 분리한다.
+
+
+> **2026-11-02 native 가속도 축의 속도 미분 비교:** 두 기존 3초 진단 원본 prefix 해시를 검증하고, 첫 주행에서 호스트 수신 기준 중심 150ms의 속도 크기 선형 미분과 native accG 3축을 비교해 절대 상관 최대 축을 선택했다 (`D:/CodexResearchRuns/flybrain-native-accel-axis-20261102-01/`, 사전 방법 `D:/CodexResearchRuns/flybrain-native-accel-axis-plan-20261102-01/`). 속도 >5km/h 및 창 내 수신 간격 ≤20ms 조건에서 native index 2가 선택되었고 첫 run 상관 0.9868, 고정된 관계의 둘째 run 상관 0.9866 및 예측 RMSE 0.609m/s²였다. 비교 대상은 서로 겹치는 996/995개 창이며 양/음 속도 미분을 모두 포함한다. 단위 변환은 표준 중력 9.80665m/s²를 가정했다. 이 결과는 한 차·트랙의 짧은 움직임에서 해당 축이 속도 미분과 연관된다는 진단이며, 수신 시각을 물리 샘플 시각으로 인증하지 않고 미분에 미래 패킷을 쓰며 횡/상하 축·노면 기울기·중력·슬립·실시간 성능을 검증하지 않는다. 가속도 회로 마스크는 유지한다. 다음은 서로 다른 회전·경사·가감속 조건에서 나머지 축과 중력 분리를 독립 검증한다. 실제 학습/actor·생리·물리 동기 미검증.
+
+
+> **2026-11-02 실제 native 가속도 마스크 검증:** 현재 단일 회로의 `VirtualBodyEncoder`는 CSP 가속도를 입력으로 쓰지 않으며, native `accG`도 축/중력 등록이 완료되지 않아 linear acceleration 3채널을 0과 invalid로 유지한다. 두 실제 3초 진단의 원본 패킷 해시를 검증해 중복 ID 첫 수신만 각각 1,393개 재생했다 (`D:/CodexResearchRuns/flybrain-real-acceleration-mask-audit-20261102-01/`). 두 run 각각 1,384개에 비영 가속도가 있었지만 가속도 3채널 유효/값 누출은 0건, 속도 채널은 전부 유효했다. 이 오프라인 encoder replay는 계약의 신원값을 제공한 것이며 실제 생리·물리 시각을 인증하지 않는다. 별도 단위 테스트에서 상반된 큰 native 가속도 입력에도 몸 특징/마스크가 같음을 확인했고 관련 11개 검사 통과. 마스크는 안전 경계이면서 실제 몸 가속도 되먹임이 목표 대비 미구현임을 뜻한다. 다음은 native 축·부호·중력과 시각 시간 정합을 독립 검증한 뒤 단일 비행 회로에 도입한다. 실제 fit/actor/주행 미검증.
+
+
+> **2026-11-02 렌더 표식·native 수치 반복 진단:** 같은 차·트랙에서 사전 계획 후 별도 3초 CSP AI 주행을 수집했다 (`D:/CodexResearchRuns/flybrain-marker-motion-20261102-02/`, 계획 `D:/CodexResearchRuns/flybrain-marker-motion-repeat-plan-20261102-01/`). 네 시야 161묶음/644화면 및 native 5,605복사를 보존했고 644시야 표식 색상·콜백 인덱스가 기존 정지 캘리브레이션과 일치했다 (`D:/CodexResearchRuns/flybrain-marker-motion-analysis-20261102-02/`). 속도 >1km/h 168시야 모두 속도·3축 각속도의 binary32 값과 일치하는 native 패킷이 있었으며, 수집 표본에서 각각 유일했다. 가속도까지 일치한 것은 152시야 (`D:/CodexResearchRuns/flybrain-cached-native-value-match-20261102-02/`). 두 주행의 불일치 각 16시야는 출발/정지 부근 4프레임×4시야였고, 첫 출발 프레임 CSP 가속도는 세 축 모두 약 1e-30이었다. 원인은 미확정이며 native와 무조건 동등 취급하지 않는다 (`D:/CodexResearchRuns/flybrain-marker-repeat-gap-audit-20261102-01/`). 샘플된 서로 다른 native 패킷 ID는 각 1,393개; 첫 주행 범위에는 ID 공백이 없고 두 번째는 ID 하나가 관찰되지 않은 구간 1개가 있다. 이는 샘플링 누락이지 엔진 전송 손실 증명이 아니다. 동일 환경의 두 짧은 주행·상관된 시야이며 공통 물리 tick/영상 노출과 몸 생성 시각의 인증이 아니다. 기존 카메라 해시로 복구, paused=false·카메라/AI off·brake=1 확인. 실제 fit/actor 및 생리 검증 불허 유지. 다음은 가속도 수신과 CSP 캐시 불일치를 마스크 처리하는 경계 및 독립 물리 시각 증거를 검토한다.
+
+
+> **2026-11-02 움직이는 렌더 콜백의 CSP/native 수치 일치:** 기존 3초 표식 진단의 영상·메타데이터·5,380 native 복사 원본 해시를 검증하고, 콜백 CSP speed와 3축 localAngularVelocity를 native speed/3축 각속도와 binary32로 정확 비교했다 (`D:/CodexResearchRuns/flybrain-cached-native-value-match-20261102-01/`). CSP 속도 >1km/h인 168시야 모두 일치하는 패킷이 있었고, 각 시야에 대해 기록된 표본 안에서는 일치 패킷 ID가 하나였다. 가속도 3축까지도 정확 일치한 것은 152시야다. 해당 값의 가장 가까운 native host 복사와 콜백 host 추정 시각 차는 -21.23~+0.89ms(중앙 -9.26ms)이며 source↔host 시계 교환 폭 3.549ms 및 단위율 가정이 있다. 이 값은 소급 분석이고 하나의 짧은 주행·중복된 시야/프레임이다. 같은 수치가 같은 physics tick을 입증하지 않으며 host 복사/콜백은 생성·세계 렌더 물리 시각이 아니다. 영상/몸 시간 동기, native packet identity, 생리·실제 학습 자격은 여전히 미검증. 다음은 값 일치를 개별 시각 증거와 함께 활용할 수 있도록 반복 수집에서 유일성·패킷 누락·시간 불확실도를 검증한다.
+
+
+> **2026-11-02 실제 전방 영상의 정적 무늬·카메라 기하 비교:** 렌더 표식 이동 진단에서 전방 영상의 표식 밖 고정 격자 520개 patch를 추적해 세 시점의 대응 127개를 찾고 앞 두 시점 camera metadata로 삼각측량했다 (`D:/CodexResearchRuns/flybrain-landmark-geometry-20261102-01/`, 방법 `D:/CodexResearchRuns/flybrain-landmark-geometry-plan-20261102-01/`). 양의 유한 깊이를 가진 83개 추적점의 세 번째 영상 위치 재투영 오차 중앙 0.539px, 95백분위 9.06px, 최대 194.16px. 사후 대조 (`D:/CodexResearchRuns/flybrain-landmark-pose-shift-20261102-01/`)는 세 번째 카메라 자세만 3프레임 뒤로 바꾸어 두 방법 모두 투영 가능한 82점에서 원래/변경 오차 중앙 0.526/0.998px, 원래가 작은 점 74개였다. 선택된 점과 겹친 10개 시간 구간은 독립 표본이 아니고 잘못된 추적·이동 물체가 있을 수 있다. 자세 metadata와 렌더러가 같은 원본을 공유할 수 있어 화면 기하와 상대 자세의 제한적 일치 증거일 뿐, native 물리 tick이나 절대 동기 오차가 아니다. 사후 대조는 사전 등록 검정이 아니다. 원본 이미지·해시 보존, actor/학습/차량 제어 0. 다음은 실제 몸 패킷의 생성 tick을 확인할 독립적 소스 증거 또는 물리적 지연 상한을 얻는다.
+
+
+> **2026-11-02 움직이는 렌더 표식과 native 원본 동시 진단:** 정지 전용 표식 후보를 별도 bounded motion 전용 후보 `integrations/ac_csp/candidates/FlyBrainCamera-render-marker-motion-v1.lua`로 확장했다. 정지·브레이크·오프라인에서 명시적 요청으로만 시작하고 파일 출력·진단 `aid_probe_only=true`, actor/학습 불허를 강제한다. CSP lifecycle AI 3초 진단 중 네 시야 155묶음과 native 원본 5,380복사·전후 host/source 시계 교환을 수집했다 (`D:/CodexResearchRuns/flybrain-marker-motion-20261102-01/`). 카메라 원본을 해시 고정 복구하고 resume 후 paused=false, AI=false, camera_active=false, brake=1 확인. 독립 정지 표식 영상에서 얻은 영역·색 기준으로 실제 주행 620시야 모두 표식 색/프레임 인덱스가 일치했고, 620개 콜백은 모두 대응 render 호출 안에 있었다 (`D:/CodexResearchRuns/flybrain-marker-motion-analysis-20261102-01/`). 시각 교환 폭은 3.549ms(단위율 가정)다. 168개 움직이는 시야에서 콜백 host 추정에 가장 가까운 native 복사 속도와 CSP 캐시 속도의 차이 중앙 0.0229, 95백분위 0.503, 최대 0.866km/h. 진단상 미래 복사도 허용한 비교로 원본 생성 tick/픽셀의 세계상태 시각이나 물리 동기 오차는 알 수 없다. 한 짧은 주행·시야 상관, actor/optimizer/실제 학습 없음. 다음은 표식 콜백에 기록한 car.timestamp와 화면 속 차량/세계 기하의 시간 관계를 독립적으로 평가하고, native 발생 시각 상한 근거를 확보한다.
+
+
+> **2026-11-02 정지 카메라 렌더 콜백 표식 실증:** CSP GeometryShot의 opaque callback에서 시야별 색상을 프레임마다 적/녹으로 바꾸고 콜백 source clock·car.timestamp를 기록하는 후보 (`integrations/ac_csp/candidates/FlyBrainCamera-render-marker-diagnostic-v1.lua`)를 만들었다. 후보는 paused의 `allow_ideal_line_probe=true`, 최대 8장, 파일 전용만 허용하고 actor/학습을 금지한다. 기존 카메라 백업·해시 고정으로 임시 설치, 정지 4묶음×4시야 수집 후 원본 해시 `78863113df3f28f59fafdb0a4103c09c4b3deb7302873b7b5f956475404b78a6`로 원복·resume했다 (`D:/CodexResearchRuns/flybrain-marker-probe-20261102-01/`, `...-restore-...`, `...-resume-...`). 원본 파일 해시·16개 callback이 각 render 호출 내부이며 인덱스/시야에 일치함을 검증했다 (`D:/CodexResearchRuns/flybrain-marker-analysis-20261102-01/`). 사후 정한 픽셀 색차 기준에서 네 시야 모두 적/녹 교대 영역이 관찰됐다(전/좌/우/후 900/263/261/258픽셀). 이는 해당 정지 진단에서 이미지와 렌더 콜백의 연관을 실증하지만, 콜백에서 읽은 캐시 car.timestamp가 그려진 세계의 물리 tick임을 증명하지 않고 native 생성 시각도 알 수 없다. 생리·실제 학습·actor·물리 동기는 미검증. 다음은 콜백 표식과 원본 native 상태를 함께 수집할 수 있는 제한적 이동 진단을 별도로 설계하고, 표식에 기록된 캐시와 실제 렌더 물리 관계를 독립적으로 검증한다.
+
+
+> **2026-11-02 실제 픽셀 변화와 native 속도의 탐색적 비교:** 움직임 진단의 원본 영상 150묶음·native 5,194복사의 해시를 재검증하고 시야별 인접 프레임 그레이스케일 절대차/렌더 간격을 native 속도와 비교했다 (`D:/CodexResearchRuns/flybrain-pixel-native-timing-20261102-01/`, 사전 방법 `D:/CodexResearchRuns/flybrain-pixel-native-timing-plan-20261102-01/`). 렌더 추정 시각 대비 -0.4~+0.4초에서 가장 높은 Pearson 상관은 전/좌/우/후 각각 0.661/0.796/0.706/0.695, 해당 shift는 -0.08/+0.16/+0.08/+0.08초였다. 0초 값은 각각 0.404/0.787/0.702/0.691. 단일 짧은 움직임·상관된 프레임이며 도로 무늬, 회전, 조명 및 노출 영향이 있어 shift는 동기 오차나 물리 노출 지연이 아니다. 그레이스케일 픽셀차는 광학 흐름도 아니다. 단위율 가정된 렌더 호출과 native host 수신만 사용하며 진단상 미래 샘플도 포함한다. 실제 픽셀 변화와 속도 사이 관찰 관계를 확인했지만 물리 동기·생리·학습/actor 자격은 여전히 미검증이다. 다음은 독립적인 표시 이벤트나 검증된 소스 프레임 계약을 확보한다.
+
+
+> **2026-11-02 움직이는 CSP 상태·native 동시 수집:** lifecycle과 제한된 CSP expert-motion-probe로 3초 진단 주행 중 카메라 150묶음/600시야와 native 원본 바이트 복사 5,194개를 기록했다 (`D:/CodexResearchRuns/flybrain-stateclock-motion-20261102-01/`). 카메라 픽셀/메타데이터 host 관찰 해시, 모든 native prefix 해시·copy 시각, 전후 CSP↔host 시계 교환을 보존하고 재검사했다. 시계 오프셋 폭 3.281ms는 교환과 단위율 가정에 한정된다. 비교 분석 (`D:/CodexResearchRuns/flybrain-stateclock-motion-analysis-20261102-01/`)은 각 렌더 호출의 추정 host 시각 중간값에 가장 가까운 native 복사(진단상 미래 허용)를 선택했다. CSP 속도 >1km/h인 168시야에서 속도 절대 차 중앙 0.0237, 95백분위 0.493, 최대 0.864km/h; 최대 CSP 속도 16.292km/h. 시야/프레임은 상관되어 독립 표본이 아니다. 렌더 호출·native 복사는 픽셀 노출/물리 발생 시점이 아니어서 이 숫자는 물리 동기 오차나 같은 tick의 증거가 아니다. 원래 카메라 해시 `78863113df3f28f59fafdb0a4103c09c4b3deb7302873b7b5f956475404b78a6`로 원복하고 paused=false·camera_active=false·AI=false·brake=1 확인했다. AI 진단 외 student 제어·UI·optimizer 0; 실제 자료 학습/actor 불허. 다음은 원본 몸/영상의 움직임 시점 관계를 외부 표식 또는 명시된 소스 이벤트 증거로 검증한다.
+
+
+> **2026-11-02 실제 정지 CSP 시계·몸 상태 진단 및 원복:** 해시 고정 lifecycle pause 후 `FlyBrainCamera-state-clock-owned-v1.lua`를 원본 백업·검증해 임시 설치했고, 기존 probe를 후보 해시에 맞춘 `scripts/probe_state_clock_owned_v1.py`로 네 시야 4묶음을 수집했다 (`D:/CodexResearchRuns/flybrain-stateclock-probe-20261102-01/`). 아카이브 전 파일 해시와 frame identity를 재검사하여 16개 시야의 전후 시각·속도·각속도·가속도가 존재함을 확인했다 (`D:/CodexResearchRuns/flybrain-stateclock-analysis-20261102-01/`). 전후 CSP 속도는 각 0.0005164km/h로 불변; 설치 전 별도 native 수신은 0.0005233km/h였지만 동시 샘플이 아니고 정지라 tick 동기 증거가 아니다. 기존 카메라 SHA-256 `78863113df3f28f59fafdb0a4103c09c4b3deb7302873b7b5f956475404b78a6`로 원복 (`D:/CodexResearchRuns/flybrain-stateclock-restore-20261102-01/`), lifecycle resume 뒤 paused=false, camera_active=false, AI=false, brake=1 확인. UI·actor·차량 제어·optimizer 0. 이 정지 수집은 후보 CSP 실행과 원본 보존을 확인할 뿐 물리 노출/몸 발생 동기·생리·실제 주행 학습을 증명하지 않는다. 다음은 동일 캡처 구간의 native 패킷을 원본 수신 시각·바이트와 함께 수집하는 움직임 진단을 설계해 속도·회전의 시간 변화와 식별 가능성을 검증한다.
+
+
+> **2026-11-02 CSP 시간·몸 상태 동시 진단 후보:** 기존 검증된 카메라 진단 후보를 기반으로 각 시야 렌더 호출 전후 `car.timestamp`와 같은 읽기 구간에 CSP `speedKmh`, `localAngularVelocity`, `acceleration`을 보존하는 후보 `integrations/ac_csp/candidates/FlyBrainCamera-state-clock-owned-v1.lua`를 만들었다 (SHA-256 `94b23290e7fd6787659f6f67f6b5170f43f821afb5be2f97073f4c237177dd56`). 로컬 CSP SDK는 car 상태가 그래픽 주기 캐시일 수 있음을 명시하므로 이는 픽셀이나 native 패킷의 물리 tick 동기가 아니다. `src/flybrain_drive/diagnostic_cached_body_clock.py`는 원본 값과 읽기/렌더 순서를 검증하고 시간·상태 차이를 진단하되 동기·native 일치·학습 자격을 부여하지 않는다. 결측·비유한·순서 역전·학습 허용 거부 포함 관련 13개 검사와 Lua 문법 load 확인; Lua 문법 검사는 CSP 실행 검증이 아니다. 후보는 설치하거나 실제 실행하지 않았다. 다음은 기존 설치본 해시 및 lifecycle/원복 조건을 검증하고 정지 진단에서 상태 원본을 수집해 native와의 일치 가능성을 별도로 검토한다. 물리 노출·몸 발생 시각·생리·실제 AC 자율주행은 미검증이다.
+
+
+> **2026-11-02 CSP 시계 변환 직접 호출 검증 보강:** 실제 움직임 진단의 카메라 시계쌍과 몸 패킷을 재확인했다. 렌더 호출/호스트 수신은 각각 픽셀에 반영된 물리 시점/몸 발생 시점이 아니므로 기존 자료의 물리 동기 오차는 여전히 미확정이며 `training_admissible=false`다. `CSPClockBounds.render_start_lower()`는 같은 generation 및 유한값만 검사해 직접 호출 시 교환이 없거나 폭이 너무 넓어도 하한을 반환할 수 있었다. 최소 두 번의 상호 일치한 bounded 교환과 음수가 아닌 원본 시각을 직접 요구하도록 수정했다. 교환 0개·넓은 교환·음수·정상 경계 회귀 포함 관련 18개 검사 통과. 이 변경은 호스트 렌더 시작 추정의 입력 검증이며 시계 단위율 가정, 물리 노출/몸 샘플 동기를 검증하거나 실데이터 학습을 허용하지 않는다. 원본 데이터·기존 실행은 변경하지 않았다. 다음은 독립적으로 식별 가능한 렌더 물리 프레임과 몸 생성 tick 또는 검증된 상한을 확보하는 계측이다.
+
+
+> **2026-11-02 코너 진입 전 구간에 맞춘 중립 학습: 기준 실패.** 직전 학습이 전체 프레임을 사용한 점을 수정해 x=9~11.5m의 손실만 6회 갱신했다 (`D:/CodexResearchRuns/flybrain-matched-neutral-window-20261102-01/`, 계획 `D:/CodexResearchRuns/flybrain-matched-neutral-window-plan-20261102-01/`). 학습 질감의 해당 구간 MSE는 업데이트 전 1.1180e-5→1.1051e-5로 내려갔으나 보류 질감의 직선 intent MAE는 0.00339157→0.00341124로 늘어 사전 50% 개선 기준 실패다. 좌우 반응 변화는 허용 이내이고 전체 81프레임 직선 MAE도 0.00240827→0.00241719로 5% 악화 제한 이내지만 전체 기준은 실패다. fit/보류 각 질감 하나이며 보류는 이전에 본 합성 이력이다. 이전 후보에서 출발한 시각 projection만 갱신, 최대 변화 0.01184; 학습과 판정 구간 불일치만으로 보류 악화를 설명할 수 없다. 후보 폐루프·배포 불허. 다음은 단일 질감의 미세 조정 반복을 중단하고 다양한 질감/차체 상태를 가진 학습 자료와 실제 감각 시간 동기/회로 인과 검증을 우선한다. 생리·실제 AC·물리 동기는 미검증이다.
+
+
+> **2026-11-02 동일 차체 이력의 직선 중립 학습: 기준 실패.** 기존 미채택 후보를 시작점으로, 같은 몸 이력에서 직선 출력은 기존 회로에 맞추고 좌우 굽이와 직선의 후보 출력 차이는 유지하는 목표로 시각 경계 projection만 6회 학습했다 (`D:/CodexResearchRuns/flybrain-matched-neutral-fit-20261102-01/`, 계획 `D:/CodexResearchRuns/flybrain-matched-neutral-fit-plan-20261102-01/`). 883601 질감으로 fit, 이전에 결과를 살펴본 883602를 보류했으며 합성 고정 이력이다. x=9~11.5m 보류 직선 intent의 기존 회로 대비 MAE는 0.00339157→0.00340782로 악화해 사전 요구 50% 감소에 실패했다. 좌우 응답 차이 변경은 각각 0.00000736/0.00001347로 원래 차이 0.01761/0.02139의 10% 제한 이내였지만 전체 기준은 실패다. 학습 질감 전체 평균 MSE는 2.4586e-5→2.4541e-5(각 업데이트 전 기록), 마지막 업데이트 후의 독립 fit 점수는 아니다. 사전 replay 출력 차 0, 최대 가중치 변화 0.01174. 후보 폐루프·배포 불허, 물리 동기·생리·실제 AC 미검증. 다음은 이전 후보에서 단순 projection 갱신이 직선 편향을 일반화하지 못한 이유를 확인하고 새로운 자세/질감을 포함한 직선 중립 회로 설계를 검토한다.
+
+
+> **2026-11-02 동일 차체 상태의 시각 선행 반응:** 직전 두 합성 질감의 기존 회로 직선 이력을 기준으로, 12개 재생에서 몸 감각·자세 이력은 같게 고정하고 도로 굽이만 바꿨다 (`D:/CodexResearchRuns/flybrain-matched-pose-replay-20261102-01/`; 분석 `D:/CodexResearchRuns/flybrain-matched-pose-analysis-20261102-01/`). 코너 시작 전 x=9~11.5m, 두 질감×기존/후보×좌우 8조건의 21프레임 모두 조향 차이는 해당 굽이 방향이었다. 조건별 평균 차 절대값은 기존 0.00337~0.00409rad, 이전 미채택 후보 0.00616~0.00749rad였다. 사후 비교에서 직선 조향 평균은 기존 -0.00131~-0.00143rad, 후보 -0.00240~-0.00261rad로 후보가 같은 몸 상태에서 한쪽 편향을 늘렸다 (`posthoc-straight-bias.json`). 원본 직선 이력 재생은 scene 최대 차 1.20e-7, 조향 intent 최대 차 1.83e-7, 굽이 조건 간 몸 이력 차 0. 이 실험은 합성 화면 변화의 선행 조향 영향과 편향을 보여주지만 직선 악화의 유일한 원인, 생리 기능, 실제 AC 또는 폐루프 성능을 증명하지 않는다. 후보는 미채택·actor 불허. 다음은 이 동일 몸/시각 쌍을 써 직선 중립을 보존하는 비행 회로 경계 학습을 설계하고 새로운 질감·자세에서 검증한다.
+
+
+> **2026-11-02 새 질감 2개 모델 구동 이력·사전 지정 평가:** 기존 회로와 이전 미채택 후보를 새 합성 질감 883601/883602에서 직선/좌우 각 81결정씩 실행했다 (`D:/CodexResearchRuns/flybrain-dynamic-holdout-20261102-01/`). 기존 두 질감으로 선형 비교기를 학습하고 새 질감 조건별 정확도 80% 이상을 사전 요구한 평가 (`D:/CodexResearchRuns/flybrain-dynamic-holdout-eval-20261102-01/`, 계획 `D:/CodexResearchRuns/flybrain-dynamic-holdout-eval-plan-20261102-01/`)는 48개 중 34개만 충족해 실패했다. 공통 RMS 척도에서 코너 전 망막 36.1%, 운동 특징 83.3%였으나 각각 최악 이력 0%; 코너 후 망막 76.8%, 운동 특징 100%였다. 사후 운동 특징에는 차량 상태 변화가 반영될 수 있어 시각 선행 예측의 증거가 아니다. 후보의 최종 코너 절대 오차는 기준 0.573~0.652m에서 0.493~0.631m로 줄었지만 직선 절대 오차가 0.030~0.032m에서 0.041~0.046m로 늘어 기존 실패가 재현됐다. 합성 도로·두 질감·조건별 상관된 프레임이며 actor 적격성/생리/실제 AC·물리 동기는 미검증이다. 다음은 같은 차체 상태에서 새 질감별 시각 선행 입력을 통제해 감각 차이를 분리하고 직선 중립을 보존하는 회로 학습을 설계한다.
+
+
+> **2026-11-02 합성 시각 탐침의 정규화 민감도:** 앞서 확인한 동일 합성 이력·동일 학습/보류 질감을 사후 재분석했다 (`D:/CodexResearchRuns/flybrain-dynamic-scale-diagnostic-20261102-01/`). 운동 시각 특징의 채널별 표준화에서 보류 정확도는 코너 전/후 각각 33.3%/33.3%, 특징 전체에 동일한 RMS 척도를 적용하면 67.5%/100%였다. 후자의 코너 전 클래스별 정확도는 음/직선/양 11.9%/90.5%/100%였다. 학습 질감에서는 모두 100%였고 보류는 질감 하나·모델별 조건 하나씩의 상관된 프레임이다. 이미 보류 결과를 본 뒤 지정한 사후 비교이므로 독립 검증이나 모델 선택 기준이 아니다. 척도와 ridge의 상대적 규제가 함께 바뀌어 이전 비교가 전처리에 민감함을 확인하며, 회로 자체에 운동 정보가 없다는 결론을 지지하지 않는다. 분석기는 actor가 아니고 실제 회로 입력이나 학습을 변경하지 않았다. 다음은 새로운 질감과 차체 상태에서 시각 반응의 선행 정보 및 단일 회로 개입 효과를 사전 지정 검증한다. 물리 동기·생리·실제 주행은 미검증이다.
+
+
+> **2026-11-02 모델 구동 이력의 시각 정보 탐침:** 합성 폐루프 12개 이력에서 한 질감으로 선형 비교기를 맞추고 다른 질감의 직선/좌우를 평가했다. 코너 시작 전 x=9~11.5m와 이후 x=13~16m 모두 망막 공간 대비는 보류 66.7%였으나 직선은 전부 오분류, 운동 시각은 33.3%로 한 클래스로만 예측했다. 조향 intent 선형 탐침도 직선 0%였다. 사후 점검에서 망막·운동 특징 학습 정확도는 100%였지만 학습 기준 표준화 후 보류 RMS가 각각 3.21~8.20, 3.54~93.56으로 달랐다. 이는 질감 변화에 취약한 **이 탐침**의 결과이지 회로의 정보 부재나 실패 원인을 입증하지 않는다. 각 보류 조건은 단일 이력이고 프레임은 상관되어 있다. 입력·계획·결과 `D:/CodexResearchRuns/flybrain-dynamic-visual-probe-20261102-01/`; 사후 확인 `posthoc-train-shift.json`. 위치·굽음은 오프라인 구간/라벨에만 사용했고 actor 입력이 아니다. 다음은 독립 질감·다양한 차체 상태와 과도한 표준화의 영향을 분리하는 감각 반응 및 회로 인과 비교다. 생리·물리 동기·실제 주행·actor는 미검증이다.
+
+
+> **2026-11-02 모델 구동 이력의 공통 기울기 학습 실패:** 합성 모델 생성 6개 fit 이력의 교사 오차에 대해 시각 경계·기존 gain의 공통 방향을 매번 계산해 8회 갱신했다 (`D:/CodexResearchRuns/flybrain-dynamic-common-fit-20261102-01/`). 보류 질감 평균 MSE는 0.1625806→0.1625828로 사전 1% 개선 기준 미달, 폐루프·배포 불허. 직선은 약간 개선됐으나 코너는 미세 악화했다. task 내적 최소값은 수치 허용 범위의 -2.9e-16으로 전 조건 엄밀 개선을 보장하지 않았다. 시각 가중치 최대 변화 0.0200, gain 변화 1.14e-5. 합성 고정 이력·교사 가설이며 물리 시각/생리/실제 주행 미검증.
+
+
+> **2026-11-02 모델 구동 합성 이력 수집·1회 통합 학습: 보류 기준 실패.** 기존 모델과 이전 미채택 후보의 실제 합성 폐루프에서 네 시야·몸 이력 12개×81결정을 수집하고 해시·상태 연속성을 확인했다 (`D:/CodexResearchRuns/flybrain-dynamic-history-20261102-01/`). 한 질감의 두 모델×직선/양 코너로 6회 학습하고 별도 질감을 보류했다. 보류 6이력의 평균 교사 MSE는 0.16258→0.15928로 감소했으나 직선 두 조건이 15.1%/12.1% 악화돼 사전 5% 악화 제한을 위반했다 (`D:/CodexResearchRuns/flybrain-dynamic-dagger-fit-20261102-01/`). 고정 이력 재생 평가이며 새 후보 폐루프·실제 학습·actor 불허. 기존 미채택 후보의 경로를 수집에 활용한 것이 그 후보의 승인이나 생리·AC 성능 검증은 아니다.
+
+
+> **2026-11-02 두 질감·여섯 조건 공통 기울기 학습: 사전 기준 실패.** 시각 projection과 기존 조향 gain에 대한 공통 하강 방향을 매회 다시 계산해 합성 고정 이력 8회 학습했다 (`D:/CodexResearchRuns/flybrain-multiscene-common-fit-20261102-01/`). 2개 질감의 직선/양 코너 중 최대 코너 개선은 약 0.073mm, 한 코너는 0.015mm 악화돼 질감별 코너 10mm 개선의 사전 기준을 만족하지 못했다 (`predeclared-screen.json`). 두 질감 모두 학습에도 사용해 독립 평가가 아니며, 규칙대로 후보 폐루프·배포는 하지 않았다. 기울기 합성 및 gain으로 해결을 증명하지 못했고 물리 동기·생리·실제 AC 주행은 미검증이다.
+
+
+> **2026-11-02 직선·코너 시각 기울기 충돌과 공통 방향:** 기존 합성 fit 이력의 시각 projection 기울기 cosine은 음 코너–직선 -0.606, 직선–양 코너 +0.614, 양 코너끼리 -0.411이었다 (`D:/CodexResearchRuns/flybrain-full-credit-projection-audit-20261102-01/`). 단일 구배 합은 음 코너에 국소적으로 불리했으나 3조건 공통 하강 방향이 존재했다 (`D:/CodexResearchRuns/flybrain-common-descent-diagnostic-20261102-01/`). 최대 가중치 0.005의 한 단계에서 fit 이력 세 손실이 미세 감소해 사전 국소 수치 검사만 통과했다. x=16.5m 오차 개선은 약 0.001~0.004mm로 매우 작다 (`D:/CodexResearchRuns/flybrain-common-descent-step-20261102-01/`). 합성 고정 이력·미배포이며 폐루프/물리/생리/실주행 통과가 아니다.
+
+
+> **2026-11-02 궤적 신용 할당 점검·수정 학습:** 같은 저장 조향의 합성 차량만 비교하면 9결정마다 차량 기울기를 끊은 norm은 전체 81결정 기울기의 1.7~2.7%였다 (`D:/CodexResearchRuns/flybrain-trajectory-credit-audit-20261102-01/`). 이는 신경망 전체 기울기나 실패 원인의 유일한 증거는 아니다. 차량의 전체 기울기를 먼저 계산해 9결정 단위 신경 회로에 두 번째 전달하는 방법을 구현하고 장난감 전체 미분 일치 등 4개 검사 통과. 합성 고정 이력 6회 학습에서 두 회로 pass 출력은 매번 차 0이었다. 사전 기준에서 코너 최대 개선 0.032mm는 요구 10mm에 미달 (`D:/CodexResearchRuns/flybrain-full-vehicle-credit-fit-20261102-01/`); 폐루프·actor 불허. 실제 물리/생리/운전은 미검증.
+
+
+> **2026-11-02 조향 이득 고정·직선 중시 궤적 학습: 사전 기준 실패.** 합성 고정 시각/몸 이력에서 기존 조향 이득을 고정하고 시각 projection만 6회 학습했다 (`D:/CodexResearchRuns/flybrain-neutral-trajectory-fit-20261102-01/`). x=16.5m 사전 지정 검증에서 직선은 약 0.017mm 개선돼 5mm 악화 제한 이내였지만, 양 코너의 최대 개선은 약 0.010mm로 요구한 10mm에 못 미쳐 실패했다 (`predeclared-screen.json`). 기준에 따라 새 폐루프를 실행하지 않았으며 후보는 synthetic-only·actor 불허다. 가중치는 최대 0.00981 변했으나 실패의 정확한 원인은 이 값만으로 확정할 수 없다. 실제 AC·생리·시간 동기는 미검증.
+
+
+> **2026-11-02 FlyVis 모델 대체의 합성 폐루프:** 000에 맞춰진 동일 통합 회로에서 001·002 전체 시각망만 각각 바꿔 두 알려진 질감×직선/양 코너를 재생했다 (`D:/CodexResearchRuns/flybrain-flyvis-model-loop-20261102-01/`). 같은 x=16.5m에서 001은 음 코너 오차 2.1~2.5cm 감소, 직선 1.8~2.1cm·양 코너 1.8~2.3cm 증가; 002는 음 코너 4.6~5.3cm 감소, 직선 4.8~5.4cm·양 코너 4.7~5.6cm 증가했다. 사후 계획된 합성 실험이며 downstream을 모델별 재학습하지 않았고 생리·실제 AC 우열이나 모델 선택의 증거가 아니다. optimizer/actor/차량 제어 0.
+
+
+> **2026-11-02 실제 진단 영상의 FlyVis 세 모델·단일 회로 비교:** 같은 원본 네 시야 영상 157묶음을 000/001/002 각각의 전체 FlyVis 상태로 재생하고, 몸 수신 이력이 있는 53프레임/116결정을 같은 고정 통합 회로에 넣었다. 000 대비 조향/전진 intent 최대 차 001은 0.003097/0.000125, 002는 0.009170/0.000313 (`D:/CodexResearchRuns/flybrain-three-model-unified-20261102-01/`). 000은 이전 기록과 출력 차 0. 모델별 가중치·입력 해시 확인, 채널 혼합·모델 선택 없음. 하나의 사후 진단 영상이며 출력 차이로 정확도·생리·실주행 개선을 판단할 수 없다. 물리 시각 미검증·fit/actor/차량 조작 0.
+
+
+> **2026-11-02 사전 지정 FlyVis 000/001/002 비교 완료:** 동일 저자 자극에서 T4d 대비 부호 000은 0/6, 001·002는 각 6/6이었다. 그러나 001은 T5b 0/6 및 T5a 최대 방향 오차 121.53°, 002는 T4b/T5a/T5b 최대 방향 오차 153.70°/174.76°/179.80°였다 (`D:/CodexResearchRuns/flybrain-t4d-prespecified-models-comparison-20261102-01/`). 세 checkpoint·원본 분석 해시를 대조했고 어떤 모델도 교체하지 않았다. T4d 한 항목으로 전체 생리나 주행 성능을 판정할 수 없으며 세 모델은 전체 집단의 대표 표본이 아니다. actor/optimizer/차량 제어 0.
+
+
+> **2026-11-02 당시 공개 FlyVis 001 분석, 002 실행 기록:** 사전 지정 001은 저자 깜박임 T4d 지수 +0.299, 이동 경계 기대 대비 부호 6/6으로 000의 T4d 실패와 달랐다. 반면 001 T5b 기대 대비 부호는 0/6, T5a 방향 최대 오차 121.53°였다 (`D:/CodexResearchRuns/flybrain-t4d-model-001-analysis-20261102-01/`). 전체 방향·대비 문제를 해결한 모델로 인정하거나 교체하지 않는다. 002 이동 경계는 후속 확인 시 36/144로 같은 순차 작업이 진행 중이다. 단일 모델·인공 자극 기준, 실제 생리·비행/주행 기능은 미검증이며 actor/학습/차량 제어 0.
+
+
+> **2026-11-02 당시 T4d 공개 모델 비교 실행 기록:** 기존 `flow/0000/000`의 T4d 대비 실패를 보존하고, 같은 공개 묶음에서 연속 ID 001·002를 결과 전에 지정해 저자 깜박임 4조건·이동 경계 144조건을 각각 실행 중이다. 계획·가중치 해시 `D:/CodexResearchRuns/flybrain-t4d-prespecified-models-plan-20261102-01/`; 001 flash 완료 후 edge 확인 시 25/144, 당시 Python PID 20928. 002와 분석은 대기 중. 완료/실패는 원본 결과와 프로세스로 재확인한다. 일부 공개 모델 비교이지 생체 전체, 모델 선택·학습·배포·운전 검증이 아니다.
+
+
+> **2026-11-02 고정 시각 이력·궤적 손실 학습과 폐루프: 후보 미채택.** 합성 영상·몸 이력을 고정하고 미분 가능 자전거 모형의 중심·방향 손실로 시각 경계·기존 조향 이득을 6회 업데이트했다. 후보 저장 후 평가 JSON 직렬화가 실패해 원 실행은 실패로 유지하고, 후보를 재학습 없이 별도 평가했다 (`D:/CodexResearchRuns/flybrain-trajectory-objective-eval-20261102-01/`). 사후 설계된 새로운 합성 질감 2개×직선/좌우 폐루프에서 코너 최종 오차는 0.574~0.650m→0.495~0.628m로 줄었지만 직선 오차는 0.030~0.034m→0.039~0.053m로 악화됐다 (`D:/CodexResearchRuns/flybrain-trajectory-objective-loop-20261102-01/`). 성공 기준 없음, 큰 코너 오차 잔존·직선 악화로 actor 미자격. 합성 한정이며 실제 생리/AC/랩 검증은 아니다.
+
+
+> **2026-11-02 코너 기하 진단·학습 기반:** 저장된 합성 x=15.8m에서 중심선 접선상의 정상 주행에 필요한 자전거 모형 조향은 약 ±0.0873rad이나 실제 명령은 -0.0047~+0.0029rad였다 (`D:/CodexResearchRuns/flybrain-corner-kinematic-audit-20261102-01/`). 차량이 이미 중심에서 벗어났으므로 이 값은 수정 조향의 정답이 아니다. 과거 이득 증폭은 직선·반대 코너를 악화시켜 재사용하지 않는다. 궤적 오차 학습용 미분 가능 합성 차량 `src/flybrain_drive/differentiable_planar_vehicle.py`를 추가했고 기존 차량 적분 일치·조향 gradient·잘못된 입력 검사 3개 통과. 아직 학습/폐루프 실행·실제 물리 검증은 없다.
+
+
+> **2026-11-02 합성 하중 폐루프: 유의미한 코너 개선 없음.** 가감속·횡가속에 따른 가정적 즉시 하중 이동을 간이 slip-free 차량에 연결해 좌우 코너×3/6m/s×기존/후보/1바퀴 결측 12조건을 재생했다 (`D:/CodexResearchRuns/flybrain-synthetic-load-loop-20261102-01/`). 후보는 4쌍 중 3쌍에서 절대 중심 오차를 0.002~0.065mm 줄였고 1쌍은 0.012mm 늘렸다. 원래 오차 0.227~0.292m는 사실상 유지된다. 결측 시 baseline 오차 차 ≤2.1e-8m; 하중 범위 0.233~0.267은 합성 모델의 값이다. 저장 궤적 산술 확인, 합성 하중/차량은 AC 타이어·실제 물리가 아니다. 학습/차량 제어/배포 0; 이 조건에서는 하중 후보의 유용한 주행 효과를 증명하지 못했다.
+
+
+> **2026-11-02 하중 후보와 기존 시각·yaw 상호작용:** 동일한 실제 진단 53프레임을 단일 회로+하중 후보로 재생하고 영상 고정 또는 yaw 0 대조를 수행했다. 각 개입의 조향 효과는 하중 후보 적용 전 대비 전 구간 최대 차가 각각 0.00000104/0.00000690였다 (`D:/CodexResearchRuns/flybrain-load-visual-yaw-20261102-01/`). 해당 기록에서 두 경로의 반응이 거의 유지됐지만, 이것은 실제 물리 동기·생리·주행 성능의 검증이 아니다. optimizer·차량 제어·배포 0.
+
+
+> **2026-11-02 합성 하중 후보의 실제 이력 통합 대조:** 진단 영상·host 수신 몸 53프레임/116결정을 같은 단일 회로로 재생했다. 실제 하중에서 기존 대비 후보의 조향·전진 intent 최대 변화는 0.000691/0.000643, 상태 최대 차 0.00253이었다. 네 하중을 균등화하면 출력 차 0·상태 최대 차 2.24e-8, 한 바퀴 결측 시 출력·상태 차 0 (`D:/CodexResearchRuns/flybrain-load-real-history-20261102-01/`). 원본 실행은 이전 저장 출력과 차 0. 실제 데이터 학습·차량 조작 없음; 물리 동기·생리·실주행 효용 미검증, actor 불허.
+
+
+> **2026-11-02 합성 하중 경로 학습 완료, 추가 검증 필요:** 현재 단일 회로 body adapter의 하중 4열만 6회 학습했다 (`D:/CodexResearchRuns/flybrain-synthetic-load-fit-20261102-01/`). 별도 합성 16조건에서 좌우 하중의 조향 평균 변화 약 ±0.00153(가설 목표 ±0.003), 전후 하중의 전진 변화 약 ±0.000313(목표 ±0.002). 사전 합격 기준이 없어 통과로 판정하지 않는다. 균등 하중 포트 차 최대 7.45e-9, 비하중 가중치 완전 동일. 부분 결측은 원본 대비 최대 0.0284 포트 변화가 생겨 안전하지 않았으나 실험적 4바퀴 완전성 경계 적용 시 16마스크 포트 비교 오차 0 (`D:/CodexResearchRuns/flybrain-synthetic-load-gate-audit-20261102-01/`). 이 경계의 전체 회로 검증·실제 몸 센서/생리/주행은 미검증, synthetic-only·actor 불허·차량 제어 0이다.
+
+
+> **2026-11-02 하중 부분 결측 처리 후보:** 네 바퀴 하중 중 하나라도 유효하지 않으면 하중값 4개를 함께 차단하고 원래 유효표시 및 다른 몸 감각은 유지하는 실험용 경계 `src/flybrain_drive/complete_wheel_load_feedback.py`를 추가했다. 완전 유효 시 기존 adapter 출력과 일치하며, 하중 16개 유효/결측 조합과 다른 채널 보존 검사 2개 통과. 실제 checkpoint 통합·실주행·생리 검증 및 actor 배포는 아직 없다.
+
+
+> **2026-11-02 당시 합성 하중 경로 학습 실행 기록:** 현재 body adapter의 하중값 네 열만 학습하고 나머지 가중치는 고정한다. 네 열을 행별 합 0으로 유지해 균등 하중에서 원래 기준을 보존한다. 좌우·전후 하중에 대한 조향/전진 목표는 공학 가설이며 생리나 실제 주행 정답이 아니다. 계획 `D:/CodexResearchRuns/flybrain-synthetic-load-plan-20261102-01/`, 실행 `D:/CodexResearchRuns/flybrain-synthetic-load-fit-20261102-01/`; 후속 확인 당시 Python PID 22456, 6회 중 3회 완료. 최종 상태는 PID와 result.json 재확인이 필요하며 실제 데이터 fit·actor 배포는 없다.
+
+
+> **2026-11-02 실제 몸 기울기·하중 대조: 하중 경로 미학습 확인.** 원본 몸·영상 53프레임 반사실에서 기울기만 0으로 하면 조향·전진 intent 최대 차 0.001567/0.00000545였다. 네 정규화 하중을 0.25씩 균등화하면 저장된 회로 상태와 출력 차이가 모두 0이었다 (`D:/CodexResearchRuns/flybrain-real-motion-tilt-load-20261102-01/`). 사용한 body adapter checkpoint의 하중값 4열 가중치가 모두 정확히 0임을 확인했다. 원본 조건은 직전 결과와 최대 차 0. 이는 해당 checkpoint에서 하중 되먹임이 작동한다는 목표가 미완료라는 증거다. 실제 물리 동기·생리·주행 효과 미검증, 학습/배포/차량 제어 0. 다음은 하중 감각의 좌우/전후 변환 가설과 마스크·결측을 명시해 비행 유래 단일 회로 경로에 학습하고 독립 대조한다.
+
+
+> **2026-11-02 실제 진단 몸 회전 경로 대조:** 같은 네 시야 영상과 원본 몸 이력에서 유효 yaw만 0으로 바꿔 동일 단일 회로를 재생했다. 실제 yaw 범위 -0.140~+0.588rad/s, 조향·전진 intent 최대 차 0.04811/0.000339, 원본 조건은 직전 저장 출력과 최대 차 0 (`D:/CodexResearchRuns/flybrain-real-motion-yaw-counterfactual-20261102-01/`). 이 조건의 몸 회전 입력이 출력에 작용함을 보여주지만 조작 방향·물리 시간 동기·생리·주행 효능은 입증하지 않는다. host 수신 순서 기준, actor/학습/차량 제어 0.
+
+
+> **2026-11-02 실제 영상·실제 몸의 host 수신 순서 재생:** AI 진단의 연속 53영상에 대해 당시 host 이미지 파일 읽기 시점 이전에 수신한 원본 몸 패킷만 사용하고, 40ms 이하 중간 결정으로 기존 단일 회로를 이어갔다. 같은 몸 이력에서 실제 영상과 첫 화면 고정 대조의 최대 intent 차이는 조향 0.003142, 전진 0.0000840; 결정 116회/조건의 몸 패킷 최대 수신 경과 31.835ms (`D:/CodexResearchRuns/flybrain-real-motion-host-body-unified-20261102-01/`). 카메라 물리 시각 및 host render 하한이 없어 0을 자명한 보수 경계로 쓰고 각 시야의 과거 몸 문맥을 결측 처리했다. 영상 freshness·물리 동기·생리·실주행 효능은 미검증, actor/학습/차량 제어 0이다.
+
+
+> **2026-11-02 실제 영상·합성 몸 통합 회로 반사실:** 기존 AI 진단 영상 FlyVis 출력과 첫 영상 고정 출력을 동일 합성 몸(요 0, 속도 3m/s, 바퀴 3/0.29rad/s, 나머지 결측) 및 같은 단일 회로에 각각 연속 재생했다. 원본 CSP 프레임 사이에는 직전 시각 입력을 유지하며 40ms 이하 중간 결정을 넣었다. 157개 영상 시각의 intent 최대 차는 조향 0.003157, 전진 0.0000847 (`D:/CodexResearchRuns/flybrain-real-motion-unified-20261102-03/`). 01은 yaw 결측, 02는 80ms 결정 간격 초과로 실패해 보존했다. 실제 몸 동기·생리·주행 효능을 뜻하지 않으며 학습/actor/차량 제어 0이다.
+
+
+> **2026-11-02 실제 AI 진단 영상 FlyVis 연속 재생:** 학습 불허 주행 진단의 원본 해시 확인된 네 시야 157묶음을 기존 겹눈 투영과 FlyVis 상태로 2,572 tick 연속 재생하고, 같은 시간과 초기 상태의 첫 화면 고정 대조와 비교했다 (`D:/CodexResearchRuns/flybrain-real-motion-flyvis-replay-20261102-01/`). 최대 활동 차이는 1.386. CSP 시각상 ±50ms 이내 AI telemetry가 1km/h 초과인 38그룹의 시야별 평균 RMS는 전/좌/우/후 0.190/0.135/0.140/0.141이며 <0.1km/h 인접 11그룹은 0.175/0.104/0.116/0.114다. 집단은 시간·장면이 달라 인과적 속도 비교가 아니고 밝기·시야 변화도 섞인다. 물리 동기·생리·actor·학습·주행 성능은 미검증이며 optimizer·차량 제어 0이다.
+
+
+> **2026-11-02 움직이는 CSP 시계쌍 진단:** 첫 시도는 카메라 수명 부족 가능성이 있는 CSP 거부로 AI 출발 전 실패했고 원본을 보존했다. 유한 시간 예산을 늘린 두 번째 시도는 기존 AI 3초 진단으로 최고 16.60km/h, 네 시야 157프레임을 수집하고 정지했다 (`D:/CodexResearchRuns/flybrain-simclock-motion-probe-20261102-02/`). 원본 해시 확인 628개 시야 중 인접 telemetry ±50ms·속도 >1km/h인 152개 시야에서도 `car.timestamp - sim.time`은 render 전후 전부 0ms였다 (`D:/CodexResearchRuns/flybrain-simclock-motion-analysis-20261102-01/`). 시계값 공유/캐시 가능성과 프레임 연관 불확실성이 있어 노출 또는 몸 샘플 동기의 증거가 아니다. AI 진단만 수행, 학습·student actor 0; 기존 카메라 해시·AI off·정지 브레이크·기존 unpaused 상태 복구 완료.
+
+
+> **2026-11-02 정지 CSP 시계쌍 실제 수집:** 현재 설치본의 소유 MMF 재개 기능을 보존해 만든 시계 계측 후보를 별도 Lua 문법 검사 후 임시 설치했다. 정지·브레이크 유지에서 4프레임×4시야를 수집하고 (`D:/CodexResearchRuns/flybrain-simclock-stationary-probe-20261102-01/`) 검사한 결과 `car.timestamp - sim.time`은 시야별 render 전 16개 모두 0ms, 시계 읽기 구간 최대 0.0028ms, 역행 0이다 (`D:/CodexResearchRuns/flybrain-simclock-stationary-analysis-20261102-01/`). 일시정지된 상태의 관찰이므로 움직임이나 픽셀 노출 동기를 검증하지 않는다. 원래 설치 해시 `78863113...` 및 기존 resume 상태를 복구했고 활성 카메라/AI 0을 확인했다. optimizer·actor·차량 조작 0, lifecycle pause/resume 각 1회다. 다음은 동작 중에도 문서상 물리 시각과 영상/몸 감각의 대응을 검증할 독립 근거를 확보한다.
+
+
+> **2026-11-02 CSP 시계 문서·진단 후보:** 설치된 CSP SDK는 `car.timestamp`를 마지막 물리 상태 기록 시각, `sim.time`과 같은 원점의 밀리초라고 설명한다. 이는 API 문서 근거이며 화면의 물리 노출·실제 원자성·호스트 시계 변환을 증명하지 않는다. 기존 진단 Lua에만 render 전후 `sim.time`/`car.timestamp` 및 CSP 시계 읽기 구간을 추가한 별도 후보와 자료 검사기를 작성했다. 후보 미설치·실행 0, actor/학습 불허; 검사 3개 통과. 소스·SDK 해시와 한계 `D:/CodexResearchRuns/flybrain-sim-clock-candidate-inspection-20261102-01/result.json`. 이전 시각 의미 미검증 기록은 당시 상태이며, 문서상 의미 확인 후에도 실제 노출 동기는 미검증이다.
+
+
+> **2026-11-02 후보 시계 경과시간 검토:** 과거 원본 해시 확인된 250개 프레임(속도 >1m/s 78개)의 후보 car 물리 시각과 진단 CSP 시계 경과시간 차이를 첫 프레임 기준으로 계산했다. 범위 -18.91~+29.81ms, 연속 프레임의 증가량 차이는 -44.95~+27.61ms였다 (`D:/CodexResearchRuns/flybrain-candidate-clock-drift-audit-20261102-01/`). 후보 시각 의미·두 시계 원점·노출 시각이 미검증이므로 실제 동기 오차나 지연을 뜻하지 않으며 학습 자격은 계속 불허다. 다음은 물리 event의 생성 의미와 공통 시계 정렬 및 불확실도 경계를 별도로 입증하는 것이다.
+
+
+> **2026-11-02 고정 몸 이력·코너 영상 개입:** 기존 음의 코너 합성 궤적의 몸 입력과 회로 이력을 고정한 뒤 x≈10m 직전 다섯 영상만 좌/직선/우 코너로 바꿨다. 공간 경로를 켠 좌우 조향 차이는 초기 3/6m/s에서 각각 0.001779/0.001704rad, 제거하면 0.00000144/0.00000067rad였다. 좌우 망막 입력 최대 차이 0.334, 교체 전 출력 최대 차이 9.1e-8을 확인했다 (`D:/CodexResearchRuns/flybrain-fixed-history-window-swap-20261102-01/`). 한 프레임 교체 직후 차이는 2.2e-8rad 이하여서 시간 상태를 포함한 후속 반응이 중요하다 (`D:/CodexResearchRuns/flybrain-fixed-state-frame-swap-20261102-01/`). 이전 결과를 본 뒤 계획한 합성 개입이며 실제 생리·AC 운전·시간 동기 검증은 아니다. 학습/조작/배포 0; 다음은 관측된 실제 영상의 물리 시각 자격 및 영상 경로 반응과 연계한다.
+
+
+> **2026-11-02 코너 전 조향 탐색:** 같은 무풍 폐루프 저장 궤적을 위치별로 사후 보간하면 코너 시작 2m 전(x=10m) 좌우 코너의 조향 차이는 공간 시각 경계가 있을 때 초기 3/6m/s에서 약 0.00629/0.00476rad였고 제거 시 -0.000075/+0.000006rad였다 (`D:/CodexResearchRuns/flybrain-corner-anticipation-trajectory-audit-20261102-01/result.json`). 방향 구분 흔적은 있으나 주행 상태가 서로 달라 시각 선행 예측의 인과 증명은 아니다. 별도 학습·시뮬레이션·차량 제어는 없다.
+
+
+> **2026-11-02 코너 오차 원인 대조:** 기존 사전 기준은 여전히 실패(절대 중심선 오차 개선 8쌍 중 5쌍)다. 이후 탐색적으로 같은 코너의 무풍 기준을 추가했을 때 측풍에 의한 궤적 변화는 8/8쌍에서 감소했지만, 무풍 중심선 오차 자체가 0.227–0.293m였다 (`D:/CodexResearchRuns/flybrain-corner-wind-reference-20261102-01/`). 같은 합성 무풍 조건에서 공간 시각 경계만 제거하면 4조건 모두 절대 오차가 0.025–0.037m 증가했다 (`D:/CodexResearchRuns/flybrain-corner-spatial-lesion-20261102-01/`). 다른 시각 경로는 유지했으며 산술 감사는 별도 저장했다. 이 결과는 해당 합성 모델의 인과 대조일 뿐 초파리 생리나 실제 AC 주행 검증이 아니다. 학습·차량 제어·배포 0, actor 미승인. 다음 우선순위는 지도/절대 위치를 actor에 주지 않는 시각 선행 정보의 표현과 인과 기여 점검이다.
+
+
+> **2026-11-02 가감속·코너 측풍 대조 실패:** 기존 단일 회로의 속도 경계와 상대풍 경계를 같은 상태에서 호출해, synthetic 좌우 코너×초기 3/6m/s×양쪽 측풍×바람 결측/학습 16조건을 평가했다 (`D:/CodexResearchRuns/flybrain-corner-wind-speed-evaluation-20261102-01/`). 모두 x=16m에 도달했으나 학습 바람 경계가 중심선 오차를 줄인 것은 8쌍 중 5쌍이며 3쌍은 악화돼 사전 기준에 실패했다. 예: 3m/s 좌측 코너·+5m/s 바람의 |오차| 0.0209→0.0429m. 모델 속도 명령 및 공학적 페달을 간이 차량에 반영했지만 실제 AC·타이어·공력·생리/실주행은 아니다. 훈련0·배포0, checkpoint 미승인. 16조건 저장 궤적·보간·비교 산술 별도 감사 완료.
+
+> **2026-11-02 합성 측풍 폐루프:** FlyVis·같은 비행 회로·학습된 합성 바람 경계를 직선 합성 차량에 연결해 2개 질감×측풍 -5/0/+5m/s×바람 결측/학습 경계 12조건을 사전 선언·검증했다. 속도 3m/s 고정, 3.24초 후 측풍 최종 중심선 오차는 경계 없음 약 0.294–0.360m, 경계 사용 약 0.260–0.329m로 각 조건 약 0.031–0.034m 감소했다 (`D:/CodexResearchRuns/flybrain-synthetic-crosswind-loop-20261102-01/`). 무풍 차이는 0.05m 이하, 12조건 완주로 사전 기준 통과. 바람 힘은 임의 횡방향 drift이고 slip-free 가상차다. 실제 AC·타이어·생리·시각 동기·가감속/실주행을 검증한 것은 아니며 실제 바람 actor 미자격·배포0이다.
+
+> **2026-11-02 실제 바람 후보 반사실 평가:** 합성으로 학습한 바람 경계를 고정하고, 별개 과거 90°/270°/무풍 저속 진단의 미검증 후보 각 35개를 정지 영상·몸 709출력 이력에 상대 순서로 반복 입력했다 (`D:/CodexResearchRuns/flybrain-trained-airflow-recorded-fixture-20261102-01/`). 무풍 대비 평균 조향 변화는 각각 -0.01262/+0.01383, 전진 변화 +0.0000348/-0.0000384였다. 입력들은 서로 다른 주행이므로 실제 동시 바람이나 주행 성능이 아니며, 유효 마스크는 오프라인 fixture용이다. 원본 3개 모두 학습·actor 불허이며 optimizer/차량 조작0. 결측 baseline은 원본 최대 차 1.863e-7.
+
+> **2026-11-02 합성 상대풍 학습 완료:** 단일 회로를 고정하고 상대풍 투영만 합성 자료에서 8회 학습한 `D:/CodexResearchRuns/flybrain-synthetic-airflow-fit-20261102-03/`은 사전 지정 두 합성 검증 seed에서 통과했다. 양쪽 ±5m/s 가상 측풍에 대한 조향 변화는 약 ±0.0057, 목표 오차 MSE는 무학습 2.5e-5에서 각 약 4.97e-7이었다. 조향 부호·목표는 공학 가설이며 이 seed/생성기는 이전에 프로젝트에서 본 자료다. 새 실제 데이터·물리 바람·생리·실주행이나 독립 실환경 성능은 검증하지 않았다. checkpoint는 synthetic-only·actor 미자격으로 보존했으며 배포하지 않았다.
+
+> **2026-11-02 당시 합성 상대풍 경계 학습 실행 기록:** 기존 wind 진단의 물리 시각·풍원 미검증 상태는 유지한다. 별도 합성 도로에서 바람 몸 포트의 임의 보정 반응을 학습하는 계획 `D:/CodexResearchRuns/flybrain-synthetic-airflow-plan-20261102-01/`을 선결정했다. 실제 데이터/조작·actor 배포는 사용하지 않는다. 01은 합성 body freshness 경계, 02는 미분 불가 CPU backend로 optimizer0 실패하여 보존했다. 미분 가능 동일 그래프를 사용하는 03 `D:/CodexResearchRuns/flybrain-synthetic-airflow-fit-20261102-03/`은 당시 PID 46972에서 실행했으며 현재 종료됐다. 아래 과거 실행 기록은 최종 결과가 아니다.
+
+> **2026-11-02 바람 추가 후 기본 경로 재검증:** 바람 비활성 현재 단일 회로의 과거 움직임 365결정 process/원본 전체 상태는 최대 차 0 (`D:/CodexResearchRuns/flybrain-unified-process-parity-20261102-05/`). 현재 소스 해시를 각 검증과 live gate에 묶고 읽기 전용 몸 검사를 통과했다. 실제 정지 `D:/CodexResearchRuns/flybrain-body-owner-live-20261102-07/`은 네 시야 201, 출력 709, 약 7.974초 host 제한 통과, 카메라 222묶음 보관 및 정상 종료했다. 원본 영상·몸 재생 `D:/CodexResearchRuns/flybrain-body-owner-full-replay-20261102-02/`의 출력 709개는 최대 차 1.863e-7이다. 실제 바람은 비활성, 물리 동기·생리·주행·학습은 미검증이다.
+
+> **2026-11-02 단일 회로 상대 바람 경로:** 검증된 상대풍 입력이 있을 때 기존 단일 회로의 몸 감각 포트로 전달하는 선택형 공학 경계를 추가했다. 기본 경로는 비활성, 활성 시에는 같은 결정의 명시적 바람 관측 또는 결측 마스크가 필수이며 출처 미검증 값을 유효하게 만들지 않는다. 원본 정지 영상·몸 711결정 재생에서 바람 결측의 기존 출력 최대 차 1.863e-7, 가상 ±10m/s 바람·임의 고정 가중치는 출력에 작은 변화를 냈다 (`D:/CodexResearchRuns/flybrain-unified-airflow-intervention-20261102-01/`). 합성 개입이지 실제 바람 측정·학습·생리/주행 검증이 아니다. 관련 34개 테스트 통과. 단일 회로 소스가 변경됐으므로 이전 실시간 proof는 과거 버전 증거이며 변경 버전의 실시간 자격을 다시 확인해야 한다.
+
+> **2026-11-02 물리 시각 범위 계약:** `physical_timing_intervals.py`에 검증된 공통 QPC 시간 구간이 별도로 주어질 때 네 시야·몸 수신 연령과 미래 행동 적용 간격의 최악 경계를 계산하는 비교를 추가했다. 물리 범위가 없으면 수신/렌더 호출 시간을 대신 넣지 않고 미해결로 처리하며, 범위 계산만으로 학습을 허용하지 않는다. 기존 TRAIN 728·개발 729 전체는 해당 물리 시간 범위 근거가 없어 모두 미해결 (`D:/CodexResearchRuns/flybrain-physical-timing-interval-review-20261102-01/result.json`); 실제 비동기화의 증거는 아니다. 합성 범위·미래 입력·잘못된 clock·기존 시계/학습 guard 관련 29개 테스트 통과. 새 물리 시각 수집이나 학습·조작은 아직 없다.
+
+> **2026-11-02 움직임 자료 자격 점검:** 기존 사전 지정 TRAIN 728결정과 개발 729결정은 모두 원본 영상 재생과 same-copy AI 신호를 확인했지만, 원래 fit 금지·recording 학습 불허·연속 시간 자격 불허이며 조작 codec/label과 물리 시각 정합이 검증되지 않았다. `D:/CodexResearchRuns/flybrain-moving-fit-qualification-20261102-01/result.json`에 각 원본 해시와 부족 항목을 기록했다. 학습 불허 원본도 데이터셋을 `training_admissible=true`로 만들 수 있던 두 봉인 경로는 recording·raw 시간 감사·label 감사 각각의 명시 허용을 요구하도록 수정했다. 기존 실패와 자료는 보존했고 새 수집·학습·차량 조작은 하지 않았다. 관련 13개 테스트 통과. 이 guard는 세 허용 표시의 존재만 검사하며 근거 자체를 새로 검증하거나 학습 자격을 부여하지 않는다.
+
+> **2026-11-02 정지 원본 전체 재생:** 8초 정지 시험 06의 선택된 네 시야 원본 201개를 해시 검증하고 당시 간격·FlyVis 상태로 재구성했다. 원본 몸 패킷·시야별 몸 관측·게시/결정 시각을 사용한 단일 회로 재생은 준비 1회와 출력 710회 전부에서 기록 대비 최대 절대차 1.863e-7이다 (`D:/CodexResearchRuns/flybrain-body-owner-full-replay-20261102-01/`). 결과 배열·오차는 별도 산술 감사로 재계산했다. 약 8초 **정지 host 경로**의 처리와 원본 재생을 확인했으나 실제 물리 노출/몸 시각 동기, 움직이는 자료의 학습 자격, 생리 기여, 자율 주행·유효 랩/랩타임은 여전히 미검증이다. 학습·차량 조작 0.
+
+> **2026-11-02 약 8초 정지 감각 경로 검증:** 카메라→FlyVis→몸 감각·단일 회로를 실제 정지 상태에서 실행한 `D:/CodexResearchRuns/flybrain-body-owner-live-20261102-06/`은 201개 영상, shadow 출력 710개, 출력 구간 7.986초를 오류 없이 마쳤다. 독립 host 감사에서 현재/이전 몸 수신 최대 나이 11.86/24.03ms, 영상 render 하한 최대 90.85ms로 50/150ms 제한 이내이며 원본 몸 해시·영상 연결 오류 0이었다. 카메라 221묶음 보관 검증, 모든 소유 프로세스 정상 종료, GC 설정 원복. 물리 노출 동기·전체 수치 재생·운전/생리는 미검증이므로 1단계 전체 통과는 아직 아니다. 이전 200장 시험 05는 상한 조기 도달 실패로 보존했다. 자동 GC 중단 대조에서 개선됐지만 지연의 유일한 원인이라고 확정하지 않는다.
+
+> **2026-11-02 영상 지연 계측:** 수정된 몸 소유자 read-only 검증 후 실제 정지 시험 `D:/CodexResearchRuns/flybrain-body-owner-live-20261102-02/`은 출력 157개 후 영상 150ms 제한으로 중단됐다. 마지막 프레임의 카메라 수신→소유자 선택 약 1.95ms, 소유자→부모 수신 0.89ms, 부모 unpack 후 몸 컨텍스트 결정 전 공백 85.08ms였다. 이 공백에서 이미지 검사·몸 이력 처리·스케줄 중 원인은 아직 구분되지 않는다. 성공 출력의 몸 감각 최대 나이 9.34ms, native 복사 간격 최대 3.06ms. 카메라 69묶음 검증, 시각 worker와 카메라 정상 종료, 몸 worker 실패 영수증 수집 및 두 PID 소멸; 학습·조작 0. 영상 검사와 원본 몸 이력 처리의 시간 기록을 추가했고 검사·가드 관련 테스트 19개 통과. 아직 실제 재시험이나 원인 해결은 아니다.
+
+> **2026-11-02 몸·회로 소유 분리:** 원본 몸 패킷 수집과 같은 단일 회로 상태를 한 프로세스가 소유하도록 구현했다. 합성 영상·실제 정지 몸 패킷 시험은 준비 1/출력 14, 원본 79개, 정상 종료했다. 실제 정지 네 시야 시험 `D:/CodexResearchRuns/flybrain-body-owner-live-20261102-01/`은 회로 출력 145개 뒤 **영상 render 하한 150ms 초과**로 중단됐다. 성공한 출력의 몸 수신 나이 최대 9.733ms, 자식 native 복사 간격 최대 3.170ms였다. 55개 카메라 묶음 해시 검증, 카메라와 시각 worker 종료 확인, 학습·차량 조작 없음. 원본 상위 결과에는 `Owner unavailable`로만 나타나지만 소유 worker의 `body-owner/result.json`에 실제 영상 stale 오류가 보존돼 있다. 오류 영수증과 마지막 수신 순번을 상위에서 수집하도록 코드 수정 후 재시험은 아직 하지 않았다. 수정된 source는 다음 live 전 read-only 재검증 필요.
+
+> **2026-11-02 시각 분리 실시간 시험:** 종료 중 CPU를 각각 약 1코어씩 점유하던 이전 GPU 시험 자식 17952/13520/32176을 소유권·종료 상태 확인 후 OS 종료 요청으로 정리했고 부모까지 사라졌다. 자원 반환 후 종료하도록 고친 GPU worker는 3프레임 합성 재생에서 기존 계산과 최대 차이 4.47e-8, 양쪽 프로세스 정상 종료를 확인했다 (`D:/CodexResearchRuns/flybrain-separate-visual-parity-20261102-05/`). 실제 무조작 정지 시험 `D:/CodexResearchRuns/flybrain-separate-visual-live-20261102-01/`은 출력 135개 후 몸 freshness 50ms 초과로 중단됐다. 해당 회로 계산 3.995ms 뒤 부모 수신까지 85.643ms, native 수신에도 87.544ms 공백이 겹쳤다. 원인은 미확정이다. 카메라 52묶음 검증·시각/회로 정상 종료, 학습·차량 제어 없음. 다음은 몸 수신과 회로 상태를 같은 독립 실행 경계에서 유지하는 방안을 검증한다.
+
+> **2026-11-02 CPU 시각 부분 재생:** 기존 GPU 종료 문제는 지속된다. 별도 FlyVis 소유 경로에 명시적 CPU 장치를 추가하고, GPU가 있는 컴퓨터에서 FlyVis 초기화 난수 장치가 CPU와 불일치하는 문제를 수정했다. 합성 프레임 시험 `D:/CodexResearchRuns/flybrain-separate-visual-parity-cpu-20261102-03/`은 2프레임 후 150ms 시각 간격 초과로 실패했다. 보존된 2프레임을 원래 39.858ms 간격과 동일 가중치로 독립 재생한 `D:/CodexResearchRuns/flybrain-separate-visual-partial-replay-cpu-20261102-01/result.json`은 최대 차이 0이다. CPU 부분 재현성만 검증한 것이며 원래 시험 실패·GPU 종료 미검증·실시간 미통과를 유지한다. CPU worker 42788은 이후 OS 프로세스 핸들이 사라졌다. CUDA 증거만 실시간 gate에 사용할 수 있다. 관련 테스트 18개 통과.
+
+> **2026-11-02 후속:** 종료 신호가 오지 않은 기존 GPU 자식 17952·13520·32176과 부모들은 재확인 시 그대로 남아 있었다. GPU 초기화 없는 Python·CPU PyTorch 종료는 각각 0.066초·2.94초, CPU PyTorch 모델을 spawn/pipe로 전달한 대조는 3.18초에 정상 종료했다. 따라서 일반 Python이나 CPU spawn만으로 같은 문제가 재현되지는 않았지만 GPU 코드·환경·드라이버 중 원인은 미확정이다. 새 GPU 프로세스는 추가하지 않았다. 이후 비교의 입력·출력·시각을 종료 전에 저장하고 시작 실패 시 PID/생존 상태를 보존하도록 수정했다. 증거: `D:/CodexResearchRuns/flybrain-cpu-process-exit-20261102-01/result.json`, `D:/CodexResearchRuns/flybrain-cpu-spawn-exit-20261102-01/result.json`. 관련 테스트 18개 통과.
+
+> **2026-11-02 추가 — 시각 프로세스 실험 미완료:** FlyVis 시각 상태를 독립 프로세스가 소유하는 경로와 정지 shadow 연결을 구현했다. 실제 GPU 합성 픽셀 동등성 시험 01/02는 작업자가 종료 응답을 보낸 뒤에도 Windows 프로세스 핸들이 신호되지 않아 종료 검증 실패로 보존했다. 03도 60초 종료 대기 후 동일하게 실패했으며 성공 증거가 없어 실제 세션에 연결하지 않는다. 01/02/03 자식 PID 17952/13520/32176은 GetExitCodeProcess 0이지만 WaitForSingleObject는 timeout이었고, 해당 부모 실행도 종료되지 않았다. 정확한 원인은 미확정이다. 시각 프로세스 코드는 아직 실시간 성공이나 학습/주행 검증이 아니다. 순서·종료 프로토콜과 기존 안전 경계 관련 18개 테스트 통과.
+
+> **2026-11-02 최신:** 1단계 실시간 경로는 아직 미통과다. 단일 회로를 별도 프로세스로 옮겨 기존 주행 기록 365개 재생과 수치가 일치했지만, 정지 shadow 두 차례는 감각 신선도 제한으로 중단됐다. 최신 계측 `D:/CodexResearchRuns/flybrain-unified-process-live-20261102-03/`에서 회로 호출 476회의 최대 왕복 7.593ms, 자식 계산 최대 6.106ms였고, 종료 직전 native 몸 수신에는 147.418ms 공백이 있었다. 몸 수신 stale 및 시각 처리 간격 초과가 기록됐으며 원인은 아직 확정되지 않았다. 학습·차량 조작은 없었고 카메라 149묶음과 정상 종료를 확인했다. 다음은 수신/시각 처리의 독립 실행 경계를 설계하고 원본·상태 연속성과 기존 50ms/150ms 제한을 유지한 채 검증한다. 물리적 노출 동기·자율 주행·유효 랩은 검증되지 않았다.
+
+**2026-11-02 — 실시간 지연 대조:** FlyVis 미리 계산을 끈 정지 시험도 479개 출력 후 몸 입력 50ms 제한으로 중단됐다. 마지막 몸 회로 154ms가 실제 FlyVis 계산과 겹쳐 미리 계산만이 원인이라는 가설은 지지되지 않는다. 두 실험 모두 지속 실시간 미통과·동일 camera terminal 확인. [계획](EXECUTION_PLAN.md).
+
+
+**2026-11-02 — 계획 1단계 실제 정지 shadow:** 별도 카메라 프로세스→FlyVis→단일 회로를 연결해 454개 진단 출력을 냈지만, 몸 센서 출력 나이 50ms 제한 및 영상 처리 간격 150ms 제한을 넘은 뒤 안전하게 중단됐다. 해당 카메라 145묶음 저장 검증·정상 종료. 지속 실시간 통과는 아니며 다음은 이 병목 해결이다. [실행 계획](EXECUTION_PLAN.md).
+
+
+**2026-11-02 — 실행 우선순위 재정리:** 사용자 요청에 따라 반복 오프라인 분석을 중단하고 데이터·실시간 감각 → 좌우/회로 기여 → 학습·조작 → 실제 완주·랩타임 단계와 통과 조건을 [실행 계획](EXECUTION_PLAN.md)에 명시했다. 다음 작업은 실제 픽셀→FlyVis→단일 회로의 정지 shadow다.
+
+
+**2026-11-02 — 합성 좌우 후보의 실제 기록 대조:** 이전에 합성 이력으로 학습한 좌우 후보를 fit 금지인 실제 영상·몸 기록에 오프라인 적용했다. 20m 미래 chord 기준 양방향 세 기록의 balanced accuracy는 기존 0.5/0.5/0.5, 후보 0.322/0.298/0.5였다. 이미 본 상관된 기록·가정된 부호이며, 후보 승격 근거가 아니라 일반화 실패 신호다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 네 과거 주행에서 하중 경로 대조:** 이미 살펴본 네 진단 기록 2966결정에서 기준 하중 고정 시 기존 회로와 출력 차 0이었다. 실제 하중 추가에 따른 조향 출력 최대 차는 기록별 0.000892~0.001011이었으나, 좌우 경로 방향 부호는 한 번도 바뀌지 않았다. 세 양방향 기록의 balanced accuracy는 기존과 같이 0.5였다. 독립 주행 성능은 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 같은 교사 주행 영상·몸의 하중 경로 대조:** 실제 교사 주행 원본 네 시야와 몸 365결정을 오프라인 재생했다. 기준 하중 고정에서 기존 회로와 오차 0, 실제 하중 이력의 추가 경로는 조향 출력 최대 차 0.000486·전진 출력 0.0000189. 한 기록의 내부 영향이며 방향의 정답·실시간·실주행 개선은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 실제 제동 몸 이력의 하중 경로 재생:** 과거 실제 제동 기록 63단계에서 기준 보존 경로에 입력했다. 하중만 제동 전 값으로 고정한 대조 대비 출력 최대 차 0.000556, 기준 고정 시 기존 회로 차 0. 영상은 다른 정지 기록의 고정 프레임·가상 시각이므로 실제 동시 입력이나 주행 성능 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 기준 하중 보존 실험:** 기존 단일 회로에 하중 변화만 더하는 공학적 실험 경로를 만들었다. 기준 하중 고정 시 원래 출력·상태 차 0, 실제 정지 이력에서는 출력 최대 차 2.76e-7, 가상 전후 하중 5%p 이동 시 0.000158이었다. 센서 누락은 거부한다. 실제 하중·생리·주행 검증 및 배포는 하지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 과거 하중 연결 재사용의 제한 진단:** 과거 후보의 하중 가중치 네 열만 현재 단일 회로에 임시 적용했다. 총합을 유지한 가상 전후 하중 5%p 이동의 출력 최대 차는 기존 0, 임시 연결 0.000158이었다. 임시 연결 자체의 기준 출력도 최대 0.000848 변해 안전한 후보로 인정하지 않는다. 생리 근거·실주행 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 몸 감각 경로의 실제 누락 확인:** 정지 자료에서 기울기·하중·타이어·바퀴를 따로 제거했다. 현 후보의 몸 감각 어댑터는 pitch·하중·타이어 온도 및 모든 유효표시 열의 가중치가 0이라 이 경로로 해당 값이나 누락에 반응하지 않는다. roll·속도·바퀴 열은 비영이다. 이는 해당 후보/경로의 한계이며 하중·타이어 적응을 달성하지 못했다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 단일 회로 반복·몸 감각 제거 대조:** 정지 원본의 실제 영상·몸 재생은 직전 실행과 출력/상태 최대 차 0으로 반복됐다. 필수 yaw·속도는 유지하고 나머지 몸 입력을 유효하지 않게 한 대조의 출력 최대 차는 0.000552였다. 값과 유효 마스크를 함께 바꾼 복합 효과이며 실주행·생리 기능은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 실제 영상·몸 감각의 단일 회로 오프라인 재생:** 정지 시 수집한 네 시야 FlyVis 반응과 원본 native 몸 감각을 기존 단일 회로에 함께 입력해 76단계 상태를 유지했다. 첫 영상 고정 대조 대비 회로 출력 최대 차 0.00290, 상태 최대 차 0.0366. 정지 영상 변동이 포함된 인과 대조이며 생리 기능·실시간 연결·실주행/학습 증거는 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 실제 정지 영상의 FlyVis 오프라인 재생:** 보관·해시 검증된 네 시야 영상 76묶음을 원래 host 결정 시각 순서로 학습된 FlyVis 시각망에 넣고 첫 영상 고정 대조와 비교했다. T4/T5 출력 최대 차 0.555가 나타났으나 정지 장면 자체의 영상 변화가 있어 이 값을 운동 방향·생리 검증으로 해석할 수 없다. 실시간 통합·단일 회로·주행/학습은 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 실제 픽셀·몸 감각 수용기 정지 진단:** 분리된 실제 카메라 76묶음과 native 몸 센서를 공학적 네 시야 수용기에 입력했다. 네 시야 각 1709개가 유효했고 최초 프레임 다음부터 시간차 값이 형성됐다. 보관 원본과 native 기록으로 전 출력을 오차 0으로 재현했다. FlyVis 운동 시각망·단일 회로·물리 시간·주행/학습은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 네 시야 픽셀 IPC 정지 진단 성공:** 실제 카메라 79묶음 저장·검증, 그중 서로 다른 76묶음의 네 시야 픽셀을 별도 프로세스로 전달해 수신 해시와 보관 원본이 일치했다. 선택 관찰 2.986초, 요청 terminal stopped, 40ms 그룹 복사 제한 유지. 회로 입력·물리 노출 시간·주행/학습은 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 별도 카메라 프로세스 정지 진단 성공:** 관찰 프로세스와 카메라 소유자를 분리하자 실제 정지 세션에서 2.973초에 76개 서로 다른 네 시야 묶음을 선택했고 총 80묶음을 원본 저장·독립 검증했다. 요청별 stopped terminal 확인, 40ms 복사 제한 유지. 픽셀의 프로세스 간 actor 전달, 물리 노출 시각·몸 정합, 주행과 학습은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 픽셀 변환 경쟁 대조:** 합성 150회씩에서 변환 중앙값은 단독 0.181ms, 같은 프로세스 CPU 스레드와 동시 30.850ms, 별도 CPU 프로세스와 동시 0.192ms, 파일 저장 스레드와 동시 0.224ms였다. 동일 프로세스의 Python 경쟁이 앞선 지연을 재현하지만 실제 카메라에서 경쟁한 작업이 무엇인지는 아직 미확인이다. 실제 영상·운전 성공 근거가 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 스레드 사이클 진단:** 실제 정지 카메라 시험에서 영상 7묶음 후 복사 제한 40ms를 초과했다. 문제 RGB 변환 벽시계 31.07ms 동안 해당 스레드는 약 101만 사이클을 썼으며, 간단한 50ms 바쁜 연산 대조는 약 1억 8414만 사이클이었다. 대기·스케줄링의 기여 가능성이 크나 사이클을 시간으로 환산하거나 GIL·OS 대기를 구분할 수는 없다. 요청별 terminal stopped 확인. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — CPU 시간과 재개 관찰 재진단:** 새 시험에서 재개 관찰을 통과하고 10묶음 수신 후 네 시야 복사 40ms 초과로 실패했다. 해당 구간은 flush 약 16ms, 첫 map 약 16ms가 관찰됐으나 드라이버 호출과 스케줄링을 구분하지 못했다. 스레드 CPU 시계의 실제 분해능이 거칠어 짧은 RGB 변환 원인도 확정하지 못했다. 자신의 terminal stopped·카메라 off. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 실시간 영상 병목 추가 진단:** 40ms 제한을 유지한 정지 진단에서 짧은 스레드 전환 간격 시험은 소비 28묶음 뒤 저장 큐 8개가 가득 차 실패했고, 기존 32묶음·32MiB 버퍼 적용 시험은 소비 3묶음 뒤 GPU 복사 시간 초과로 실패했다. 후자는 첫 시야 RGB 변환 구간의 경과가 31.74ms였으나 연산 자체와 스케줄링 지연은 구분되지 않는다. 두 요청 모두 각자의 stopped terminal 확인. 지속 입력·실제 학습/주행 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-02 — 소유 MMF 카메라의 실제 재개:** v4 producer에서 paused 시작 후 같은 카메라를 유지한 CSP resume과 몸 packet 증가를 두 차례 확인했다. 첫 시도는 잘못된 80ms host wait 설정으로 실패, 둘째는 영상 3묶음 후 GPU 그룹 복사 40ms 초과로 실패했다. 각각 자기 terminal stopped·camera off, 실제 학습/주행 미검증. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 새 엔진 MMF 정지 진단 성공:** 과거 요청 원본 격리와 기존 OS 프로세스 종료를 검증한 뒤 새 generation에서 8묶음·네 시야 32장 공유 메모리/동시 원본 이미지가 픽셀 완전 일치했다. 새 요청 terminal completed, 구 요청 terminal 미상은 보존한다. 재개 후 카메라 off·정지·brake1. 실시간·자율주행은 미검증. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 미종료 요청 격리와 엔진 인계:** 이전 요청 원본을 보존한 채 게시 슬롯에서 격리하고 CSP API로 pause 후 엔진을 재시작했다. PID 34992 종료 신호·새 PID 38464와 새 generation을 확인했고 새 트랙 세션의 브레이크를 복원했다. 옛 요청 terminal은 여전히 미상이며 당시 새 카메라 요청은 없었다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — Lua 종료 콜백 실제 관찰:** 종료 witness v3를 설치하고 같은 코드를 한 번 재적재했을 때 직전 generation의 release callback과 camera 비활성을 실제 기록했다. 당시 엔진 PID 34992는 실행 중이었으며, 계측 이전의 원래 미종료 요청 terminal은 여전히 없다. 관련 261검사 통과. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — MMF 취소 후보 실제 설치·자동 재적재:** 설치 원본을 보존하고 검사 257개 통과한 당시 v2 후보를 설치했다. AC Lua가 자동 재적재돼 새 generation의 orphan 관찰 기록이 생겼지만 이전 요청의 terminal은 없고 원 엔진 PID 34992는 살아 있다. 이 관찰은 새 요청 승인이나 이전 producer 종료 증거가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 2×2 합성 폐루프 반복·속도 대조:** 같은 설정 재실행 6조건의 전체 값 최대 차 1.99e-6으로 2e-5 기준을 통과했다. 다른 질감·초기 4m/s에서 직전→차동 후보의 x=16.5m 오차는 +0.320/+0.081/-0.103→+0.135/-0.044/-0.165m였다. 한쪽 코너 악화·실제 주행 미검증. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 합성 도로 부분 픽셀 평균:** 별도 2×2 renderer에서 문제 프레임의 수용기 차이와 고정 이력 단일 프레임 치환 효과가 0이었다. 합성 폐루프 곡률 .024의 x=16.5m에서 기존→차동 후보 오차는 +0.283/+0.048/-0.140→+0.127/-0.045/-0.168m였다. 반복 재현·실제 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 직선 baseline 차이의 합성 영상 원인 대조:** 자세 차 약 9.1e-8인 프레임에서 도로 경계 픽셀 하나와 겹눈 표본 하나가 달라졌다. 같은 몸 이력에서 이 프레임만 치환해도 이후 조향 intent 최대 차 0.000295가 발생했다. 렌더링 불연속의 기여 근거이며 엄격 재현 실패는 유지한다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 좌우 차동 목표 합성 학습:** 같은 단일 회로에서 좌우 출력 차이를 학습했다. 이전에 본 질감·곡률 .024의 x=16.5m 오차는 굽이 -1 +0.298→+0.158m, 직선 +0.027→+0.007m, 굽이 +1 -0.144→-0.170m였다. 직선 baseline 재생의 엄격 검사 실패로 원인 미확인·후보 미배포다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 직선 비중을 높인 조향 경계 학습:** 이전 후보에서 시각·조향 이득·중립 기준을 제한 학습했다. 합성 x=16.5m에서 직선과 한쪽 코너는 개선됐지만 다른 쪽은 악화됐으며, 추가 곡률 .024의 해당 오차는 +0.114→+0.298m였다. 후보는 실제 차량 미검증·미배포다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 기존 조향 출력 이득과 시각 경계 합성 학습:** 12회 학습 후 이득이 약 6.28배가 됐다. 이전에 본 두 질감의 합성 폐루프 x=16.5m에서 좌우 오차는 약 +0.29/-0.35m→+0.006~0.017/-0.270~-0.284m였지만 직선 오차는 약 -0.026m→-0.11~-0.13m로 악화됐다. 실제 차량 미검증·미배포. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 폐루프 이력 기반 합성 학습:** 폐루프에서 재구성한 영상·몸 이력으로 시각 경계만 6회 학습했다. 이전에 본 다른 질감의 고정 평가에서 좌우 교사 평균 -0.443/+0.471에 비해 출력은 약 -0.013/+0.005로 남았고 개선은 미미했다. 교사는 합성 위치를 평가/목표에만 쓰며 배우 입력은 아니다. 후보 미인증·미배포. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 포화 페널티 합성 학습:** 단일 회로의 시각 projection만 8회 학습했다. 이미 본 합성 평가에서 포화 페널티 0.001303→0.001306, 가설 MSE 0.0035520→0.0035522로 개선되지 않았고 조향은 9조건 모두 음수였다. 후보는 미인증·미배포다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 공간 시각 증폭의 내부 추적:** 동일 합성 이력에서 시각 경계 tanh 입력 절댓값 >2인 비율은 1배 약 7~8%, 4배 약 49%였다. 배율에 비해 포트 출력 증가는 작아 포화가 관찰됐으나 전체 주행 오차의 유일한 원인이나 생리 기능으로 볼 수 없다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 재시작 후 이전 generation 요청 구분 후보:** 기존 엔진 재시작은 paused를 요구하고 재시작 시 generation이 바뀐다. 다른 generation의 stop 요청을 종전 terminal로 위장하지 않고 별도 미확인 관찰만 남기는 당시 미배포였던 Lua 후보와 모의 시험을 추가했다. 관련 28검사 통과, 실제 요청은 미해결이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 미종료 MMF 요청 재현:** 현재와 같은 v3·80프레임·stop 설정의 Lua 모의 시험에서 운영 원본은 일시정지 전 계속 실패하고 terminal을 쓰지 않았으며, 당시 미배포였던 취소 후보는 MMF를 열지 않고 같은 ID의 0프레임 stopped를 기록했다. 관련 24검사 통과. 당시 실제 producer 취소·배포는 미완이었다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — MMF 재개 검사 보강:** 기존 요청은 자기 ID의 종료 영수증 없이 producer에서 계속 거부 중이다. 별도로 카메라 준비·재개 확인 때도 정지·브레이크·가스·보조선/AI·오류 상태를 재검사하도록 순수 게이트를 보강했고 관련 23검사가 통과했다. 실제 runner 연결과 live 복구는 미완이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 공간 시각 가중치 배율의 합성 폐루프:** 과거 중립 기준에서 1/2/4배를 두 질감과 직선·좌우 코너에 적용했다. x=16.5m에서 코너 오차 절댓값은 1배 약 0.29/0.35m, 4배 약 0.28/0.34m로 소폭 감소했다. 비선형 경계의 탐색 실험이며 실제 차량·생리·배포는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 과거 중립 기준의 합성 폐루프 대조:** 다른 비시각 상태에서 등록된 과거 기준으로 직선의 x=16.5m 편차가 두 질감에서 약 -0.18m→-0.026m였으나, 한쪽 코너 오차는 +0.13m→+0.29m로 커졌다. 후보는 미인증·미배포이며 실제 물리와 생리는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 같은 합성 이력의 경계 제거:** 공간 시각 경계 제거 시 좌우 평균 조향은 -0.04628/-0.02707에서 -0.03711/-0.03802로 수렴했으나 공통 음의 편향은 남았다. 기본 시각 가중치만 제거하면 각각 -0.04267/-0.02263이었다. 고정 이력의 모델 내부 반사실이며 실제 주행이나 생리 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 합성 폐루프 감각 반사실:** 같은 단일 회로의 좌우 굽이에서 정상 대비 직선 영상 치환 시 종료 yaw 차는 0.02750→0.000000008rad, 몸 yaw 0 고정 시 0.02863rad였다. 한 합성 질감의 짧은 구간이며 궤적도 달라져 생리 검증·실제 주행 또는 센서 장애 시험은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 합성 폐루프 속도 경계 비교:** 단일 회로의 기존/대칭 속도 출력 경계를 좌우 코너에서 비교했다. 네 조건 모두 81단계를 마쳤고 상태 전이는 독립 검산을 통과했다. 대칭 경계는 더 느리고 덜 전진했으므로 작은 종료 중심 오차를 성능 개선으로 판정할 수 없다. 실제 AC·생리 검증 및 배포는 아직 없다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 합성 S자 yaw의 시야별 반사실:** 몸 yaw0에서 한 시야씩 무회전 이력으로 바꿨다. 반전 전 조향 차는 원본 +1.76e-5 두 질감에서 오른쪽 치환 시 -3.30e-6/-3.65e-6, 네 시야 모두 치환 시0이었다. 작은 합성 출력이며 네 시야의 실제 주행 기여·생리 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 합성 S자 yaw 반전의 단일 감각 회로:** 네 시야·몸 yaw가 일치하면 두 질감에서 조향 차는 반전 전 약 -0.00996, 후반 약 +0.01001, 첫 부호 전환은 반전 후 120ms 표본이었다. 몸 yaw0 대조는 반전 전후 작은 양수였다. 강제 운동학·40ms 샘플이며 실제 제어 지연이나 안정화 증거는 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 몸 진행 방향이 맞는 합성 yaw:** 정지 후 3m/s·±0.05rad/s 무슬립 원호의 네 시야를 만들고 같은 yaw 몸 감각을 단일 감각 회로에 넣었다. 두 질감에서 반대 yaw의 조향 차 평균은 몸 일치 -0.008676/-0.008678, 몸0 대조 +0.000016/+0.000014였다. 강제 운동학·단일 직선 환경이며 실제 차량 안정화/주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 합성 yaw/roll 신호의 마지막 구간 감사:** 같은 두 질감의 마지막10프레임에서 yaw의 반대 방향 조향 차 평균은 +5.35e-6/-1.44e-6으로 부호가 달랐다. 원래 자극 이후 전체 평균은 두 질감 모두 양수였다. HS/VS와 T4/T5에도 yaw 차이는 존재하나 다른 축의 입력 기하·단위가 달라 전달률이나 생리 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 같은 합성 도로의 yaw/roll 집단 대조:** 두 질감·동일 0.05rad/s에서 몸 회전 감각을 고정하면 yaw 반대방향 조향 차 평균은 +5.22e-6/+2.56e-6으로 roll +2.11e-4/+2.19e-4보다 작았다. VS 절제 시 yaw는 +4.91e-7/-1.28e-7이었다. 작은 수치·다른 영상 운동의 합성 대조이며 축 선택성이나 실제 주행을 증명하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 합성 롤에서 HS/VS 집단 절제:** 같은 단일 회로의 HS8 또는 VS34 상태를 매 결정 0으로 유지했다. 몸 롤 고정 조건에서 VS 절제 시 반대 시각 롤의 조향 차는 두 질감 모두 원래의 약15%, HS 절제 시 약83%였다. 모델 내부의 합성 인과 대조이며 생리·실제 안정화·주행 증거가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 정지 도입 정합과 공간 시각 제거:** 첫 0.4초 몸 속도/바퀴를 0으로 고쳐 합성 집단 진단을 재생했다. VS의 직선−코너 차 0.166/0.171/0.393m/s는 공간 경로 제거 시 0.042/0.047/0.050으로 줄었으나 목표 속도 RMS 오차 0.774m/s가 남았다. 실제 생리·폐루프 검증이나 배우 학습 결과가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 다중 속도 그래프 집단 진단:** 합성 한 학습 질감·한 평가 질감에서 VS/하행 후보/날개 후보/근육의 임시 ridge 진단을 비교했다. VS의 직선−코너는 0.166/0.171/0.394m/s였으나 목표 1m/s보다 작고 전체 RMS 오차 0.774m/s였다. 나머지는 거의 0이었다. 고정 상태·이미 본 평가·동일 기하의 사후 진단이며 배우 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 제한된 좌우 대칭 속도 경계 합성 학습 실패:** 같은 비행 회로의 6근육·몸 속도만 쓰는 대칭 제한 경계를 구현·400회 학습했다. 기존에 본 합성 평가 질감에서 직선−코너 속도 차는 0.0010~0.0033m/s로 가상 목표 1m/s에 못 미쳤다. 상태 고정 진단이며 폐루프·실제 주행·생리 미검증, 후보 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 감각 롤의 통합 회로 집단 상태:** 두 합성 질감의 감각 경로에서 HS·VS·DNg02·날개 출력 후보·6근육 상태를 기록했고 intent는 기존 재생과 정확히 일치했다. 반대 롤 차 RMS는 시각 HS/VS에서 약0.0017~0.00185, 몸 롤을 맞춘 근육에서 약6.68e-6이었다. 집단·단위가 달라 전달률이나 생리 증거가 아니며 실제 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-02 — 감각 기반 단일 회로의 합성 롤:** 외부 조향·속도 명령을 빼고 두 합성 질감에서 4시야/몸 롤을 재생했다. 반대 롤 조향 차 평균은 몸 일치 +0.005260/+0.005269, 고정 +0.000211/+0.000219, 반대 -0.004839/-0.004830이다. 기존 명령 주입 대비 절대 intent는 최대 조향 0.00356·전진 0.225 차이였으므로 응답 차가 비슷하다고 전체 제어가 같지는 않다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 롤 시각의 망막·운동 분리:** 몸 롤을 고정한 두 질감에서 원본 반대 롤 조향 차 평균은 +0.000210/+0.000219. 망막만 롤0으로 치환하면 +0.000141/+0.000147, T4/T5만 롤0으로 치환하면 +0.000069/+0.000072였다. 인공 반사실·단일 합성 생성기이며 생리·실제 안정화는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 새 합성 질감의 네 시야 롤 반복:** 두 번째 질감에서 반대 롤 방향의 조향 차 평균은 몸 롤 일치 +0.005269, 고정 +0.000219, 반대 -0.004830이었다. 첫 질감과 같은 부호지만 동일 합성 직선·단일 생성기의 2조건이며 실제 안정화·생리·주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 네 시야·몸 자세가 함께 변하는 합성 롤:** 동일 도로·전진3m/s에서 네 카메라를 ±0.05rad/s로 롤하고 몸 롤 자세를 같게/0/반대로 입력했다. 두 롤 방향의 조향 차 평균은 각각 +0.005260/+0.000210/-0.004839였다. 고정 시각·몸 반사실은 원인 분리용이며 물리 차량·생리·실주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 수직 시각과 합성 롤 자세 대조:** 미검증 롤·피치 각속도와 가속도를 가리고 롤 자세 0/±0.05rad와 단일 시야 수직 경계를 조합했다. +롤−−롤 조향 평균 차는 +0.010373~0.010377, 시각 방향 차에 대한 롤 상호작용은 최대 약2.85e-6이었다. 합성 고정 자세이며 실제 물리 동기·주행 증거가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 직교 방향 망막·운동 반사실:** 같은 밝기 내 반대 방향의 망막 또는 T4/T5 이력을 한쪽에 맞춰 고정해 회로를 재생했다. 운동 이력만 바꾼 대조에서도 4시야 모두 차이가 남고, 망막만 바꾼 대조에서도 차이가 남았다. 전방 어두운 조건은 망막 고정 시 조향 차의 부호가 바뀌었다. 인공 반사실이며 생리·주행 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 수직 반대 방향 FlyVis 전체 열의 통합 회로 대조:** 밝고 어두운 90°/270° 경계의 721위치 응답을 복원하고 각 시야에 넣었다. 각 시야의 1초 이후 조향 차 평균은 밝기 극성에 따라 부호가 반전됐다. 합성 단일 시야·고정 몸 대조이며 실제 수직 운동의 올바른 부호나 생리·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 양측 선형 정규화 대조:** 합성만으로 5개 ridge 계수를 맞추고 기존 실제 기록을 사후 범위 진단했다. 강한 정규화는 실제 범위 초과를 없앴으나 합성 교사 오차가 교사 크기와 비슷했고, 중간 설정도 실제 범위 초과가 44~68%였다. 제한 없는 진단 출력이며 배우 적용·주행 증거가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 양측 특징의 선형 용량 진단:** 합성 3질감에서 64특징의 관측 rank는 32였고 무제한 선형 포트 맞춤은 교사 RMS 0.0858 대비 잔차 RMS 0.0157이지만 계수 norm 약9176이었다. 이 진단을 이전에 본 실제 영상에 적용한 예측 97% 이상이 ±0.5를 넘어 분포 밖에서 극도로 불안정했다. 이는 실제 bounded 배우 출력이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 시각 포트 모방 학습 실패:** 기존 비행 회로를 고정하고 양측 공간 경계만 300회 합성 학습했다. 이전에 본 평가 질감의 코너 차이는 -0.000808/-0.000812로 기존 -0.00670/-0.00698보다 작고, 실제 보관 영상 4기록에서 공간 포트 36~72%가 강포화했다. 후보는 배우 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 양측 공간 경계의 실제 이동 이력 교체 대조:** 기존 비행·운동 경로를 고정하고 공간 경계만 양측 후보로 바꿨다. 동일 공간 0 대조 대비 마지막 315결정의 조향 평균 기여는 기존 +0.012775, 양측 후보 +0.002786이었다. 단일 기존 AI 이력의 사후 비교이며 후보의 운동 가중치는 학습 당시와 다르고 합성 코너 실패도 남아 배우 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 이동 기록 경로 효과의 시간 분해:** 기존 교사 주행 365결정에서 사후적으로 앞 50개를 제외하면 공간 시각 경로 제거의 조향 차 평균 -0.01277·시간 표준편차 0.000064, 운동 시각 경로는 평균 -0.000260·표준편차 0.00129였다. 단일 기존 주행의 편향/시간 변화 분석이며 올바른 조향·생리·주행 능력은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 8단계 시각 선계산의 연속 이력 검증:** 기존 실제 정지 기록의 선택 네 시야 55묶음·54간격을 원본 순서로 두 경로에 재생했다. 누적 FlyVis 상태 최대 차 9.54e-7, T4/T5 motion 최대 차 4.19e-7이었다. 미선택 25묶음·물리 노출·실제 주행은 검증 범위 밖이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 미접수 취소 요청 재시도 결함:** CSP는 MMF 요청을 paused 검사에서 거부한 뒤 ID를 소비하지 않아 같은 요청을 주기적으로 다시 검사한다. 이미 stop이 있는 미접수 요청을 0프레임 종료 기록으로 처리하는 미배포 Lua 후보를 만들고 mock 포함 237검사를 통과했다. 당시 운영 producer는 수정되지 않았고 해당 요청은 미확정이었으므로 새 요청·pause 전 소유 해소가 필요하다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — MMF 일시정지 시작 순서 검사:** 이전 요청의 동일 ID terminal, 동일 generation/epoch의 paused 카메라 소유, resume 후 진행하는 native packet을 요구하는 순수 검사기를 추가했다. 관련 12검사 통과. 실제 실행기 연결·live 인계는 미완이며 직전 MMF terminal 미확인으로 새 요청은 보내지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 통합 MMF 정지 shadow 시작 실패:** 공유 메모리 요청을 unpaused에서 보내 CSP의 paused-start 조건에 거부됐다. 0프레임·0출력, 요청 ID에 대한 terminal 영수증은 아직 확인되지 않았다. 현재 MMF 실행기는 검증된 paused-start/resume 인계가 없어 재요청 전 명시적으로 거부한다. 이전 요청을 재발행하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 기한 임박 시 시야 출력 보류:** 직전 실패에서 새 장면 게시 약 0.6ms 전에 오래된 장면으로 출력이 시작됐다. 보유 장면이 140ms에 도달하면 출력을 보류하고, 150ms 초과 시 중단하는 ticker를 추가했다. 실제 정지 시험은 12출력 뒤 새 장면 대기 중 기한 초과로 중단됐으며 카메라 지연은 해결되지 않았다. 관련 25검사 통과. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 8단계 선계산 실제 정지 shadow:** 네 시야 전부 검정인 프레임 없이 31출력 후 시야 출력 시점 age 154.88ms로 중단됐다. 독립 감사상 정상 출력의 시야/이전 몸 최대 143.73/22.31ms, 선계산 중앙 15.81ms였다. 조건이 다른 이전 시험과 비교해 인과적 개선으로 볼 수 없으며 연속 실시간·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 시야 선계산 길이 8단계 선택지:** 직전 실패에서 새 영상 수신→시각 처리 시작은 27~51ms였고 앞선 선계산은 약 34ms였다. 선계산을 16→8단계로 선택 가능하게 하고 모자란 구간은 원래 갱신으로 이어간다. 실제 보관 네 시야·단일 초기 상태의 7개 시간 간격에서 최대 상태 차 9.54e-7, 관련 24검사 통과. 실제 속도·장기 동등성·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — CSP 세션 재시작 후 시야 복구:** 정차·카메라 종료 상태에서 API restart/start 후 네 시야가 비영 장면으로 복구됐다. 정지 shadow는 7출력 뒤 이전 시야 age 151.52ms로 중단됐다(제한 150ms). 카메라 terminal stopped, 영상/물리 동기·실제 주행 미검증. 출력 결과 기록 후 Python 프로세스는 종료 대기 중이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 동일 AC 세션 보관 영상 밝기:** 동일 generation의 archive 13개 첫 묶음과 ZIP 해시를 확인했다. 기존 11개는 왼쪽 RGB 평균 약 145~183, 최근 2개는 0이다. 마지막 밝은 기록과 첫 검정 기록 사이 관측 공백은 약 6시간 18분이다. 현재 race 설정 TIME_MULT=1은 현재 태양 위치·원인을 증명하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 검정 시야 실시간 차단 확인:** 정지 카메라 신규 검사에서 왼쪽 완전 검정 프레임을 감지해 회로 출력 0으로 중단하고 원본 및 producer 종료 영수증을 보존했다. AC 창은 당시 최소화되지 않고 백그라운드였다. 렌더링 원인은 미확정이다. 거부 이벤트 기록 보강과 테스트 대기 경쟁 수정 후 관련 15검사 통과. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 순서 보호 후 정지 shadow와 검정 시야 발견:** 변경 후 정지 실행은 시간 검사상 296출력·거부 0이었으나 원본 80묶음의 좌·우·후방은 전부 검정이어서 정상 시각 검증이 아니다. 정지 실행기에 완전 검정 시야 거부를 추가했고 관련 11검사 통과. 그 외 영상 결함·물리 노출 동기·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 정정 및 영상 순서 보호:** 앞서 독립 몸 ticker 연결이 필요하다고 한 설명은 기존 구현·실행을 누락했다. 이미 통합 회로에서 정지 실시간 shadow 두 번을 정상 종료했다(각 출력 243/247, 거부 0). 이번에는 처리 완료된 capture ID의 중복·역순 재게시를 거부하도록 보완했고 관련 11검사가 통과했다. 변경 후 실제 동시 실행은 아직 검증하지 않았고 종전 해시 고정 증거가 새 코드 검증을 대신하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 정지 shadow 몸 입력 지연 원본 감사:** 두 영상 결정 사이 50.20ms에 native 수신 20건·고유 패킷 17개가 있었으나 동기식 회로는 이전 몸을 유지해 다음 결정에서 61.86ms로 50ms 제한을 넘었다. 새 몸 수신은 2.63ms 전이었다. 별도 몸 ticker의 필요성을 뒷받침하는 단일 실패 사례이며 실제 시간 동기·실시간 ticker 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 시간 변화 시각·몸 회전 대조:** 합성 두 질감과 좌우 코너에서 시각 yaw와 몸 yaw를 각각 0/0.12 rad/s로 조합했다. 마지막 10프레임 평균 조향 변화는 시각 단독 -0.00181~-0.00203, 몸 단독 -0.01190, 추가 상호작용 +0.0000043~+0.0000071이었다. 개루프 인위적 대조이며 생리·실제 주행 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 시각 포트 유한 개입:** 저장한 합성 회로 상태 8개에서 42개 시각 입력을 각각 ±0.001/±0.01 바꾸고 입력을 고정한 채 비선형 상태를 10회(0.1초) 갱신했다. 근육 6개에 대한 중앙차분 민감도 RMS는 10회 후 약 1.33~1.34e-6이었다. 3회째 수치는 섭동 크기에 따른 수치 정밀도 영향이 크다. 고정 입력 실험이며 주행·생리 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 비행 그래프의 국소 활성 경로:** 현재 부호가 반영된 비영(非零) 연결과 마지막 시점 ReLU 활성 상태를 고정해 합성 두 질감·양 코너를 분석했다. 시각 입력 42개에서 날개 출력 후보 67개 중 활성 56개와 실제 readout 사용 뉴런 28개 모두로 경로가 남았다. DNa04/05 각 2개는 해당 시점 국소 비활성이었다. 고정 게이트 도달성은 시간 변화·기능·생리 증거가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 양측 경계의 비행 상태별 개입:** 동일 합성 코너에서 공간 경계를 끈 대조와 비교하면 학습된 양측 경계는 시각 입력·HS/VS 상태뿐 아니라 날개 후보와 여섯 근육에도 변화를 냈다. 두 질감의 개입에 따른 코너 차이 RMS는 HS 약 5.2~5.4e-5, 날개 후보 약 5.6~5.8e-8, 근육 약 2.4e-8이었다. 집단 구성·기능이 달라 단일 연결의 전달률이나 생리 증거는 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 양측 포트→조향 기울기 대조:** 합성 3질감에서 한 번 계산한 코너 gradient 방향으로 가중치 L2를 20만큼 바꿔도 새 질감의 코너 차이는 약 -0.00158/-0.00145로 기존 참조 약 -0.0071보다 작았고 yaw 차이는 +0.0116/+0.0104였다. 같은 변화에서 실제 주행 캐시 포트 24~38%가 강포화했다. 선형화 방향의 한정된 대조이며 배우 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 양측 특징의 코너 정보 진단:** 합성 학습 질감 3개로 만든 사후 ridge 진단기를 기존에 관찰한 두 평가 질감에 적용했다. 새 양측 특징은 yaw 0/±0.12 모두 좌우 코너 순위 1.0, 학습된 공간 포트는 각각 1.0/0.9/0.8~0.9였다. 다만 yaw에 의한 점수 변화가 커 별도 뇌·배우나 회로의 올바른 판단을 뜻하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 양측 대칭 공간 경계 시범:** 고정 scene 기준 없이 네 시야의 좌우 반대 성분을 같은 비행 그래프의 시각 포트로 보내는 공학 경계를 추가했다. 초기 0 출력·반사 변환·시야 결측·기존 단일 상태 보존 등 22개 검사 통과. 합성 6회 학습 후 새 질감 두 개의 코너 차이는 기존 약 -0.0067/-0.0070 대비 -0.000060/-0.000059로 회복 실패했다. 실제 캐시 포트 범위는 포화가 없었으나 시야 유효성을 가정한 오프라인 검사다. 배우 미적용. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 주행 캐시의 상한 확대 대조:** 0 기준에서 상한을 10배로 높이면 이전 실제 주행 4기록의 공간 포트 중 `|preactivation|>3` 비율이 약 46~65%, 30배면 약 67~82%였다. 이는 원래 상한에서 0~1.1%였다. 포트 포화의 오프라인 계산이며 실제 주행 성능은 미검증이고 변경은 배우에 적용하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 0 기준 공간 경계의 기울기와 상한 대조:** 좌우 코너 개별 가중치 기울기는 남지만 0 기준에서 코사인 0.9999 이상으로 거의 같아 차이 기울기가 상쇄됐고, gain 중앙값은 약 0.034였다. 합성 상한을 30배로 올리면 코너 차이는 회복됐으나 두 질감의 yaw 조향 부호는 다시 반대였다. 인위적 대조이며 배우 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 기준 없는 공간 경계 합성 재학습 실패:** 기존 비행 회로와 운동 경계를 고정하고 0 기준 공간 투영만 6회 학습했다. 새 질감 881609/610의 코너 차이는 원래 기준 -0.004856/-0.006630, 0 기준 학습 전 -0.000271/-0.000281, 학습 후 -0.000271/-0.000281이었다. gradient norm은 약 5.5e-9, 기존 norm 대비 변화 약 0.032%였으며 배우 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 공간 기준 제거 대조:** 기준을 0으로 바꾸면 기존 실패 질감의 시각 회전 부호는 양수가 됐으나 네 합성 장면의 좌우 코너 조향 차이는 약 -0.007에서 -0.00028~−0.00029로 감소했다. 실제 주행 캐시에서도 상한은 모든 샘플에 유지됐다. 단순 기준 제거는 채택하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 인과적 시간 기준의 오프라인 대조:** 기존 실제 주행 4기록에서 첫 프레임으로 기준을 초기화하고 입력으로 갱신하는 0.15초 시정수는 gain 중앙값을 0.023~0.044에서 0.826~1.0으로 높였다. 그러나 합성 코너의 공간 포트 차이 RMS는 약 0.136→0.073~0.074로 줄었다. 실제 입력에 조건화된 상태 적응이며 가중치 피팅·배치는 없고, 생리 기능·주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 고정 합성 기준의 실제 영상 차이:** 기준 차감 전 중심 대비 RMS 중앙값은 실제 정지 0.0852, 합성 두 장면 0.0931/0.0909로 비슷했다. 기준 차감 후 합성은 0.00410/0.00427, 실제는 0.0788이었다. 기존 실제 주행 4기록도 기준 차감 후 전 프레임 제한됐고 gain 중앙값은 0.023~0.044였다. 실제 기록은 학습에 쓰지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 카메라 설정의 망막 표본 동등성:** 실제 보관 프레임 24×4장에 두 카메라 설정을 적용해 망막 표본·시야 방향의 최대 차이 0을 확인했다. 따라서 이전 실제/합성 대비 차이는 표본 좌표 차이로 설명되지 않는다. 실제 카메라 원점·노출 동기와 합성 세계 기하의 일치는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 AC 정지 기록의 공간 경계 범위:** 기존 AC 네 시야 정지 기록 중 유효 23프레임의 고정 합성 기준 차감 후 대비 RMS 중앙값은 0.0788, 합성 두 조건은 0.00410/0.00427이었다. 차감 전 대비는 실제 0.0852, 합성 0.0931/0.0909였다. 합성 후보의 RMS 상한은 실제 기록 전체에 작동해 gain 중앙값 0.041이었다. 카메라 설정 파일·장면·운동이 달라 직접 성능 비교가 아니며, 후속 검사에서 표본 좌표와 시야 방향은 일치했고 원점은 미검증이며 물리 노출 동기와 실제 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 공간 경계의 선형 보존 제약 시범 실패:** 학습 질감의 평균 회전 특징은 공간 투영에서 제거하고 평균 코너 특징은 보존하도록 계산했지만, 기존 실패 질감의 전체 조향 차이는 -0.005778→-0.005014로 여전히 반대였다. 다른 알려진 질감의 코너 차이는 -0.007051→-0.004663으로 약 34% 줄었다. 공간 가중치 변화는 기존 norm의 29.5%; 배우 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 공간 시야 상쇄와 민감도:** 두 합성 질감에서 공간 경계의 회전 차이는 시야별 투영 크기의 합에 비해 합산 RMS가 약 15.8%/17.6%였다. 전방 가중치를 ±5% 바꾸면 조향과 코너 차이가 함께 바뀌었지만 실패 질감의 회전 부호는 계속 반대였다. 투영 전 합산의 제한된 진단이며 생리·차량 주행 증거는 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 코너 보존 조건의 공간·운동 공동 학습:** 단일 비행 그래프를 고정하고 두 시각 경계를 4회 갱신했다. 새 질감 881605의 전체 시각 회전 차이는 -0.006091→-0.005778로 여전히 목표 양수와 반대였고 운동 단독 +0.003587을 공간 단독 -0.009360이 압도했다. 새 질감 881606은 양수였다. 두 질감의 기존 좌우 코너 조향 차이는 거의 유지됐으나, 실험은 실패로 남기고 배우에 적용하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 질감 다양화 운동 경계 학습:** 기존 실패 질감 하나를 포함한 3개 질감으로 운동 투영만 6회 갱신했다. 새 질감·각속도 0.08/0.20rad/s에서 운동 경로 기여가 있었으나, 알려진 두 실패 질감의 시각 전용 조향 차이는 여전히 -0.002344/-0.000164로 목표 양수와 반대였다. 그중 하나는 학습 자료였다. 후보 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 새 운동 후보의 몸 yaw·질감 대조:** 기존에 살펴본 세 질감에서 새 후보의 시각 전용 -yaw 대 +yaw 조향 차이는 +0.007872/-0.003413/-0.001260이었다. 몸 yaw를 함께 넣으면 모두 양수였지만 몸 감각 영향이 크다. 두 질감에서 시각 단독 부호가 여전히 반대여서 방향 일반화는 미달이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 공간·운동 통합 조건의 합성 yaw 학습:** 기존 운동 후보에서 단일 비행 그래프를 고정하고 대항 운동 투영을 6회 더 학습했다. 새 질감의 직선/좌/우 코너에서 -yaw 대 +yaw 조향 차이는 0.00382/0.00376/0.00411이었고 운동 입력 고정 시 0.00165/0.00163/0.00194였다. 목표 0.004는 공학 가설이며 한 질감·한 각속도 합성 결과이고 배우 미적용이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 운동 시각 경계의 합성 yaw 학습:** 망막 회전 단서를 고정하고 기존 단일 비행 그래프는 동결한 채 T4/T5 대항 운동 투영만 6회 학습했다. 새 질감에서 운동 단독 좌우 조향 차이는 0.000096→0.001227, 투영 차단 시 0.000003이었다. 전체 시각 경로의 후보 차이는 -0.002387로 목표 +0.004와 반대여서 배우에 적용하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 yaw 시각 경로 개입:** 두 질감의 시각 회전 조향 변화는 공간 대비 투영 제거 또는 망막 채널을 무회전으로 치환하면 거의 사라졌지만, 운동 방향 투영을 끄거나 운동 채널을 무회전으로 치환하면 거의 유지됐다. 현 조향 반응을 운동 시각 기반 안정화로 판정할 수 없다. 인위적 합성 자극에 한정된다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 회전 부호 반전의 시각 단계 대조:** 두 합성 질감에서 +yaw−-yaw의 망막 패턴 코사인 유사도는 0.994, FlyVis 운동 채널은 0.996이었지만 비행 회로의 최종 조향 변화는 반대였다. 양쪽 모두 전방을 무회전 시야로 치환하면 조향 반응 방향이 같아졌다. 제한된 두 장면의 상관·인위적 치환으로 특정 뉴런의 원인은 확정되지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 시각·몸 yaw 결합 합성 대조:** 같은 ±0.12rad/s 좌회전 기준에서 두 질감의 몸 yaw 단독 조향 변화는 유사했으나, 시각 yaw 단독 변화의 부호는 서로 반대였다. 결합 출력은 몸·시각 개별 변화의 합과 근사했다. 영상 각도와 몸 yaw를 맞췄지만 차량 이동은 월드 직선으로 고정한 개루프 합성이므로 실제 회전 안정화 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 네 시야 합성 회전 개입:** 직선 영상의 좌우 시각 회전에서는 전·좌·우·후의 망막과 운동 채널이 모두 변했다. 고정 몸 yaw에서 각 시야를 무회전 화면으로 치환하면 같은 비행 회로의 조향 변화가 크게 바뀌었고 네 시야 모두 치환하면 0이었다. 화면 치환은 인위적 대조이며 실제 차량 회전·생리 기능 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 시야별 코너 정보 대조:** 새 질감·세 속도에서 코너 장면의 전방만 같은 시각 직선 영상으로 치환하면 직선−코너 진단 차이 0.119/0.575/0.640m/s가 약 0으로 줄었다. 양옆 치환 시 0.127/0.577/0.643이었고 후방 망막의 코너 차이는 0이었다. 이 생성 장면은 전방에 치우쳐 사방 겹눈 통합 검증에 부족하다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 다중 속도 합성 진단 시범 학습:** 한 질감의 1.5/3/4.5m/s 회로 상태로 속도별 근육 기준과 대칭 판독을 맞추고 다른 질감을 평가했다. 직선과 코너 평균 예측 차이는 각각 0.119/0.575/0.640m/s였고 시각 경계 제거 시 약 -0.002/-0.011/0.009였다. 1.5m/s에서 약하고 작은 입력 교란에도 민감하다. 단일 질감 학습·단일 질감 평가의 합성 진단이며 배우가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 시각 이동과 몸 속도를 맞춘 합성 대조:** 정지 도입 이후 영상 이동과 몸 속도를 1.5/3/4.5m/s로 맞춰도 고정 비선형 진단의 직선 예측은 약 187.6/3.31/-162.4m/s였다. 단일 속도로 맞춘 판독기의 극심한 분포 이탈이 감각 불일치에만 의존하지 않음을 합성 조건에서 확인했다. 첫 0.4초는 영상 정지·몸 속도 유지다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 고정 영상·변화한 몸 속도의 사후 진단:** 동일 3m/s 합성 영상을 유지하고 몸 속도 감각만 0/1.5/3/4.5/6m/s로 바꿨다. 기존 단일 속도에 맞춘 제한 없는 비선형 진단은 3m/s의 약 3에서 벗어나면 대략 389/187/-162/-302m/s 수준으로 폭주했다. 영상과 몸 속도를 의도적으로 불일치시킨 대조이며 실제 배우가 낸 명령이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 좌우 차이 크기 기반 속도 진단:** 기존 단일 비행 회로의 저장된 근육 상태로 선형·좌우 차이 절댓값 추가 판독을 사후 학습했다. 후자는 새 합성 조건에서 직선/코너 차이를 더 크게 냈지만 가까운 코너에서 평균 -0.315m/s를 예측했고 근육 한 값 1e-6 변화에 최대 0.774m/s 변했다. 제한 없는 오프라인 진단이며 배우에 배치하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 코너 단일 변수 대조:** 같은 기준에서 거리만 20→6m, 곡률만 0.04→0.012, 질감만 변경했다. DNg02 균형 정확도는 기준 0.675에서 각각 0.75/0.525/0.5, 날개 출력 후보는 0.7에서 1.0/0.5/0.65로 바뀌었다. 각 값은 단 한 질감·기하 조합에서의 상관된 합성 장면이므로 일반화·주행 성능은 미확인이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 동력 출력 평균의 합성 대조:** 세 기존 합성 조건에서 같은 시점의 코너-직선 차이를 비교했다. 좌우 동력의 절댓값 변화에 비해 가감속 readout에 들어가는 좌우 공통 평균 변화는 약 27.0%/20.9%/22.5%였다. 좌우 신호 상쇄가 관찰됐지만 이는 사후 분석이며 단독 원인·생리·실제 주행의 증거는 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 고정 판독기 합성 조건 재검증:** 이전 진단 판독기를 재학습하지 않고 새 조건 세 개에 적용했다. DNg02 균형 정확도는 0.925/0.95/0.675, 날개 출력 후보는 1.0/1.0/0.7, 여섯 근육 출력은 모두 0.5였다. 공간 시각 경계를 인위적으로 제거하면 DNg02와 날개 후보는 모두 0.5였다. 질감·곡률·시작 거리를 함께 바꿨으므로 어느 요소가 성능 저하를 일으켰는지는 분리되지 않았다. 연속 프레임이 상관된 같은 생성기의 합성 진단으로 실제 주행이나 생리 기능의 증거가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 코너 정보의 비행 graph 상태 비교:** 두 질감으로 학습한 진단 판독기를 새 합성 질감 하나에 적용했다. DNg02 29개와 날개 운동 후보 67개 상태의 직선/코너 균형 정확도는 각각 1.0, 여섯 근육 평균은 0.5였고 공간 시각 경계 제거 시 앞의 두 값은 0.5였다. 각 값은 상관된 30프레임·3장면의 합성 진단이며 생리·운전 능력의 입증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 코너 속도 학습의 고정 상태 한계:** 이전 합성 근육 상태 40쌍에서 선언한 가중치 절댓값 5000 이하면 속도 명령의 평균 쌍별 차이는 최대 0.424m/s로, 가설 표적 차이 1m/s보다 작다. 더 약한 ridge는 fit 차이를 늘리지만 필요 가중치가 급증했다. 고정 상태에 대한 수학적 대조이며 다른 회로 상태·실제 주행 전체의 한계는 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 코너별 속도 readout 학습 실패:** 이전 비행 근육 상태에 직선 3.5·좌우 코너 2.5m/s의 가설 표적을 ridge로 학습했다. 새 질감에서 직선과 코너 평균 명령은 약 2.995와 2.995m/s로, 목표 차이 1m/s에 비해 실제 차이는 0.00048m/s였다. 손실 감소는 주로 공통값 이동이며 후보 미채택이다. 합성 고정 몸·개방루프 검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 학습 속도 명령의 시각 기여 대조:** 같은 합성 몸 속도에서 좌우 코너 영상의 목표속도 차이는 약 -0.000013m/s였고 조향 intent 차이는 +0.00586이었다. 공간 시각 경계를 끄면 조향 차이는 약 -0.000018로 줄었다. 현재 일정 속도 교사로 학습한 경로의 코너별 속도 판단은 입증되지 않았다. 인위적 합성 대조이며 실제 주행/생리 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 비행 상태 기반 합성 속도 명령 학습:** 동일 회로 상태·몸 속도로 합성 3m/s 교사 목표를 맞추는 경계를 40회 갱신했다. 새 질감 폐루프 1.64초에서 초기 0/1.5/3/4.5/6m/s는 각각 0.84/1.93/3.14/4.37/5.53m/s가 됐다. 3m/s에서는 상승·전체 조향 음수였고 목표 명령도 속도에 따라 달라졌다. 일정 교사·합성 물리의 부분 결과이며 시각 기반 코너 속도·실제 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 같은 비행 상태를 이용하는 속도 명령 경계:** 이전 단일 비행 graph의 근육 상태와 현재 몸 속도에서 속도 보정량을 만드는 별도 상태 없는 공학 경계를 선택형으로 추가했다. 0 초기화 시 합성 이력의 기존 출력·전체 상태 차이 0, 실측 연결 graph의 최종 전진 출력 gradient norm 0.05579; 관련 검사 24개 통과. 학습·생리·실제 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 전진 기준과 외부 목표속도 결합 진단:** 합성 학습 power 기준과 외부 3m/s 명령을 함께 쓰자 1.64초 후 초기 0→1.00m/s, 6→4.96m/s로 각각 가속·감속했다. 같은 짧은 합성 도로의 사후 조합이며 목표 속도는 actor가 결정하지 않았고 조향·실제 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 명시적 합성 목표속도 대조:** 기존 sensory 경로는 실험적으로 목표를 현재 속도와 같게 두어 speed-error 경로를 중립화한다. 3m/s를 외부 진단 명령으로 넣어도 초기 0m/s에서는 출발하지 못했고, 초기 6m/s는 1.64초 뒤 1.94m/s로 감속했다. 이는 목표 미공급뿐 아니라 전진 출력 보정 문제도 남아 있음을 보여준다. 외부 명령은 actor 판단이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 다중 속도 추가 학습 실패:** 기존 후보에서 동일 합성 이력으로 30회 더 갱신했다. 다른 질감의 폐루프에서 초기 0/1.5/3/4.5/6m/s가 1.64초 뒤 1.21/2.70/4.20/5.70/7.20m/s로 모두 가속했다. 정지 출발은 생겼지만 목표 이상에서도 감속하지 못해 후보 미채택이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 다중 속도 몸 피드백 학습:** 정지·3·6m/s의 합성 이력과 조향 보존 손실로 몸 feedback·전진 기준을 15회 갱신했다. 같은 도로의 보류 초기속도 1.5→0.846, 4.5→3.848m/s였고 정지 상태는 출발하지 못했다. 손실은 줄었으나 속도 회복 실패로 후보 미채택이며 실제 주행·생리 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 가감속 기준 학습과 속도 대조:** 기존 회로의 공학적 전진 기준값 하나만 20회 학습하자 같은 합성 조건의 초기 3m/s 차량은 1.64초 뒤 2.94m/s였다. 하지만 정지 출발은 0.14m/s, 6m/s 출발은 5.93m/s에 그쳐 목표 3m/s에 대한 양방향 속도 조절은 확인되지 않았다. 후보 미채택·실제 주행 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 폐루프 속도 피드백 학습:** 합성 자가 생성 41결정에서 몸 감각 어댑터만 4회 갱신했다. 학습 손실은 0.5228→0.5098이었으나 같은 조건 폐루프 차량은 1.87m→1.93m 이동 후 여전히 정지해 코너에 이르지 못했다. 조향 출력도 변해 후보 미채택이며 실제 학습·운전 성공이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 네 시야 FlyVis·단일 회로·합성 차량 폐루프:** 41결정에서 회로 intent를 조향·가감속 가설로 바꾸고 다음 영상과 몸 yaw/속도에 되먹임했다. 초기 3m/s의 차량은 계속 감속해 1.87m에서 정지했고 12m 코너에 도달하지 못했다. 조작 0 대조는 4.92m·3m/s를 유지했다. 단순 합성 물리·단일 짧은 실행이며 학습·실제 주행은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 차량 경로 기반:** 기존 합성 도로가 조향 중 횡이동을 재현하지 못하는 한계를 보완하기 위해 별도 평면 도로 렌더러와 미끄럼 없는 bicycle 상태 적분기를 추가했다. 좌우 조향·정지 제동·기존 영상 일치·횡이동 반응을 포함한 관련 9개 검사 통과. 아직 회로와 폐루프로 연결하거나 학습·실제 주행을 검증하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 몸 관측 수신 시각 보정:** 이전 대조는 출발 경계에서 과거 몸 관측에도 현재 속도를 복사했다. 현재·과거 각각의 수신 시각으로 yaw·속도·바퀴 회전을 생성하도록 고쳤고 관련 21개 검사 통과, 기존 후보의 결과 배열은 동일했다. 고정 속도·바퀴는 합성 가정이며 실제 동역학 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 코너의 시각·몸 yaw 교차 대조:** 같은 세 굽이와 좌우 시각 회전에서 몸 yaw를 0·같은 방향·반대로 바꾸었다. 몸 yaw 0일 때 시각 회전 양방향의 조향 차이는 -0.00057~+0.00010, 몸 yaw도 변화시키면 약 ±0.023이었다. 굽이 차이는 남았지만 27조건 모두 음수였다. 인위적 개방루프 대조이며 생리·주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 현재 몸 yaw 누락 정정:** 이전 yaw 구간 실험은 회전 자극 중에도 현재 몸 yaw를 0으로 고정했다. 정지·회전의 가상 수신 시각에 맞춰 현재/과거 몸 yaw와 구간 yaw를 함께 넣은 사후 대조에서 9조건 조향은 여전히 모두 음수였고, yaw 조건 간 출력 차이는 크게 달라졌다. 이는 시각 안정화나 조향 성능의 성공·실패 판정이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 yaw 시간 불일치 정정:** 직전 어댑터 학습과 최초 평가는 영상의 정지 0.4초에도 몸 yaw를 비영으로 넣었다. 정지 yaw를 0으로 고친 사후 평가에서도 MSE는 1.668e-6→1.687e-6으로 악화했고 9조건 조향은 음수였다. 기존 후보는 잘못 정렬된 입력으로 학습돼 미채택이다. 구간 평균 함수와 검사 5개를 추가했다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 새 합성 도로의 사전 고정 평가:** 학습 후 새 질감·곡률 도로에서 yaw 어댑터 적용 시 회전 변화 조향 차이 MSE는 1.668e-6→1.687e-6으로 악화했고 9조건의 조향은 모두 음수였다. 좌우 굽이 차이는 거의 유지됐으나 양방향 운전과 회전 안정성 일반화는 입증되지 않아 후보를 채택하지 않는다. 같은 합성 생성기의 개방루프 평가다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 기록 조향 readout 분해:** 동일 설정 저속 재생 462결정 중 449개에서 조향에 쓰이는 두 근육 차이가 모두 고정 중립 기준보다 낮았다. 이 고정 상태와 양의 혼합에서는 비율만 조정해 양의 조향을 만들 수 없다. 나머지 13개는 한 채널이 양수였고, 실제 보정·운전 능력은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 기록 감각 경로 제거 대조:** 동일한 저속 기록 462결정에서 몸 되먹임 어댑터·운동 시각 채널·공간 시각 어댑터를 각각 인위적으로 끄자 조향 intent 최대 변화는 각각 0.000196·0.00995·0.01209였지만 출력은 모두 음수였다. 몸 전체 제거가 아니며 경로 상호작용이 있어 편향의 단일 원인 판정은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 학습 설정 복원 후 실제 기록 진단:** 합성 학습 당시의 몸 감각·시각 경계와 가중치를 복원해 저속 기록 462결정을 재생했다. 학습된 yaw 구간 입력의 조향 intent 최대 변화는 1.35e-6이고 기존 조향 intent는 전부 음수였다. 입력 0·결측은 기준 출력과 내부 상태에 정확히 일치했다. 실제 주행 개선과 물리 시각은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 학습 어댑터의 실제 기록 진단:** 저속 네 시야 기록 462결정에서 어댑터에 의한 조향 intent 최대 변화는 1.04e-6이었다. 기존 조향 intent는 전부 음수였고, 필요한 조향 반응 보존 여부는 이 기록만으로 판정할 수 없다. 평가 회로 설정은 합성 학습 설정과 달라 전이 진단이며 물리 시간·실주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 yaw 안정성 학습:** 실측 연결 기반 단일 graph에서 yaw 구간 어댑터만 2회 갱신했다. 같은 코너의 회전 변화에 대한 조향 출력 평균제곱 차이는 학습 도로 3.52e-7→2.98e-7, 이전에 살펴본 비교 도로 1.67e-6→1.57e-6이었다. 합성 안정성 가설의 개발 진단이며 운전 성능이나 미리 보지 않은 일반화를 입증하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실측 비행 graph의 구간 입력 gradient 진단:** 합성 도로 영상과 가상의 회전 입력을 실측 연결 기반 단일 회로에 넣었을 때 어댑터까지 유한한 gradient가 도달했다(최대 7.32e-6). 입력 전체 결측 대조는 gradient 0이었다. 이는 경로 연결성 검사이며 학습 성능·물리 시간·실주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — yaw 구간 입력 학습 경로:** 진단용 yaw 구간 어댑터에 같은 재귀 회로를 통한 gradient 학습 경로를 추가했다. 합성 graph 검사에서 시각 운동·회전 입력의 gradient와 수치 상태를 유지하는 detach를 확인했고 관련 15개 검사가 통과했다. 실제 데이터 학습 허가, 물리 시간 정합, 생리 기능과 주행 성능은 입증하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 기록의 yaw 구간·단일 회로 재생:** 기존 저속 네 시야/몸 감각 462결정을 같은 비행 graph에서 오프라인 재생했다. 구간 입력 0 및 전부 결측은 기존 출력·전체 상태와 정확히 일치하고, 시야별 70개 구간을 준비했으며 2개 영상쌍은 packet 공백으로 결측이었다. 임의 미학습 가중치의 최대 출력 변화는 1.32e-6으로 기능·성능 증거가 아니다. 물리 시간·실시간·학습·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 단일 회로의 선택형 yaw 구간 입력:** 구간 평균과 기존 순간 몸 감각을 구분해 같은 비행 graph의 시각 포트에 연결하는 0초기화 진단 경계를 추가했다. 전체 graph에서 0/결측은 기존과 완전 일치했고 관련 검사 40개 통과; 실제 시각·학습·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 네 시야 yaw 구간 재생:** 영상 게시 즉시 네 시야가 모두 준비된 비율은 빠른 수신 70/72, 일반 수신 33/76이었다. 최대 50ms 가상 대기 시 일반 수신 74/76, 실제 추가 최대 21.92ms였다. host 기록 진단이며 live·물리 노출은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 시야별 yaw 구간 준비:** 검증된 yaw만 원본 packet 이력에서 구간 평균·적분으로 반환하는 진단 경계를 추가했다. 실제 기록 69/73창이 기존 적분과 일치했고 관련 검사 10개 통과; 물리 노출·actor 통합은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — native 각속도 이력 구현:** 중복 packet 첫 수신 보존·역순/긴 공백 거부·미래 정보 차단 이력과 검사 7개를 추가했다. 실제 기록 69/73창에서 순차 적분이 기존 일괄 계산과 일치했으나 actor 연결·축/물리 시간 인증은 하지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 영상 게시 후 패킷 추가 대기:** 빠른 수신 두 기록은 영상 게시 시 필요한 packet이 모두 도착해 추가 대기 0, 일반 수신 두 기록은 일부 창에서 최대 7.06/8.86ms였다. host 기록의 하한 기준이며 live 물리 지연은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 추가 저속 세 기록의 구간 적분:** 두 기록은 roll/pitch 수치 기준에 들어왔지만 한 기록은 roll slope와 pitch 자극 범위가 미달했다. 같은 차·세션의 사후 탐색이며 물리 시간·축 마스크는 미검증 상태다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 롤 이상 구간의 출발 맥락:** 두 기록의 초반 이상 구간은 차속이 거의 0에서 각각 약 2.0/2.6km/h로 늘고 조향 요청이 기록된 구간이었다. 시간상 동시 발생이며 원인은 미확정이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 초반 롤 불일치 분해:** 두 이력의 이상 구간에서 native 자세 변화는 renderer에 가깝고 native 롤 각속도는 둘과 크게 달랐다. 가정한 Euler 축 결합만으로는 차이를 설명하기 어려웠으나 물리 시각·축 검증은 여전히 미완이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 롤 오차 구간 추적:** 과거 두 주행에서 최대 오차 1%가 제곱오차의 97.3%/96.2%를 차지했고 촬영 초반의 겹치는 한 구간에 모였다. 원인은 미확정이며 사후 제외 수치를 센서 유효화에 쓰지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 과거 두 주행의 각속도 적분:** 원본 주행 두 이력에서 구간 적분 후 pitch/yaw는 해당 수치 기준에 들어왔지만 roll은 실패했다. 같은 시뮬레이터·사후 분석이며 물리 시각 미검증으로 축 마스크를 유지한다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 몸 각속도 구간 적분:** 저장된 저속 이력에서 시간 가중 native 각속도와 renderer 변화의 일치가 개선됐다. 결정 시점까지 도착한 패킷만 쓰는 원시 벡터 적분 함수와 검사 3개를 추가했으나 축 유효화·실시간 통합은 하지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 단일 화면 자세 재검산:** 전방·좌측 렌더 시차 가능성을 없애 전방 화면의 방향·위쪽만으로 재계산해도 롤·피치 불일치는 거의 그대로였다. 두 축 마스크는 유지하고 물리 시각 동기는 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 저속 기록 롤·피치 재검사:** 보존된 별도 주행의 3프레임 비교 73개에서 roll·pitch는 기존 수치 기준에 실패했고 yaw만 통과했다. 물리 노출 동기 미검증이며 기존 센서 마스크를 유지한다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정지 감각 결측 원인:** 과거 원본에는 세 축 각속도 값이 있으나 롤·피치 축·부호 검증이 미완이라 변환 마스크가 꺼져 있다. 원본 벡터 크기로 재검사해도 네 기록에 엄격한 정지 기준 창은 없었다. 물리 노출시각은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정지 기준 조향 보정 반사실 미채택:** 합성 정지 영상별 기준을 빼자 이미 보이던 좌우 굽이 차이가 크게 줄거나 부호가 바뀌었다. 과거 실제 이력 4개는 정지 판정에 필요한 몸 값이 모두 유효한 결정이 없어 기준을 만들 수 없었다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 고정 중립 근육 혼합 한계:** 실제 기록 재생 365결정 중 351개는 두 근육 대응 신호가 모두 중립보다 음수다. 고정 상태·중립·양의 gain에서는 혼합 비율만 바꿔 양수 조향을 만들 수 없다. 실제 주행 성능은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 공간 가중치 제한 범위 반사실:** 합성 한 조건의 ±0.02 가중치 범위에서 기울기 선형 추정 최대 차이는 4.36e-6이고 양 끝 직접 재생도 비슷했다. 목표 가설과 큰 차이가 남으며 이는 전역적 불가능성의 증거가 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 후보 시각 경로 추적:** 합성 장면에서 학습 후보의 변화는 시각 포트·회로 상태·근육까지 전해졌으나 전체 공간 투영 제거 효과보다 작았다. 공간 projection logit은 강한 tanh 포화 범위에 없었고 단일 원인은 미확정이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 기울기 시간 범위와 재학습:** 한 합성 조건에서 5프레임 기울기는 40프레임의 약 12%, 20프레임은 약 99%였다. 20프레임으로 3회 재학습해도 평가 조향은 모두 음수여서 후보를 채택하지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 쌍별 굽이 학습 후보 미채택:** 중립값을 고정하고 좌우 굽이 출력 차이를 목표로 공간 투영을 3회 갱신했지만, 기존에 본 평가 도로의 출력 변화는 최대 5.56e-7이고 조향은 전부 음수였다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 굽이·회전 공동 학습 후보 미채택:** 한 합성 도로에서 공간 투영·중립값을 2회 갱신했다. 이전에 본 다른 도로에서 가설 손실은 줄었으나 조향 전체가 음수이고 차이 개선은 거의 없어 후보를 채택하지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 과거 네 기록의 경로 편향 대조:** 공간 투영의 평균 효과가 네 기록에서는 음수로 앞선 다른 기록의 양수와 달랐다. 시야별 과거 몸 감각이 빠진 재생이고 기록 간 조건이 달라 원인은 확정되지 않았으며 고정 보정은 채택하지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 기록의 시각 경로와 몸 회전:** 학습 금지 AI 교사 주행 기록에서 공간 경로 제거 효과는 양·음 yaw 두 구간에서 비슷한 양수였고 운동 경로 효과의 평균은 각 yaw와 반대였다. 각 방향은 연속 한 구간뿐이며 물리 시각 정합·주행 정확도는 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 두 번째 굽이·회전 장면:** 다른 텍스처·곡률·굽이 시작점에서도 공간 투영을 끄면 좌우 굽이별 조향 차이가 거의 사라졌고 모든 조향이 음수였다. 같은 합성 렌더러를 쓴 두 장면으로 실제 일반화는 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 도로 굽이·회전 동시 자극:** 네 시야 카메라 회전을 더한 합성 도로와 검증 3개를 추가했다. 단일 합성 장면 재생에서 공간 투영 제거 시 굽이별 조향 차이는 거의 사라졌다. 조향은 전부 음수이며 실제 주행·생리는 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 공간 투영 개입:** 순수 합성 회전 두 영상에서 공간 투영을 제거하면 영상별 회전 반응 차이가 줄었다. 이 투영은 도로 굽이 반응에도 기여하므로 제거를 채택하지 않았다. 실제 주행·생리 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 순수 합성 회전 재검증:** 기존 합성 구체 두 무늬에서 순수 일정 회전과 가상 몸 yaw를 교차했다. 운동 투영 제거 효과는 비슷했지만 전체 시각 반응의 부호가 무늬에 따라 달라졌고 절대 조향은 모두 음수였다. 실제 센서·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 이전 자극 설명 정정:** 879511/879512는 일정한 순수 yaw가 아니라 자극 계수에 비례한 진동 회전과 병진에 조명 변화를 섞은 합성 영상이다. 이전 결과는 혼합 자극 민감도이며 순수 회전 또는 rad/s 부호 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 시각·몸 회전 교차:** 기존 혼합 시각 자극과 가상 몸 yaw를 교차하자 몸 회전에 따른 조향 차이가 더 컸고 운동 시각 투영의 기여는 몸 회전 조건에서도 남았다. 모든 절대 조향은 음수이며 실제 부호·폐루프는 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 반대 방향 시각 회전 개입:** 몸 감각을 고정한 기존 합성 혼합 자극 2종에서 운동 시각 투영 제거가 좌우 회전 간 조향 차이를 크게 줄였다. 절대 조향은 양방향 모두 음수여서 안정화·주행 성공은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 시각 경로 추적:** 합성 도로 2종에서 운동 시각 투영에도 좌우 차이가 남지만 해당 투영 제거가 조향 차이에 미치는 영향은 작았고, 공간 시각 투영 제거 시 대부분 사라졌다. 하늘 개입 시 최종 시각 포트 차이는 약 25%로 줄었다. 한정된 오프라인 진단이며 생리·주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 정지 파일 카메라 shadow:** 이전 미확정 MMF 요청은 0프레임 실패 terminal 확인 후 세션 원상 복원. 별도 파일 카메라는 첫 상태 준비 후 둘째 결정에서 유지 몸 수신 ≥62.65ms로 차단·출력 0, camera terminal 정상. 실제 물리 시각/주행 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정지 카메라 shadow 시작 실패:** 당시 unpaused 세션에서 MMF 카메라를 요청해 준비 시간 초과, 소비자 종료 확인 실패. 요청 stop은 있으나 producer 최종 영수증은 없고 현재 camera inactive; 자동 재시작 금지. paused·이전 요청 terminal 확인 사전 검사 추가, 9검사 통과. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 단일 회로 영상 유지 shadow:** 원본 게시 영상·몸 수신을 출력 보호기에 연결하는 선택형 어댑터 구현, 관련 20검사 통과. 실제 기록 365결정의 이상적 시계와 준비된 오프라인 계산시간 반영 재생 모두 준비 출력 1개 억제·364출력 및 기존 상태와 일치했다. live·물리 시간 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 영상·몸 기록의 통합 회로 재생:** 원본 네 시야 253묶음을 FlyVis 재구성해 공개 105장면과 몸 수신 365결정을 현재 단일 회로에 연결했다. CPU/GPU 전체 상태 최대 차 8.94e−8·조향은 모두 음수. fit 금지·오프라인·물리 시각/주행 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — FlyVis→CPU 단일 회로 연결:** 합성 망막 41프레임에서 GPU FlyVis→공간 요약→CPU 복사→병렬 비행 회로를 순차 재생했다. 운동·특징·intent 최대 오차 3.58e−7/1.07e−6/6.71e−7, 준비 후 총 중앙/95 24.33/26.10ms. 실제 카메라·live·주행 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — FlyVis 동시 부하:** 별도 GPU FlyVis 합성 시각 부하와 병렬 CPU 단일 회로 200결정 중 124개가 호스트 시간상 겹쳤다. 겹친 구간 중앙/95 11.63/13.07ms, 전체 가상 freshness 86/199; 실제 카메라·전달·live 검증 아님. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 병렬 CPU 희소연산:** 선택형 8스레드 backend를 추가해 29개 검사 통과. 기존 실제 이력 200결정의 9728개 상태 전체와 출력이 기존 CPU와 비트 단위 동일. 단일 오프라인 중앙 11.65ms, 가상 신선도 85/199로 여전히 미달·live 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정확한 0 희소항목 생략:** 기존 비행 그래프는 1,311,145개 저장 항목 중 57,083개가 정확히 0이다. 선택형 CPU 계산 캐시에서만 0을 제거하는 backend를 추가, 관련 28검사 통과·실제 이력 200결정 기존 CPU와 출력 동일. 단일 benchmark 중앙 13.66→13.81ms로 개선 미확인. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 통합 회로 CPU/GPU 오프라인 비교:** 같은 실제 이력 200결정에서 GPU 중앙/95 21.21/24.04ms, CPU 희소행렬 13.66/26.84ms, 출력 최대 차 3.13e−7이었다. 단일 순차 실행이며 live 지연이 아니다. CPU 계측에서 반복 회로·희소 곱이 지배적이었다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 출력 보호기의 이력 재생 시간:** 오프라인 단일 실행에서 cold 첫 계산 864.6ms는 차단됐다. 별도 warm 조건도 첫 5.78ms 후 둘째 20.39ms에서 유지 몸 감각 50ms 초과로 차단·출력 0. 실제 live 처리율이 아닌 제한적 계산 시간 관측. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 통합 회로 출력 시각 호스트 검사:** 연구용 보호기가 첫 priming 출력을 숨기고 계산 완료 후 현재/유지 몸 수신과 네 시야 시간 하한을 검사한다. 실패 시 명시적 reset 전까지 잠금; 관련 27개 검사 통과. 실시간 차량 연결·물리 노출 인증은 미완료. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 호스트 시각 신선도 제한:** 통합 회로에 선택형 현재·직전 몸 수신과 네 시야 렌더 하한 검사를 추가하고 23개 검사 통과. fit 금지 실제 이력은 첫 priming을 뺀 740/740결정이 50ms/150ms 호스트 기준 통과. 물리 노출·출력 시점 검증이나 제어 자격은 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 중립 기준 대조:** 적응 후보의 합성 직진 두 장면으로 정한 출력 기준을 실제 이력에 사후 적용하자 20m 경로 방향 균형 일치율은 0.5→0.262였다. 출력만 바꾼 반사실·실제 보정/배포 아님. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 기준 대비 제한:** 선택형 시각 대비 제한을 구현하고 14개 검사 통과. fit 금지 실제 이력에서 경계 포화 비율 86.48%→1.50%였으나 조향 부호 변화 0·20m 균형 일치율 0.5다. 합성 검증 2장면의 좌−우 차는 +0.00582/+0.00222, 미배포. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성·실제 시각 경계 분포:** 동일 학습 경계의 tanh 입력 절댓값 >2 비율은 합성 검증 두 장면 0%, fit 금지 실제 episode-06 86.5%였다. 합성 대비 실제 입력 포화가 큰 사후 진단이며 단독 원인·주행 성능은 미확정. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 좌우 포함 이력 대조:** 합성 공간 패턴 후보를 fit 금지 episode-06에 재생했다. 20m 미래 경로 좌 214·우 343 중 후보는 모두 같은 방향 출력, 균형 일치율 0.5로 상수 기준과 같다. 사후 평가·미배포. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 공간 패턴의 단일 회로 전달:** 공학적 시각 경계의 새 합성 도로 좌−우 상대 차는 +0.00551/+0.00523(목표 +0.004)이었으나 절대 조향은 모두 음수다. 실제 이력 742결정은 부호 변화 0·미배포. 기준 저장과 경계 테스트 13개 통과. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 영상의 좌우 정보 진단:** 운전자가 아닌 선형 비교기를 독립 합성 영상에 적용한 결과 망막 원본 24/24, 기존 공간 요약 21/24를 구분했다(각 12쌍·한 프레임). 영상에 구분 정보가 존재한다는 합성 한정 증거이며 회로·주행 성공이 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 회로 민감도 기반 공간 경계 학습:** 합성 학습 장면의 시간별 기울기로 제한된 후보를 선택했으나 학습 손실은 1.6056e−5→1.6000e−5에 그쳤고 새 도로 좌−우 차는 −0.00000733/−0.00000286이었다. 공통 조향만 이동해 미배포. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 시간 정렬 시각 포트 교체:** 두 합성 도로에서 시각 포트만 매 시점 좌우 교체하자 기록된 조향 차 −0.00000654/+0.00000813이 그대로 재현됐다. 시간별 미분 예측도 각각 −0.00000641/+0.00000815로 근접했다. 사후 개방루프 진단·실제 주행 아님. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 시각 포트 민감도:** 한 합성 직진 이력의 42개 시각 포트 전체에 고정된 작은 교란을 주면 조향 평균이 양 끝 간 0.00272 바뀌었고 미분 예측과 거의 일치했다. 제어 입력을 강제로 바꾼 사후 개방루프 진단이며 실제 코너 인식은 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 좌우 코너 회로 추적:** 두 합성 장면에서 시각 포트의 좌우 차이 RMS는 약 0.000106/0.0000974, 6개 날개 유래 출력군은 1.21e−8/1.07e−8이었다. 각 단계의 단위·차원이 달라 직접 전달률은 아니며 원인 연결의 확정도 아니다. 학습·제어 0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 공간 대비 증폭 대조:** 학습한 경계를 합성 장면에서 0·1·10·100배 탐침했다. 10배 좌−우 차는 +0.0000199/+0.0000224, 100배에서는 포화되고 차이는 다시 작아졌다. 임의 증폭은 인과 진단이며 학습·주행 성공이 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 망막 공간 대비 경계:** 전후좌우 시야별 공통 밝기를 제거해 단일 비행 회로 시각 포트로 전달하는 선택형 공학 경계를 추가하고 관련 12개 검사를 통과했다. 합성 20회 학습 후 미사용 도로 좌−우 차는 −0.00000654/+0.00000813으로 목표 +0.004 실패, 후보 미배포. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 작은 기울기 최적화 비교:** 같은 합성 학습에서 Adam epsilon 1e−8→1e−12로 바꾸자 손실 감소가 다소 커지고 새 합성 도로 두 개의 좌−우 차이는 +0.00000517/+0.00001267이었다. 목표 +0.004보다 여전히 작고 조향은 전부 음수여서 미배포다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 좁은 공간 요약 합성 학습:** 시각 공간 요약의 폭을 절반으로 줄이고 합성 두 도로로 10회 학습했으나, 사전 분리한 새 도로의 좌−우 조향 차는 −0.00000082/−0.00002385로 목표 +0.004에 실패했다. 후보 미배포·실제 학습/주행 0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 도로 공간 요약 진단:** 좌우 자극 차이의 tanh 후 공간 에너지 중 기존 721→16 요약의 행공간에 남는 비율은 네 합성 도로에서 0.92~2.21%였다. 이는 유용한 코너 정보의 손실률이나 실제 주행 정확도가 아니다. 추가 학습·제어 없음. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 코너 기울기 진단:** 단일 회로의 망막 가중치에서 좌−우 기울기 크기 0.00000926, 공통 기울기 0.01936(약 2,090배)이었다. 공통 기울기에 직교하는 탐침은 공통 이동을 줄였으나 좌우 차이는 여전히 작다. 합성 도로 1개·사후 진단이며 학습/배포/실제 주행 검증은 없다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 코너 공간 학습:** 2개 합성 도로에서 망막 공간 가중치만 10회 갱신했으나 미사용 도로 두 개의 좌−우 조향 차는 −0.00000193/−0.00000583에 그쳤다. 실제 이력 742결정의 부호 변화 0, 후보 미배포·실제 데이터 학습 0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 도로 경계 자극:** 공통 평면 도로의 직진·좌/우 굴곡을 전후좌우 카메라와 인과 FlyVis로 재생하는 도구를 만들었다. 좌우 굴곡의 전방 수용기 일부가 달랐으나 원본/후보 회로의 마지막 조향 차는 −0.00000230/−0.00000375였다. 인공 도로·일회 진단이며 AC 코너/주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 이력 시간 편향·방향 전환:** episode-06의 20m 좌우 표본은 시간순 한 번만 전환돼 극단적 순위 점수를 독립 근거로 쓸 수 없다. 방향 두 번 전환된 episode-03/04에서도 후보 조향은 계속 음수, 균형 일치율은 각 0.5였다. 사후 평가·fit 금지 유지. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 중립 기준의 실제 이력 반사실:** 좌우 포함 이력의 조향은 합성 기준 적용 전 모두 음수, 적용 후 모두 양수로 바뀌었고 20m 좌우 균형 일치율은 둘 다 0.5였다. 단일 연속 이력의 순위와 chord 간 관계는 시간·좌표 혼동 가능해 생리·주행 성능이 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 좌우 경로 포함 이력 대조:** 기존 8이력을 조사한 결과 development 2개는 20m 방향이 모두 우측이었다. 사후 선택한 episode-06은 좌 214/우 343이지만 두 후보 모두 우측만 출력해 343/557, 균형 정확도 0.5로 상수 우측 기준과 같았다. 미래 경로는 평가 전용·fit 금지 유지. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 이력의 미래 경로 평가 한계:** 기록된 교사 경로를 사후 재구성한 20m 유효 59결정은 전부 우측이며, 모든 시야 대조의 항상 음수인 조향이 59/59 부호 일치했다. 이는 상수 방향 기준과 같아 코너 판단 정확도 증거가 아니다. 학습/제어 0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 기존 서킷 이력의 시야 고정 대조:** 각 시야의 pooled 특징을 첫 관측값에 고정한 742결정 반사실에서 평균 절대 조향 차는 전 0.000743, 좌 0.001731, 우 0.000433, 후 0.000580이었다. 부호 변화 0; 실제 카메라 결손·운전 기여 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 두 속도·두 질감 합성 재학습:** 시각 투영을 10회 갱신하고 미사용 합성 질감 두 개에서 검증했다. 이전→새 후보의 좌우 turn 차는 0.004254→0.003270, 0.002684→0.002779로 결과가 엇갈렸다. 기존 실제 이력 742결정은 여전히 모두 음수, 미배포. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 질감·yaw 속도 분리:** 학습 시각 경계의 좌우 차이는 기존 질감·기존 속도 0.009435, 속도만 변경 0.002367, 질감만 변경 0.003450, 둘 다 변경 0.000456이었다. 두 요인에 모두 민감한 사후 합성 진단이며 실제 일반화는 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 시간 정렬된 시각 방향 학습:** 합성 yaw 두 질감으로 운동 시각 투영만 8회 갱신했다. 학습되지 않은 질감/낮은 yaw의 조향 차이는 0.000385→0.000456으로 목표 0.004522에 크게 못 미쳤다. 기존 실제 이력에서도 부호 변화 0, 미배포. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 시각 신호 경로 대조:** 같은 합성 두 영상에서 시각 포트·회로 상태에 차이가 전달됐고 기본 sigmoid는 포화되지 않았다. 방향성 시간 경로를 끄면 마지막 조향 차이 +0.000477→−0.000342, 기본 영상 가중치를 끄면 +0.000850이었다. 비선형 반사실이며 실제 운전/생리 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 움직이는 네 시야·몸 조합:** 합성 영상 2방향×속도 2×기울기 2 조건에서 개선 후보는 속도에 따른 평균 절대 조향 변화 0.000234, 전진 변화 −0.003281, 기울기 간 조향 변화 −0.007955였다. 영상 방향만 바꾼 조향 평균 절대 차는 0.000204; 모든 intent 음수·주행 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 속도·조향 교차 억제:** 같은 합성 출발점에서 전진 반응과 조향 변화 억제를 함께 40회 학습했다. 별도 속도/반경 조건의 조향 변화는 −0.01256→+0.000263, 전진 변화는 −0.00541→−0.00365였다. 기존 실제 이력의 intent는 여전히 음수; 후보 미배포. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 속도·바퀴 합성 학습:** 속도/바퀴 값 경계만 20회 갱신했고 별도 반경·속도 조건에서 전진 intent의 상대 속도 반응이 나타났다. 같은 속도 변화가 조향도 약 −0.01256 바꾸었으며 실제 742결정의 조향 부호는 변하지 않아 미배포다. 실제 데이터 학습 0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 속도 감각 경로:** 감각 전용 경로의 현재 속도 입력이 상쇄되는 문제를 합성 대조로 확인했다. 속도를 포함하는 중심화 몸 경계를 실험용으로 추가(기본값 유지), 검사 18개 통과. 수동 가중치 탐침은 신호 전달만 확인했으며 학습·물리/주행 검증 전이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 중심화 경계 합성 기울기 학습:** 단일 회로의 몸 경계만 12회 학습한 뒤 별도 합성 장면의 ±0.025rad 기울기에서 조향 상대 변화 +0.00435/−0.00434, 센서 결측 시 차이 0이었다. 손실이 진동했고 기존 실제 742결정의 조향 부호는 모두 음수여서 미배포다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 유효 표시 중심화 경계:** 동일 비행 회로에서 완전 유효 입력의 상수 표시를 제거하고 결측은 유지하는 기존 몸 어댑터를 명시적으로 선택 가능하게 했다(기본값 유지). 검사 17개 통과. 기존 742결정의 기존 가중치 대조에서는 출력이 여전히 전부 음수였고 배포하지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 몸 값 그룹 고정 대조:** 기존 한 이력의 742결정에서 실험용 되먹임 경로만 기울기·하중·온도·회전수별로 초기값 고정했다. 평균 절대 조향 변화는 각각 0.00251/0.000631/0.00000648/0.00142였고 어느 조건도 intent 부호를 바꾸지 않았다. 유효 표시·기본 몸 경로 유지, 비현실적 반사실 가능·주행 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 단일 회로 몸 되먹임 제거 대조:** 기존 평가 이력 742결정에서 실험용 몸 투영은 조향/전진 intent를 평균 +0.01168/+0.01393 바꿨지만 두 출력은 전부 음수였다. 센서 유효 표시만 남겨도 +0.01044/+0.01059 변화해 몸 값의 효과와 구분이 필요하다. 원래 몸 경로 유지·학습/배포 없음. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 인과 시각 합성 재학습:** 시간 정렬을 고친 합성 두 장면으로 200회 학습하고 별도 합성 장면과 기존 실제 8이력을 평가했다. 합성 장면 MSE는 현재값 유지 대비 64.49% 감소했으나 실제에서는 약 51.19% 증가해 후보를 배포하지 않았다. 실제 이력 학습 0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 시각 시간 정렬 정정:** 기존 합성 생성은 현재 영상을 미리 적분했고 실제 재생은 직전 영상을 유지한다. 동일 자극을 원래 인과 규칙으로 재생한 운동 응답은 기존 합성 응답을 한 프레임 미룬 값과 최대 3.6e−7 차였다. 기존 합성 학습/평가는 실제와 시간 계약이 다르므로 미배포이며 새로운 인과 조건에서 재학습·검증이 필요하다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 혼합 자극 시험:** 네 시야에 같은 합성 회전·이동과 조명 변화를 주어 FlyVis에 재생했다. 운동 특징 변화 코사인 중앙값 0.942로 실제 이력 0.206과 여전히 달랐다. 단일 사후 진단 자극이며 학습/배포/주행 검증은 없다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성·실제 운동 변화 비교:** 이전 실제 이력의 연속 특징 변화 방향 코사인 중앙값은 0.206, 기존 합성 반전 평가의 운동 구간은 0.945였다. 회전 반전 주변 8창도 중앙값 0.766으로 특징 변화가 반전되지 않아 자극의 부족 가능성이 확인됐다. 사후 진단·학습/배포 없음. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 캡처 반복 영향:** 기존 실제 8이력의 5,916창을 원래 캡처 ID로 사후 분해했다. 연속 3개 모두 새 캡처인 5,595창에서도 합성 반전 예측은 현재값 유지보다 61.32% 악화해 반복 캡처만으로 전체 실패를 설명하기 어렵다. 물리 노출 시각·주행 성능은 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 시야별 예측 오차:** 기존 실제 이력 8개를 평가 전용으로 분해한 결과, 반전 합성 학습 후보의 오차는 현재값 유지 대비 전방 +69.77%, 좌 +61.50%, 우 +56.71%, 후방 +55.59%였다. 기존 후보의 전방은 −0.56%이며 8개 중 2개 이력에서 악화했다. 시간 상관·사후 분석이며 두 후보 모두 actor 검증 전이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 예측 구간 재검토·반전 학습:** 기존 예측의 전체 3.76% 개선은 초기 8구간 영향이 크고 이후에는 2.21% 악화했다. 합성 방향 반전으로 학습한 새 후보는 실제 8이력 전체 오차가 현재값 유지보다 61.03% 커져 미배포다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 운동 시각 40ms 예측:** 합성 200회 학습 후 새 합성 질감 MSE는 현재값 유지 대비 1.78% 감소, 기존 실제 이력 8개의 예측-only 평가는 3.76% 감소했다. 단일 회로 DEV 재생의 조향 변화는 미세하고 전부 음수; 주행·생리/배포 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 새 2초 정지 저속 이력:** 고유 정지 영상11개의 yaw 특징 편차 0.001111→0.0000961, 회전 영상16개의 몸 방향 부호 일치12→11. 두 후보 조향·전진 intent는 523결정 모두 음수; 결측·물리 시간/생리·폐루프 미검증, actor/학습0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 긴 정지 기준 실험:** 두 저속 이력의 출발 전 공통 준비 표본에서 yaw 특징 편차가 작아졌지만 고유 영상은 각각 1개와 2개뿐이다. 회전 방향 부호는 고유16개 중12→13, 18개 중15→15; readiness 감소·같은 세션·배포/학습 없음. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정지 카메라 초기 밝기 변화:** 성공한 차내·차 밖 원본에서 네 시야가 시작 직후 어두워졌고, 차내 30프레임 한 기록은 약0.17초 후 수용점이 일정했다. FlyVis 고정화면 대조의 yaw pool 최대 차0.06449; 원인·생리·주행 영향은 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 카메라 종료 검사:** 새 진단에서 촬영 완료 후에도 같은 카메라 요청이 일시적으로 활성으로 표시됐다. 해당 요청의 활성 상태와 이후 새 종료 상태를 확인하는 수정으로 5프레임 촬영을 완료했고 16검사를 통과했다. 과거 실패는 보존하며 학습·자율주행 자격은 없다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 차내/외부 카메라 프레임 비교:** 같은 세션의 보존 프레임에서 전방 중심 2.869m 차이·LDR 평균 차 51.73/255, 좌우뒤 중심 차0. 두 촬영 모두 종료 guard 실패이며 원인 불명·훈련/actor 자격 없음. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 합성 학습 편향 분리:** 실제 저속 양쪽 펄스에서 geometry 제거 대조의 학습 bias 변화는 +0.05459/+0.05462, 후보 geometry 자체 효과는 −0.000081/−0.000013이었다. 단일 이력·호스트 시각의 반사실이며 운동 시각 주행 향상이나 생리 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 감각 경로 합성 조향 학습 30회:** 알려진 합성 개발 자극의 절대 목표 MSE 0.002257→0.0000602지만, 실제 저속 이력의 이동 중256결정은 조향 intent가 모두 양수·전진은 여전히 음수다. 기존 음의 편향이 반대쪽으로 이동했으며 후보 미배포·폐루프 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 외부 maneuver 중립 감각 경로:** 같은 통합 graph의 조향/속도 오차 입력을 중립화하고 실제 저속 이력462결정을 재생했다. 두 intent 모두 전부 음수로 양방향 조향·가속 학습은 미입증; 관련12검사 통과, actor/학습/차량제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 몸 감각 수신 밀도 실험:** 같은 세션의 저속 역순 기록에서 native 수신 중앙42.33→12.35ms, 고유 영상 시야의 이전 몸 결측 156/308→12/292. 새 원본462결정을 단일 graph로 재생했으나 물리 시간·생리·actor/폐루프 및 학습은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 반복 영상 중 운동 시각 상태 진행:** 동일 영상에도 원본 FlyVis 상태가 변해 15/15 반복 결정에서 고정 보정과 차이가 났다. 현재 활동을 다시 반영하는 실험 후보와 7검사; 실제 시간·생리·폐루프 및 학습은 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 반복 영상의 신선도 한정 유지 실험:** 기존 신호가 중간 결정에서 꺼지는 문제에 대해 원본 receipt 기준 50ms 이내 유지 후보를 추가했다. 실제 이력 재생 144결정에서 보정 적용 66→81, zero 대조 동일, 6검사 통과. 호스트 시간·단일 오프라인 진단이며 actor·학습·폐루프 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 새 역순 저속 이력의 단일 회로 대조:** 사전 지정 |몸 yaw|>0.01 표본18건에서 mean11 부호 일치9/18, last3 15/18. 같은 세션의 연속 구간이며 물리 시각·생리·폐루프·일반화는 미검증. 정지/vJoy 해제, actor·학습0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 저속 이력 last3 포트 대조:** 이미 검토한 회전 구간18결정에서 mean11 기하 yaw는 전부 양수·몸 부호 일치8/18, last3는 양7/음11·일치15/18이었다. 같은 graph의 zero 대조/readiness 정확히 같고 두 후보의 첫 intent 평균차0.0001355. 기준과 가중치가 함께 달라진 단일 사후 비교·물리 시간/생리/폐루프 미검증, 배포/학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 저속 이력의 단일 비행 graph 재생:** 정지→조향 원본에서 첫 유효 영상 이후145결정을 고정 yaw/속도0 명령으로 재생했다. 기하 포트 제거 시 조향/전진 intent 평균 절대차 0.000123/0.000000482, 현재 몸 yaw만0이면 0.000517/0.00000310; 시야별 이전 몸 253/580 결측 유지. 생리/물리 시각/actor·실제 폐루프 미검증, 학습/차량제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 저속 네 시야 FlyVis/정지 포트:** 원본 몸147결정·영상77그룹을 연속 재생해 정지 reference는 index20, 첫 준비 index21, 준비66·반복 capture68·초기 영상 결측2다. 준비 및 |몸 angular[1]|>0.01인18결정에서 몸 부호 +8/−10인데 기하 yaw는 18개 모두 양수였다. 단일 연속 이력·host 시간·생리/폐루프 미검증, actor/학습0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 저속 네 시야·몸 동시 기록:** 먼저 기록한 62그룹은 출발 전 유효 영상3표본뿐이라 11개 정지 기준에 부족했다. 정지 prefix 1.2초 추가 재수집에서 출발 전 서로 다른 16그룹·몸30표본 확보; 전체 몸147 중 영상 연계145, 서로 다른77그룹 hash/host chronology 감사 통과. 최대5.185km/h 후 정지/vJoy FREE. 물리 노출·몸 발생시각 및 actor/학습 자격은 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 역순 5km/h 축 반복:** ±0.1 조향을 이전과 역순으로 적용해 최대5.187km/h, 정지/장치 해제 확인. native angular[1] 양/음 중앙 −0.02531/+0.02416, heading 변화와 host 간격 회귀 −0.993(직전 −1.005). 두 단발 시험·물리 발생/노출 시각 및 좌표 부호 미인증, actor/학습0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 더 큰 저속 회전에서 native 축 비교:** 최대5.119km/h·±0.1 펄스 원본118패킷에서 native localAngularVel[1]은 양/음 요청 중앙 −0.02319/+0.02469, heading 변화와 host 간격 회귀 −1.005였다. 기존 몸 yaw 매핑은 이미 [1]을 사용한다. 앞선 약한 자극에서 [2]가 더 일관돼 보였던 판단은 이 새 결과로 일반화할 수 없다. 물리 동기·축 부호/폐루프 미검증, 정지/vJoy FREE. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 저속 native 회전축 사후 비교:** 두 저속 진단의 원본 heading 변화와 세 local angular 성분을 host 간격으로 비교했다. 셋째 성분의 단일 비례 회귀값은 0.345/0.430이나 heading 범위 약0.0032, 물리 발생시각·단위 미확인이므로 축/부호/배율 확정 불가. 절대 heading은 사후 감사만, actor 입력·제어/학습0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 역순 저속 조향 반복:** 같은 세션에서 −0.05를 먼저, +0.05를 나중에 주고 최대3.170km/h·제동 정지·vJoy 해제를 확인했다. 원본72패킷 감사에서 양/음 native 조향 중앙 ±0.0703125, local angular z −0.000206/+0.000293로 기존 순서와 부호 관계가 같다. 두 단발 실험·물리 축/시간·폐루프 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 저속 조향·제동 진단:** offline/AI off에서 중립→1단, 최대3.216km/h, ±0.05 조향 펄스 후 정지/제동·vJoy 해제를 확인했다. 원본72패킷 감사에서 양/음 요청 중 native 조향 중앙 ±0.0703125, local angular z 중앙 −0.000369/+0.000358. 물리 축 부호·발생시각·지연·폐루프 자격은 미검증, actor/학습/UI0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정지 조향 세 크기:** 같은 새 세션에서 ±0.1·±0.3·±0.6 요청의 native 중앙값은 각각 ±0.140625·±0.421875·±0.843750, 세 점의 기울기는 약1.40625였다. 각32표본 원본/제동/AI-off 감사 통과, 마지막 vJoy free·정지·brake1. 세 점 외 선형성·물리 단위·주행 중 전달은 미검증. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 새 세션 정지 조향 보정:** offline/AI off/정지·프로필·장치를 확인한 뒤 neutral/full-brake를 요청하고 native 제동 확인 후 0/±0.1/0을 실행했다. 독립 native32표본 중앙값 0/±0.140625/0, SDK 0/±45/0, 최대속도0.01856km/h; 종료 후 vJoy free·AI off다. 주행 중 전달/물리 단위/생리·actor 자격은 미검증, 관련9검사 통과. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 조향 보정 현재 상태:** 새 AC generation의 native AI off·vJoy free·장치 일치는 확인됐으나 brake0이고 기본 조향 설정 profile hash가 현재 프로필과 달라 보정 선행조건 실패다. 현재 hash는 과거 ±0.6 정지 보정/독립 감사의 프로필과 일치하여 진단용 별도 설정을 준비했다. 시간·세대가 달라 주행 중 조향 전달 자격은 없다. 제어/UI0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 기록의 T4d 개입:** TRAIN 원본728결정에서 네 시야 T4d 활동을 0으로 만드는 반사실을 동일 비행 graph에 재생했다. 조향/전진 intent 평균 절대차 0.0001417/0.00000143, 조향 부호 변화1회는 양쪽 모두 0 근처다. 원본 조건은 이전과 정확히 일치. 0 대체는 분포 밖 가능하며 T4d 생리 불일치 해결·주행 개선 증거가 아니다. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 known DEV의 last3 후보 진단:** 원본729결정 재생에서 기존 mean11 대비 zero 대조·준비 전 출력 정확히 일치, 준비 후 첫 intent 평균 절대차 5.57e-6, 부호 변경0. 알려진 개발 이력·미자격 preview·fit 금지이며 실제 라인/주행 성능 증거가 아니다. 학습/차량제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 실제 TRAIN 기록의 last3 후보 진단:** 원본728결정과 같은 비행 graph에 새 last3 기준/가중치를 오프라인 재생했다. 기존 mean11 대비 zero 대조와 준비 전 출력은 정확히 같고 준비 후 첫 intent 평균 절대차 1.43e-5, 부호 변경0. 기존 preview는 미자격·원본 fit 금지이며 폐루프 운전/성능은 미검증, 학습·제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 동일30회 예산 비교:** last3 기준 포트를 처음부터 30회 학습해 기존 mean11 30회와 같은 last3 입력으로 알려진 합성 seed879301을 평가했다. 목표 MSE old/new 6.1133e-6/6.1024e-6, 전체 출력 최대차 3.49e-6이다. 단일 개발 사례·합성·가상 몸이어서 우열/실제 주행 일반화는 미검증이며 새 모델 미배포. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 새 합성 질감의 checkpoint 비교:** 사전 미사용 seed879301·±0.13rad/s에 동일 last3 기준을 적용해 zero/기존30회/새12회 포트를 비교했다. 가상 목표 MSE는 각각 2.766e-5/6.113e-6/1.654e-5, 세 조건의 좌우 상대 부호는 맞았다. 학습 횟수도 달라 기준 변경의 인과 효과가 아니며 단일 합성 사례다. 새 포트 배포·차량 제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 마지막3 기준의 합성 시각 포트 재학습:** 같은 통합 graph를 고정하고 3개 합성 질감의 시각 포트만 12회 갱신했다. 학습 손실 0.00019175→0.00014477, 알려진 개발 질감의 정지 대비 좌우 turn [+0.000219,−0.001101]→[+0.001240,−0.002144], 목표 MSE 2.512e-5→1.589e-5. 개발은 이전에 검토된 합성 사례, actor 미자격·실제 주행 미검증. 관련10검사 통과. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 새 합성 장면의 몸 yaw 개입:** ±0.13rad/s 영상에서 같은 부호의 합성 몸 yaw를 주면 정지 대비 turn [0.01549,−0.01632], 반대 부호면 [−0.01013,0.00929]였다(mean11). 몸 yaw0의 [0.00266,−0.00353]보다 몸 경로의 영향이 컸다. 충돌 조건은 반사실이며 오류 감지·생리·차량 응답을 입증하지 않는다. 학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 새 합성 질감의 기준 비교:** 새 seed863201, ±0.13rad/s에서 고정 통합 graph의 정지 대비 좌우 turn은 mean11 [+0.002660,−0.003532], last3 [+0.002649,−0.003553]으로 두 조건 모두 방향 부호가 맞았다. 정지 raw intent는 −0.047대, 한 합성 장면·외부 속도 명령·가상 몸·물리/생리/폐루프 미검증. 학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 마지막3 기준의 통합 graph 사후 대조:** 고정 checkpoint·동일 회로로 알려진 합성 질감4종을 재생하자 좌우 상대 반응 부호는 기존 mean11과 마지막3 모두 4/4 유지됐다. zero-weight 대조는 완전 동일, 학습 포트 출력 최대차 0.000434. 정지 raw intent는 약 −0.048 부근에 남아 중립/주행 성공이 아니다. 물리 시각·생리·폐루프 미검증, 학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정지 reference 창 사후 비교:** 같은 정지 11표본 전체 평균 대신 마지막 3표본 평균을 사용한 가상 비교에서, 합성7질감의 정지 yaw 잔차 범위가 0.0102~0.0159에서 0.00241~0.00346으로 감소했고 좌우 회전 상대 부호 7/7이 유지됐다. 정지 원본 2개 마지막 잔차도 감소했으나 표본/물리 동기·기존 checkpoint 호환성 미검증이므로 적용·학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 더 긴 정지 원본 반복:** 새 native-only 48묶음 중 네 시야 유효47, FlyVis/포트 재생에서 reference index11·준비36개. 약 3.64초 끝의 yaw reference 잔차는 원본 0.00335, 첫 유효영상 고정 대조 0.00870이며 고정 대조 마지막 1초 범위는 8.3e-9다. 초기 기준과 안정 이후가 다른 단일 재시험이며 물리 동기·생리·주행 미검증, 학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정지 원본 FlyVis·인과 시각 포트 재생:** 원본24묶음의 첫 영상은 유효성 실패로 제외, 이후 정지 reference는 index11에 성립하고 index12~23 보정 준비. 준비 후 yaw 특징 평균 0.002779(고정영상 대조 0.009545)로 정지에서도 수치 잔차가 남았다. 물리 노출·회전 동기와 실제 통합 운전은 미검증, 학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — SDK 생략 정지 진단:** 수집기에 명시적 native-only 진단을 추가해 누락 SDK를 null로 보존하고 새 24묶음을 수집했다. 네 시야 유효 23/24, camera receipt→decision 중앙16ms; raw pixel/native 독립 재생 오차0. 학습 불가·actor 미생성. 관련24검사 중 1개 실패 후 단독 재실행 통과(원인 미확정). [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 정지 네 시야·몸 동시 수집 병목:** 새 세션에서 24묶음 수집했으나 네 시야 신선도 통과는 2개였다. 원본 host 기록에서 native→SDK 수신 중앙109ms·결정 간격 중앙125ms로 80ms 카메라 요청보다 느려 지연이 누적됐다. native 속도는 0.000608~0.000620km/h이나 물리 노출 동기는 미검증. 학습/제어0, 원본 보존. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 인위적 전역 밝기 대조:** 원본 첫 망막 화면의 각 시야를 원본 시야별 평균에 맞춰 균일 축소하는 가상 영상만으로도 고정 화면 대비 T4/T5 최대차 0.6694, 기하 yaw 특징 최대차 0.03978이 발생했다. 원본 영상 변화의 각 최대차는 0.8905·0.04006이다. 단일 인공 개입이며 실제 노출 원인·운전/생리·정지 기준 자격은 미검증, 학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 초기 화면 변화의 FlyVis 대조:** 네 시야 원본8묶음과 첫 화면 유지 대조를 동일 원본 CSP 간격·고정 FlyVis state로 재생했다. T4/T5 활동 최대 절대차 0.8905, 기하 yaw 특징 최대차 0.04006이다. 영상 전체 변화의 반응이며 밝기 단독·물리 정지·운전 성능은 미검증이다. 0.197~0.200초 간격은 live 자격 밖, 학습/제어0, 관련11검사 통과. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 새 세션 카메라 초기 밝기 감사:** 원본 해시를 확인한 네 시야 8묶음에서 전방 RGB 평균은 첫 묶음 0.621→다섯째 0.300이고 이후 인접 묶음의 평균 절대 픽셀 변화는 약 0.00024~0.00048이다. 실제 노출·차량 정지의 독립 동기와 원인은 미확인이라 운동 시각 반응으로 단정하지 않는다. 센서 예열·정지 기준 오염 가능성 후속 검증 필요. 학습/제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 새 AC 세션 및 목표 입력 확인:** AC 엔진 PID34992의 새 CSP generation에서 API start로 오프라인 Monza/Z4 세션을 시작했다. 이후 native100표본과 전후좌우8묶음 수집 성공, UI/차량 제어/학습0. 마지막 관측 live·메뉴 밖·AI/camera off·정지 상태다. 현 물리 회로의 racing ceiling은 명령 범위 검사에만 쓰이며 그 자체가 전류를 바꾸지는 않는다(관련11검사 통과). [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 외부 명령 0에서 통합 회로 감각 개입:** 동일 원본 TRAIN 728결정에서 장면 특징·기하 시각 보정·학습 몸 어댑터를 각각 제거했다. 첫 회로 intent 평균 절대 변화는 각각 0.00383·0.0000506·0.01302다. 고정 레이싱 목표는 남고 0 대체는 분포 밖일 수 있어 자율 판단/주행 검증이 아니다. 이전 zero-command 기준과 baseline 완전 일치, 관련18검사 통과, 학습/차량 제어0. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 인과 기하 시각 포트 수신시각 검사:** 네 시야 묶음의 원본 host 수신시각이 결정 시각보다 미래거나 50ms 초과면 해당 기하 보정을 적용하지 않고, 정지 기준 수집 중이면 부분 기준을 초기화한다. 이는 물리 노출시각이나 기본 시각 경로 전체의 freshness 검증이 아니다. 관련 26검사 통과; TRAIN 728결정 재생 output SHA 기존 동일, known DEV 729결정의 61ms 사례는 이미 중복 capture로 거부됐다. 학습/차량제어 없음. [상세](spatial-transit-20261031.md).
+
+
+**2026-11-01 — 몸 packet 최초 수신시각 보존:** 인과 기하 경계에서 같은 native packet을 재읽어도 최초 수신시각으로 age를 계산하고, 같은 packet 내용 변경·packet/결정 시각 역행을 거부하도록 수정했다. 관련25검사 통과, 실제 원본 TRAIN728 재생 output SHA는 기존과 같다. AC 주행 엔진·신선한 CSP 세션은 확인되지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 시각 보정값 1회 소비:** 인과 기하 포트가 새 관측 없이 이전 보정값을 다음 결정에 재사용할 수 있던 결함을 수정했다. 관측값은 한 decision에서만 쓰고 이후 미관측이면 보정0이다. 관련24검사 및 원본 TRAIN728 전체 replay SHA 동등 확인. AC launcher만 실행 중이며 주행 엔진·새 CSP 세션은 없다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 세션 재시작과 reference reset:** 앞선 엔진 실행이 Steam과 AC 런처를 시작한 사실을 부모 PID로 확인했으나 주행 엔진 acs 및 신선한 CSP heartbeat는 없다. `UnifiedFlightSensorimotor.reset_episode`가 상태형 visual context도 재설정하도록 수정, 관련24검사 통과·원본 TRAIN728 전체 재생 출력 SHA가 변경 전과 동일하다. 실제 주행/학습은 미시작이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — AC 비GUI 재기동 시도:** AC/Steam이 꺼진 상태에서 기존 Monza/Z4 설정을 확인하고 AC 엔진을 숨김 실행했으나 종료됐다. Steam을 silent/hidden 시작한 뒤에도 엔진은 종료, 마지막 직접 관측 exit code53이다. 원인은 미확정이며 오래된 CSP heartbeat는 살아 있는 세션이 아니다. Steam PID38796은 확인 당시 실행, AC/학습 없음. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 원본 정지 구간 zero-task 회로 진단:** TRAIN/known DEV 각각 약5.24초 정지 기록을 포함한 전체 이력에서 목표 yaw/속도를 반사실로0 고정 재생했다. 정지 후1초 이후의 첫 raw intent 평균은 −0.02562/−0.02952이고 안정적으로 남았다. 이를 후속 preview 출력에 사후 보정해도 교사 경로와의 방향 불일치는 그대로이며 실제 중립 교정은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 조향 중립 기준 반사실:** 기존 graph readout은 이미 자체 중립 보정돼 있으나 별도 과거 physical quiet 기준과 값이 다르다. 해당 등록 기준을 출력에만 가정해 적용하면 교사 경로 비교 구간 첫 intent 평균 TRAIN −0.05528→−0.02113, DEV −0.05069→−0.01652이나 부호 일치는 여전히0이다. 등록 기준은 영상 없는 다른 조건이므로 통합 actor의 중립으로 인증하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 인과 기하 port의 교사 경로 사후 비교:** 정지 기준 준비 및 유효 20m 곡률 구간은 TRAIN54/known DEV27결정이며 둘 다 화면 왼쪽 방향뿐이다. raw 회로 조향 의도 부호는 port 적용 전후 0/54·0/27이 경로 방향과 같았고 부호 변경0이다. 교사 이동 chord는 직접 조향 정답이 아니며 연속 표본·물리 시간·폐루프 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 기하 시각 포트 시간 응답:** 동일한 원본 입력에서 정지 기준 준비 후 index500에 합성 기하 신호 0.005를 한 결정만 넣었다. TRAIN/known DEV 모두 다음 결정 약41ms 후 차이가 나타나고 index505 약0.208/0.205초 후 첫 intent 변화가 최대였다. 한 상태·한 부호의 실험이며 실제 시각 노출·조작 지연이나 주행 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 원본 몸 yaw와 기하 시각 진단:** 준비된 구간 중 속도>1m/s·|yaw|>0.02rad/s인 TRAIN46/known DEV20 연속 결정에서 기하 신호와 몸 yaw의 부호 일치는 42/46·18/20, 학습 시각 포트의 intent 변화가 몸 yaw와 반대인 경우는 42/46·12/20이었다. body receipt는 독립 정답/물리 동기가 아니며 표본이 연속·불균형해 주행 성능으로 해석하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 원본 기록의 인과 기하 경로:** 원본 TRAIN728/known DEV729에서 정지 기준이 둘 다 441번째 결정에 처음 준비돼 각각 285/286결정에 입력됐다. 기존 graph에 학습 투영을 연결한 결과 준비 이후 첫 intent 평균 절대 차는 0.0001223/0.0000547; zero 대조 출력·별도 readiness 감사는 정확히 일치했다. 기록은 fit 금지·물리 동기/실제 주행 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 정지 근거 기반 기하 포트:** 원래 native bytes와 신선도·정지(속도/바퀴/yaw)를 확인한 11프레임으로만 기준을 만들고, 해당 프레임까지 보정0·결측/오래된 입력 시 보정0인 실험 경계를 구현했다. 7개 합성 질감×3조건×41결정에서 기존 학습의 기하 입력과 최대 1e-6 이내 일치, 관련15검사 통과. 합성 native fixture로 검증했으며 실제 배포/물리 동기 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 학습 시각 경계와 몸 yaw 결합:** known DEV 4질감에서 동일 graph에 학습 시각 경계와 시각 일치/반대 몸 yaw를 넣었다. 일치 시 첫 intent는 두 방향 모두 목표 부호, 반대 시 몸 yaw 방향이 우세해 네 질감 모두 시각 목표와 반대였다. 이력 시작 정지·몸 과거 시야 맥락 결측·합성 값이며 생리/폐루프 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 고정 기하 yaw 후보의 known DEV 재평가:** 추가 최적화 없이 보류됐던 기존 합성 질감 4개(102/105/106/107)를 재생한 결과 모두 정지 대비 ±yaw 출력 부호가 공학 목표와 일치했고 목표 MSE가 초기 대비 감소했다. 이미 알려진 개발 질감·합성 정지 기준이며 실제 생리/주행·폐루프 자격은 없다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 기하 yaw 단일 축 학습:** 단일 graph 시각 포트에 기하 yaw 축만 주입해 세 합성 질감에서 30회 학습했다. 새 질감·더 느린 ±0.13rad/s에서 정지 대비 양방향 intent가 −0.000110/+0.000288에서 +0.002738/−0.001540으로 바뀌어 가설적 목표 부호와 일치했다. 보류1질감·합성 정지 기준·비행 생리/실제 주행 미검증, 미배포. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 인과 기준 기하 포트 학습:** 각 합성 이력의 앞 11개 정지 프레임으로만 기준을 만든 뒤 기하 6축→동일 graph visual port 투영을 12회 학습했다. 세 fit 질감의 방향 부호는 맞았으나 새 보류 질감의 정지 대비 양방향 출력은 +0.000758/+0.000266으로 한 방향 실패다. 분리 반사실 대신 이력 내 기준이지만 실제 정지 판정·생리·주행은 미검증, 미배포다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 기하 운동 특징과 새 질감:** 네 시야 T4/T5를 기존 카메라 기하 template로 모은 사후 진단에서, 새 합성 질감863106은 같은 장면 정지 조건 대비 −yaw/＋yaw 변화가 −0.09177/+0.06744로 사전 지정 부호와 일치했다. 앞서 본 5개 질감도 같은 부호였다. 정지 기준은 별도 반사실이며 실시간 actor 경로·생리·실주행은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 다중 질감 시각 경계 학습 실패:** fit 세 질감에서 opponent projection을 12회 갱신해 모두 양방향 부호를 맞췄지만, 사전 분리한 새 질감은 정지 대비 −0.002668/−0.005114로 한 방향이 반대였다. 새 질감 목표 MSE도 8.877e-5→9.218e-5로 악화했다. 합성 실험·미배포·실제 생리/주행 미검증. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 합성 회전의 통합 시각 경계 학습:** 몸 yaw0·같은 graph에서 opponent projection만 12회 학습했다. fit 질감의 정지 대비 좌우 반응은 +0.01135/−0.01154로 목표 부호를 보였지만, 사전 분리한 새 질감에서는 −0.000139/−0.004245로 한 방향이 틀려 일반화 기준 실패다. 인공 안정화 목표·미배포·실차/생리 미검증. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 동시 시각·몸 yaw:** 동일한 합성 네 시야에 몸 yaw 0/시각과 동일/반대를 입력해 단일 graph를 비교했다. 회전 후 첫 intent의 양방향 차 평균은 각각 -0.000320/-0.040523/+0.039883이며, 동일 몸 yaw 효과의 시각 조건 차는 최대 2.94e-6이다. 현재 조건에서 몸 회전 효과가 주도하며 생리·안정화·실주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 네 시야 동시 회전 자극:** 고정 질감 구 안에서 카메라 네 개를 동시에 정지/±0.23rad/s yaw시켜 721열 FlyVis와 단일 graph를 재생했다. 시작 전 반대 방향 graph 출력은 같았고 시작 후 반대 방향 첫 intent 평균차 -0.000310; 정지 대비 두 방향 평균은 +0.000315/-0.00000524로 비대칭이다. 합성 시각 전용·몸 yaw 고정, 올바른 안정화/실주행 미검증. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 공간 열을 보존한 저자 경계 자극:** 원저자 FlyVis를 밝고 어두운 0°/180° 이동 경계 4조건으로 재실행해 721개 위치의 T4/T5 반응을 보존했다. 중앙 응답 최대 차 9.54e-7. 각 시야에 한 번씩 통합 graph에 넣자 반대 방향 출력이 달랐고, 이는 합성 단일시야 자극의 반응이지 생리·방향 부호·주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 단일 graph 시야별 운동 방향 개입:** 네 시야 중 하나씩 T4/T5 상대 방향 채널쌍을 교환해 TRAIN728/known DEV729 전체 재생했다. 각 시야 교환은 두 intent를 변화시켰고 원래 조건은 이전 결과와 정확히 같다. 시각 preview 명령은 고정되어 이 결과는 직접 시각 경로의 반응이며, 올바른 방향 선택성·생리·주행 이득의 증명은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 단일 graph 몸 감각 개입:** 학습 body adapter의 기울기·하중·온도·바퀴값을 각각 0으로 바꿔 TRAIN728/known DEV729를 전체 재생했다. 네 조건 모두 두 intent가 변했으며 정상 조건은 이전 전이 결과와 정확히 같고 저장 배열에서 평균차를 재계산했다. 0 치환은 분포 밖일 수 있으며 유효성 마스크·다른 입력은 유지; 주행/생리 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 학습 몸 경계 단일 graph 전이:** 기존 1909 TRAIN에서 가속·제동/조향 보존으로 학습된 공학 adapter를 네 시야 단일 graph에 선택적으로 넣어 TRAIN728·known DEV729를 재생했다. 중립 대비 intent 평균 절대 차는 TRAIN 0.01283/0.01212, DEV 0.00875/0.01121이며 중립 출력은 기존과 정확히 일치했다. 원래 학습의 제동 악화·다른 pedal command 파라미터·물리 시간 및 실제 주행 미검증으로 배포하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 조작 수신 시간차 감사:** TRAIN 후보 728결정에서 최초 렌더 시작 하한 직전부터 결정까지 native 수신값의 범위를 계산했다. raw 값 범위가 0.01을 넘은 프레임은 조향35·가속78·제동3이며 최대 범위는 각각 0.449·0.800·1.000이다. 원시 조향 단위는 미보정이고 호스트 수신 창은 물리 노출 창이 아니다. fit/표적 생성 0. 현재 AC 프로세스는 발견되지 않았고 기존 상태 파일은 오래되어 live 상태로 취급하지 않는다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 원본 감각 경로 backward 진단:** fit 금지 TRAIN 후보의 원본 16결정·네 시야 FlyVis·몸 입력을 실제 단일 graph에 넣고 임의 출력 목적의 gradient를 계산했다. 몸 norm 0.09981·운동시각 projection norm 0.003377, GPU 최대 256,475,648 bytes. 고정 가상 속도 명령이며 optimizer 0·운전 자격 없음. 기존 영상 TRAIN 수집 역시 원본에 주행 training_admissible=false·expert_labels=false로 기록됐다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 실제 비행 graph gradient 진단:** 원본 TRAIN 728결정의 수정 후 실행 출력 SHA가 수정 전과 동일했다. 실제 체크포인트/graph와 합성 몸·시각 입력 8결정에서 몸 adapter gradient norm 0.09213, 비영 3,120개, peak GPU 할당 250,192,384 bytes를 확인했다. 합성 objective, optimizer 0회이며 실제 데이터 학습·생리·폐루프 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 통합 회로 학습 경로:** 기존 실행 경로는 매 결정에서 gradient를 끊어 시간 학습을 할 수 없었다. 동일 단일 상태의 명시적 연구용 gradient 경로와 수치 상태를 보존하는 구간 detach를 추가했다. 합성 그래프에서 실행 출력 일치·시간 gradient·8회 최적화 손실 감소·구간 보존 확인, 관련 17검사 통과. 실제 회로/데이터 학습과 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — TRAIN 이력별 방향·시야 재분석:** 기존 3-fold 저장 점수에서 20m 예측 RMSE는 시각+몸이 세 이력 모두 별도 학습한 몸-only 비교군보다 컸다. 전방 개입은 세 이력의 오차를 증가시켰으나 전체 신경 특징 평균 개입은 일관되지 않았다. 좌우 불균형만으로 원인을 단정할 수 없으며 표본은 상관·지리적으로 인접하다. 재추론·새 학습 없음. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 기존 TRAIN 방향 분포:** 20m 교사 경로 유효 2,121프레임 중 좌254·직선1083·우784, 임계값 연속 구간 6·13·9개다. 서로 상관된 프레임/구간이며 독립 코너 수는 아니다. 원본 hash 확인, DEV payload 미열람·새 학습 없음. 단일 감각운동 회로의 시각 예측 학습에서 방향 불균형과 별도 이력 검증이 필요하다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 시각 예측 정량 평가:** 교사20m chord 대비 TRAIN/DEV는 직선 기준보다 RMSE가 나빴다. 원본 target/mask 독립 감사 완료; 생리·주행·학습 자격은 없다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 시각 예측의 단일 graph 연결:** 고정 14종 preview의 yaw/속도 명령과 직접 네 시야 temporal·몸 입력을 단일 flight state로 전달하는 오프라인 TRAIN/DEV replay 완료. 미인증 engineering 예측이며 실시간 actor/주행 자격은 없다. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 하나의 flight graph 경계:** 시각 temporal·시야별 몸 prior·현재 몸·물리 속도 명령을 같은 graph state로 통합한 오프라인 경로를 구현했다. 이전 source 원본 replay와 현 source15테스트 완료, 최종 source 원본 재생·actor/실주행 미검증. [상세](spatial-transit-20261031.md).
+
+**2026-11-01 — 통합 상태:** 구 속도 경로와 물리 속도 경로는 분리 실험이며 단일 end-to-end 모델은 미완. 새 TRAIN/DEV 14종 FlyVis 원본 연속 replay 완료; 실제 통합/생리/주행 검증은 남았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 학습된 common-to-per-view 전이:** 동일 yaw 동등성·mask unit test 및 새 TRAIN/DEV 고정 회로 개입을 완료했다. 새로운 최적화·배포 및 실제 주행 기여는 없다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — TRAIN/DEV 회로 개입:** 네 시야 FlyVis·몸 prior/current로 고정 회로728/729결정 및 3개 개입을 연속 재생했다. 원본 identity/통계 감사만 완료, 독립 모델 재실행·생리/실제 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — TRAIN/DEV FlyVis:** 728/729결정 원본 전체의 네 상태 연속 replay 및 독립 재계산 완료. 학습·비행 회로 결합·운전 자격은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 원본 teacher 시간·axes:** TRAIN/DEV 전 사건의 activity/phase bounds 및 native 조작값 감사 추가, 관련101테스트 통과. label·학습 자격은 부여하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — DEV 후보:** camera ownership 수정 live 통과, 분리된 보호 구간에서 729결정과 시야별 body 독립 감사 완료. 학습/학생 제어는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 카메라 시작 ownership:** 동일 세대의 실제 camera ID heartbeat를 제한 시간 내 확인한 뒤 제어 child를 시작한다. 관련39테스트 통과, live 검증 전이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — DEV transit:** 등록 목표 0.67–0.72를 지원하고 테스트5개 통과했으나 실제 8단계 예산 소진으로 0.64659에서 전체 실패; DEV 미수집이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — TRAIN 시야별 prior:** 728×4 맥락과 현재 body 재구성 및 독립 검증 완료, 4 결측 보존. 학습·물리 동기 자격은 없다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 현 generation transit 및 TRAIN 후보:** 세 제한 transit 완료 후 728결정 후보를 수집하고 raw·same-copy·native·제동 감사를 완료했다. 학습/독립 DEV·학생 제어는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — pace same-copy 선택:** 계획에 명시된 경우 기존 same-copy native reader를 pace 수집에 전달한다. 관련 46테스트 통과; 새 조합 live 검증·학습 자격은 없다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — camera 종료 경로:** AI active 후 inactive 관측에만 producer stop을 요청하는 선택형 경로와 30초 진단 원본 감사 완료. 학습·학생 제어 자격은 없다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — pace 고빈도 실시간 결과:** 729결정과 native 원본이 보존됐으나 GPU group timeout 및 frame count 불일치로 원본 camera 전체 감사 실패; 학습 적합성 없음. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 고빈도 수집기 live:** 74결정·3,995 native copy, 원본 영상 및 packet 감사 완료; 4시야는 50ms 초과로 결측. 학습/배우 자격이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 고빈도 native copy 수집:** 선택형 sampler와 실패 시 부분 이력 보존을 수집기에 연결했고 12개 관련 테스트 통과. 새 실주행 수집 및 학습 자격은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 시야별 몸 이력 감사:** TRAIN00 raw 독립 재구성과 TRAIN 여섯 이력의 별도 조사·독립 교차검증을 추가했다. 고빈도 진단 원본 105장면 중 39개는 시야별 유효 prior packet이 달랐다. 이는 학습·생리·폐루프 검증이 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 코너 시야별 body replay:** 원본 transit739결정과 FlyVis4시야에 공통/개별 prior 고정 탐침을 적용했으나 출력 기여는 수치 오차 범위였다. 실제 생리·제동·폐루프는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 각 시야 prior 선택:** 원본 host receipt를 시야별로 추적·mask 보존하고 pace 기록의 731장면을 재생했다. 고정 탐침의 회로 기여는 수치 오차 밖으로 입증되지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — pace 시각·몸 개입 replay:** 네 FlyVis state와 보수적 공통 과거 body로 731결정, native 감사 제동62행을 평가했다. 브레이크 제어·source 시각·생리·폐루프는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 몸 감각 반사실험:** 현재 tilt/load의 개별 제로 개입과 동일 intact lineage 감사를 추가했다. 분포 밖 개입 가능·생리/실제 성능 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 선택형 body GPU 우선순위:** -1에 대해 원본 수치 동등 확인, 첫 live freshness0/103. 우선순위만으로 실시간 통합은 해결되지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 제한 mailbox 대기:** 이전 장면을 50ms까지 기다리고 stale·ticker 중단 시 실패한다. live freshness 0/105로 미완성, float64 몸 입력 정밀도 회귀 검사 추가. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 몸 입력 묶음:** 4시야 body/mask 전송을 묶고 원본 replay 및 helper proof를 갱신했다. live shadow는 stale view로 실패해 실시간 통합은 미완성이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — CPU/GPU 비교:** 동일 몸 회로 387사건의 교차 device 진단 추가. CPU 실시간 경로는 구현·배포되지 않았고 폐루프 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — MMF CUDA 시간 진단:** 선택형 GPU event 계측과 독립 시간 감사를 추가했다. live freshness8/135로 미완성, event 구간은 실제 kernel 점유가 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 중복 MMF RGB 처리:** 같은 후보의 반복 복사·해시 생략 및 변경된 metadata 거부. live 반복은 24/138 freshness로 미완성이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — MMF/body live 첫 진단:** 제한 3초 runner와 독립 원본 감사를 추가했다. 134회 중 7회 freshness 통과·stale 중단으로 실시간 경로는 미완성이다. 제어·학습은 수행하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — MMF/body 연결부:** 기존 카메라·동일 native rows·ticker를 묶는 비제어 소비자 구현 및 단위 검증. 실시간 통합과 폐루프는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 불변 MMF shadow 입력:** 카메라 계약과 원본 영상 검증, 중복/결측 감지 및 기존 시각 producer 연결. 원본 재생 통과, 실시간 소비·몸 회로 결합 및 폐루프는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — MMF 시각 state 재생:** 원본 74결정에서 FlyVis state·scene 파일/불변 경로 동등. 실시간 MMF shadow와 비행/몸 회로 및 폐루프 통합은 검증 전이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 카메라 계약 검사:** view/order/mount 비교와 원본 74결정 불변 사본 재생을 추가했다. 연결된 실시간 shadow 및 신경망 상태 동등성은 아직 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — MMF 영상 부품:** 해시·원래 시각·시야 identity를 확인하는 불변 RGB 스냅샷 구현, 실제 보존 기록 8그룹 투영 동등. 실시간 shadow 통합과 폐루프는 미구현/미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 부분 원본 감사:** 정지된 부분 수집의 metadata·shadow·ticker·terminal을 확인하는 재현 가능 감사기를 추가했다. frame metadata hash는 감사 시점 산출이다. 실제 제어/학습 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 제동 수집 profile:** 명시적 30초 제동 profile과 유한 카메라 예외를 구현했으나 첫 실기 시험은 camera stale 및 shadow 오류로 실패했다. 폐루프 제어·학습은 수행하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 10ms 반복 shadow:** 246/264 host freshness 통과, stale 안전 중단; 실시간 신뢰성은 미완성이다. 물리/노출 시각·생리·폐루프 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 최소10ms body ticker shadow:** 원본 timestamp·회로 state 유지와 stale 중단을 보존하며 live freshness245/257, 영상 1개 미소비. 반복·source 시간·생리·폐루프 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 분리 stream CUDA event 계측:** live shadow의 visual/body CUDA event span과 body encoder host time을 기록·감사했다. freshness110/170, 마지막 scene1개 미소비이며 정확한 kernel 점유율과 actor 자격은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — CUDA stream 분리 shadow:** 독립 시각/body stream과 완료 후 scene 게시를 추가했다. 211-event 원본 재생 state/drive/trace/intent bitwise 일치, live host freshness109/170으로 실제 제어 자격은 미달이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — body ticker/FlyVis 동시 shadow:** 실제 저속 진단 157회 중 host freshness 전체 통과57회, scene53/53 순서 소비 및 stale 시 중단. GPU 동시 스케줄링과 physical source/폐루프는 미검증, actor 미배포다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — body-rate 비행 회로:** 마지막 영상과 그 시야별 과거 body를 유지하면서 새 body receipt에 회로 상태를 전진하는 실험 경계를 추가했다. 원본 이력 재생 및 yaw 개입은 완료됐으나 실시간 동시 실행·source 동기·생리·자율주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 시각 후 current body 선택:** live shadow에서 새 packet age는 낮아졌지만 실제 출력에 적용된 직전 held body는 52/52가 50ms 초과해 output freshness 0/53이다. 빠른 body 구동 회로 및 실제 운전은 아직 구현·검증되지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 실제 신경 shadow 실행:** 네 시야 FlyVis·비행 회로를 저속 진단에 연결해 139그룹 중 53개 의도를 무제어 기록했다. 출력 52/53에서 body host receipt가 50ms보다 오래되어 이 상태는 actor에 부적합하다. 물리 동기·생리·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 단일 감각 경로 오프라인 측정:** PNG·원본 body 이력·망막·FlyVis·비행 회로를 함께 재생해 기존 출력과 일치했다. 폐기용 warmup 뒤 유효 그룹 p50 47.73ms이나 live 동시 수집/시간 동기/운전 성능 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 선택적 회로 반복 계산 최적화:** 5ms state 갱신을 유지하는 옵션을 추가하고 실제 53그룹·두 조건에서 상태/drive/시각 trace bitwise 일치와 오프라인 속도를 확인했다. 전체 실시간 inference와 주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 실제 shadow 원본을 신경망에 오프라인 연결:** 138그룹의 네 독립 FlyVis 상태와 53그룹의 시야별/current body·비행 회로를 이어 재생했다. 실시간 inference·물리/노출·폐루프 운전은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 실제 수신 shadow:** 저속 AI 진단 138그룹에서 camera file receipt·host decision과 시야별 native 이력 선택을 기록, 원본 packet·mask 감사 완료. 신경망 actor 연결 및 물리/노출 동기·실제 주행 성능은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — body 이력 선택:** 시야별 render 선행 및 결정 시점 native receipt를 분리하는 bounded 선택기를 구현하고 저장 복사 4,512건으로 212시야 packet 일치를 검증했다. 실시간 수집/actor 연결과 물리 동기는 아직 검증하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 네 시야별 시간 몸 경계 및 stream:** 시야별 과거 몸과 결정 몸을 구분하고 결측·수신 순서·재귀 상태를 검사한다. 저속 저장 영상 53그룹 재생 종료0, 실제 actor/동기/생리/주행 검증은 미완료다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 가용 시점 수신 body 재구성:** 137그룹의 원본 packet과 clock 교환을 감사해 53그룹의 선행 body를 복원하고 회로 결과의 시점 민감도를 확인했다. 실제 물리 발생·노출 또는 actor 결정 시점의 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 부호 반전 회로 개입:** 몸 유효 53그룹에서 0/±시야별 yaw 탐침의 비행 회로 전파를 float32·float64로 관찰했다. 효과는 작고 실제 현재 몸의 동기, 생리 및 폐루프 성능은 검증되지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — FlyVis 및 시야별 몸 회전 오프라인 진단:** 실제 저속 영상 137그룹의 네 시야 고정 FlyVis 상태와 yaw mask를 이용해 공학적 시각 포트 탐침을 재생했다. 결측 처리와 0 초기화는 확인했으나 비행 회로 출력·자율주행·생리 검증은 아직 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 시야별 선행 몸 패킷 재구성:** 최근 저속 진단 548시야에서 중복 패킷은 첫 수신 시각을 유지하고 최초 패킷의 미확인 나이는 결측으로 남겼다. 관측된 이전 전환이 있는 몸은 212시야, 이동 35그룹의 140시야는 모두 포함됐다. 수신 순서일 뿐 물리/노출 동기는 미검증이며 학습 금지다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 전 구간 빠른 native copy 진단:** camera 전후를 포함하도록 sampler를 바꾸고 Windows 대기 양자화를 수정했다. 신규 3초 저속 AI 이력 137그룹 548/548시야가 host copy로 감싸졌고 copy 시작 간격 중앙/95/최대는 2.509/2.725/3.321ms다. 물리 발생·노출 동기와 학습 자격은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 실제 저속 이동의 렌더·native copy 구간:** 별도 3초 engine AI 진단에서 138개 네 시야 그룹과 native 4,318개 copy를 기록했다. 전체 552시야 중 532개, 이동 35그룹의 140시야는 모두 렌더 호스트 범위 앞뒤로 copy를 찾았다. 물리 생성·노출 동기와 학습 자격은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 네 시야와 native copy 동시 진단:** 정지/full-brake live 세션에서 네 시야 2그룹의 8개 렌더 시작 host 범위를 native 이중 복사 전후로 감쌌다. 앞뒤 copy 사이 간격은 4.27–5.30ms, CSP/host clock 교환 불확도는 2.59ms다. 물리 표본 발생·실제 노출 동기는 미검증이며 pause 복원했다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — native 복사 시간 직접 측정:** 정지/full-brake live 3초에서 420-byte 이중 복사 1,209회와 packet 전환 997회를 기록했다. 일관된 단조 발행을 가정한 전환 시간 구간 폭 중앙/95백분위/최대는 2.526/2.781/3.491ms다. 물리 샘플 생성·카메라 노출 시각은 미검증, pause 복원. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 몸 패킷 발행 시각의 조건부 추정:** 기존 30km/h·제동 이력의 연속 native 수신 간격 중앙은 약 31.9/31.8ms다. 이전 복사본이 수신 시각까지 최신이었다는 미검증 가정까지 넣으면 결정 시점의 발행 나이 추정 상한 중앙은 77.5/83.4ms다. 실제 발행·물리 발생 상한은 증명되지 않아 학습 자격은 없다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 정지 중 시각 후보 검증:** 같은 native 물리 packet 11787과 동일 420-byte hash가 유지되는 동안 CSP `car.timestamp` 후보는 9.407초 증가했다. 따라서 이 값을 물리 샘플 발생 시각으로 사용하지 않는다. 감사 출력 명칭을 후보 시각으로 수정했고 운영 Lua 복원. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 실제 바람 후보의 비동기 회로 개입:** 별도 주행의 후보를 기존 DEV04 시각/몸 이력에 임의 시간 대응한 오프라인 fixture에서, 상대풍 0 가중치는 결측 대비 출력 차 0이었다. 인위적 측풍 가중치에서는 ±풍향 대 무풍의 평균 조향 변화가 각각 +0.00664/−0.00629였다. 실제 동시 감각·학습·생리 및 주행 성능은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 반대 풍향 저속 이동 대조:** 270°·36km/h 조건의 실제 engine AI 진단은 129프레임 중 35개 이동이다. 무풍과 비슷한 속도 35쌍에서 몸 좌우축 상대풍 후보 차 중앙은 -12.66m/s였고, 앞선 90°의 +11.45m/s와 반대다. 독립 표본·시간 정합·풍원 및 학습은 미검증이며 무풍/설정/운영 Lua 복원. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 실제 바람/무풍 속도 대응 비교:** 같은 시작 spline의 별도 3초 진단에서 바람 146/무풍 136프레임을 기록했다. 후보 속도 차 ≤0.2m/s인 34쌍의 바람−무풍 몸 좌우축 상대풍 후보 차 중앙은 11.45m/s다. 대조 표본 27개 재사용·시간/풍원 미검증, 학습/actor 금지. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 실제 바람 중 저속 이동 진단:** 카메라 기한 부족으로 첫 AI 요청은 거부됐고 원인을 확인해 예산을 수정했다. 별도 새 실험은 engine AI 3초 주행·146프레임 중 35개 이동, 후보 전방속도 1.07–4.61m/s를 기록했다. weather 35km/h, wind 후보 12.13–12.24m/s; 시간/풍원 자격 및 학습은 미검증이다. 무풍·설정·운영 Lua 복원. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 동일 풍향 반복 관측:** 270°·36 km/h 한 번 적용 후 정지·full-brake에서 resume/pause를 사이에 둔 세 표본의 weather 표시는 모두 35 km/h, 풍속 후보 크기는 11.880/11.328/11.129 m/s였다. 같은 설정에서도 변동이 있으나 세 표본으로 원인이나 분포는 확정할 수 없다. 무풍·설정·운영 Lua 복원, actor 입력/학습 없음. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 실제 상반 풍향 관측:** 90°/270° 각 36 km/h 자극에서 weather 벡터는 각각 약 `[35,-0.061]`/`[-35,0.061]` km/h, 풍속 후보 벡터의 방향 cosine은 -0.9918, 크기는 10.05/12.18 m/s였다. 각 1회 정지 관측으로 크기 차이·시간 동기·이동 상대풍은 미검증이다. 무풍·원래 WIND·운영 Lua 복원. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 실제 풍향 자극과 무풍 복원:** 90°·36 km/h merge 후 실제 정지 관측은 weather 35 km/h, 풍속 후보 `[10.036, 0, -0.603]` m/s였다. 이후 무풍 merge·관측 weather 0 및 설정 WIND·운영 Lua 복원을 확인했다. 단일 방향과 무풍 비교로 축·부호·물리 동기 및 actor 입력 자격은 미검증이며 학습/자율주행은 없다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 풍향 재시작 host 사전 검사:** 원래 프로세스 종료·새 엔진/producer 및 요청 영수증을 확인하는 일회성 host 후보를 추가했다. 예전 controls hash로 첫 검사가 실패했고, 이전에 정지 축 시험한 현재 설정을 명시하여 읽기 전용 재검사에 통과했다. 운영 Lua 복원 완료; 실제 재시작·풍향 반영·원상 복원 연계는 미실행이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 풍향 실험 후 복원 경로:** 새 엔진 확인을 호출자가 증언한 경우에만, 잠금 상태에서 WIND가 원래 값이면 파일을 쓰지 않고 실험값이면 그 세 값만 원복하도록 구현했다. 충돌·불확실한 재시작을 거부하고 부분 쓰기 증거를 보존한다. 임시 파일 시험 28개 통과. 실제 엔진 확인 및 lifecycle 연결·실파일 복원은 미검증이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 풍향 실험 원본 스냅샷과 판정:** Windows 배타 잠금으로 원본과 90°·36 km/h 후보를 보존하고 이후 WIND가 원본·실험값·충돌 중 어느 쪽인지 읽기 전용으로 구분한다. 실제 race.ini의 전체 hash 불변을 확인했으며 임시 파일 시험 23개 통과. 잠금 해제 후 동시 변경, 엔진 merge·재시작 및 자동 복원은 미검증/미구현이다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — 실제 엔진 정지 풍속 관측:** AI off·정지/full-brake·offline·백그라운드 확인 후 별도 진단 Lua를 일시 설치해 관측 요청 1회 terminal을 확인하고 운영 Lua SHA `475e085d…`를 복원했다. 날씨 후보는 0 km/h, 다른 풍속 후보는 약 `[-0.0046, 0, 0.0277]` m/s였다. 독립 풍향 자극·좌표/시각 동기·actor 사용 자격은 미검증이며 학습/주행은 하지 않았다. [상세](spatial-transit-20261031.md).
+
+
+**2026-10-31 — AI 상태 초기화와 풍속 관측 후보:** CSP session restart/start 후 epoch2에서 별도 live packet 59/59가 native AI false·CSP AI off였고 pause를 복원했다. WIND 전용 재시작 후보에 정지 상태 read-only 풍속/몸 축 진단을 추가하고 LuaJIT mock 24개 통과. 후보는 미설치이며 엔진 merge·실제 바람 적용/복원·물리 동기는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 설치된 WeatherFX base 코드의 합성 자극 검사:** 설치된 controller.lua 원본을 LuaJIT mock에서 실행해 무풍과 36km/h·0/90/180/270° 입력이 `setConditionsSet2`에 그대로 전달되는 5조건을 확인했다. 이는 컨트롤러 코드의 합성 시험이며 현 세션 controller 선택·실제 engine merge/바람 부호·물리 시간은 미검증이고 원본/게임은 수정하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 풍향 복원 중단 시험:** 복원 전/목표 bytes와 hash를 먼저 보존하고, 중단 후 현재 파일이 전 상태·목표 상태·알 수 없는 상태 중 어디인지 배타 잠금에서 읽기 전용으로 분류한다. 임시 파일을 쓰다 child 프로세스를 강제 종료한 시험에서 부분 파일을 unknown으로 남기고 자동 덮어쓰지 않았다. 실제 게임·OneDrive 복구와 엔진 상태는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — Windows 풍향 복원 잠금 시험:** 기존 파일에 배타적 Windows handle을 열고 WIND만 조건부 복원하는 저수준 함수를 추가했다. 임시 파일에서 다른 읽기/삭제 차단, 풍향 충돌 거부, 쓰기 전 원본·intent 기록과 실패 보존을 검사했다. in-place 쓰기는 원자적이지 않으며 crash 복구·OneDrive·실제 엔진 적용/복원은 미검증이다. 원본 게임 설정은 변경하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 풍향 설정 복원 dry run:** 원본 race.ini의 WIND 세 값만 복원하는 순수 byte 변환을 추가했다. 실험 중 다른 섹션 변경은 보존하고 풍속 자체가 예상과 다르면 복원을 거부한다. 실제 원본 복사 데이터 dry run과 관련 검사41개 통과. 파일 잠금/원자적 교체·엔진 재시작/실제 복원은 미구현·미검증이며 원본 설정 변경은 없었다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 풍향 자극용 CSP 재시작 후보:** 운영 Lua는 유지하고 WIND 세 값만 허용하는 별도 source 후보를 만들었다. LuaJIT 모의에서 허용·범위/상태 불일치 거부·terminal 기록 실패 시 미호출·중복 재실행 방지 등20개 통과. native AI 확인은 host 진술일 뿐이고 설정 복원·실제 엔진/풍속·시간 동기는 미구현/미검증이라 설치·실행하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 바람 실험 전 native AI 재검사:** CSP AI off·정지/full-brake인 live 구간의 새 packet 59/59에서 native AI true가 지속됐다. 종료 후 pause 확인; 독점 제어 의미는 미확정. CSP 재시작에 INI 병합 API가 있으나 기존 프로젝트 경로는 병합을 금지한다. WIND만 포함하는 bounded payload 생성·테스트를 준비했으며 적용/재시작은 없었다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 독립 풍향/풍속 자극 설정 준비:** 기존 race.ini를 변경하지 않고 무풍 1개·36km/h의 0/90/180/270° 4개 격리 복사본을 생성했다. WIND 세 값 외의 파일은 변경하지 않고 원본 hash 불변을 확인했다. CSP 기본 WeatherFX controller가 세션 입력 풍속을 읽는 코드는 확인했으나 새 설정이 현 실행에 반영되는지·바람 부호/단위/동기·실제 회로 입력은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 원본 두 주행의 상대풍 후보 대조:** 기존 248/422프레임에서 날씨 바람 속도·벡터는 모두0인데 `ac.getWindVelocity()` 후보 크기는 0.0475–0.0858/0.0733–0.0850m/s였다. 각 기록의 몸 방향 변화가 약 0.50°/4.02°이고 독립 바람 자극이 없어 풍속 API 차이·부호·좌표를 결정하지 못한다. 몸 축 직교는 확인했으나 상대풍은 계속 무효다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 시간 분리 경계 신호 진단:** TRAIN00/known DEV02/07의 유효 맥락에서 yaw 절댓값 중앙은 0.0379/0.00526/0.0256rad/s, yaw×방향 대립 흔적 norm 중앙은 0.0829/0.00807/0.0505였다. 학습 경계의 시각 포트 delta norm 중앙은 0.000549/0.0000568/0.000322로 연결은 있으나 최종 조향 기여는 앞선 평가에서 매우 작았다. 상관 관측이며 원인을 확정하지 않는다. 실제 바람 원천은 여전히 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 시간 분리 몸·시각 경계 known DEV 평가:** 두 개발 이력에서 기존→학습 조향 RMSE는 0.06817935→0.06817781, 0.09332076→0.09332078이고 무조향 기준 0.05257177/0.09318612보다 둘 다 나쁘다. 양 조향 부호 일치는 기존·학습 모두 0/13·7/15다. 효과 극히 작고 미배포; 결과 저장 후 평가 프로세스 종료 코드는 미확정이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 시간 분리 몸·시각 경계 TRAIN 1회:** 기존 TRAIN episode00의 741관측에서 새 projection만 TBPTT64로 12회 갱신했다. 같은 이력의 조향 RMSE 0.04395719→0.04395588, 전진 0.10333130→0.10333130으로 효과는 매우 작다. 과거 그래프 재생 대비 초기 출력 오차0; DEV·제동·실제 주행·생리 미검증, 미배포다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 실제 저장 FlyVis·시간 분리 몸 회로 재생:** 과거 TRAIN 741개 중 렌더 전 몸 맥락 479개, 결측262개를 명시했다. 저장 네 시야 FlyVis 반응·원래 결정 몸을 고정 비행 그래프에 재생한 결과 파일에서 0 초기화 새 경로는 기존 출력과 오차0이다. 임의 고정 probe의 평균 출력 차는 약 3.06e-8/1.29e-9로 매우 작다. 실행 결과는 저장됐으나 원래 프로세스 핸들은 아직 살아 있어 종료 코드는 미확정; 배우 배포·학습·물리 동기 검증은 없다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 시각 맥락 몸·운동 시각 경계:** 현재 몸은 기존 조작 경로에 유지하고, 과거 몸 yaw와 네 시야 ON/OFF 방향 대립 시간 흔적의 곱만 HS/VS 시각 포트에 전달하는 0 초기화 공학 경계를 추가했다. 합성 검사에서 중립·yaw 부호/결측·이전 상태 유지와 오류 롤백을 확인했다. 실측 신경 연결·학습·실제 영상/몸 동기·주행 검증은 아니다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 시각 전후 몸 감각 시간 계약:** 렌더 전 수신 몸을 실제 camera host 수신 시점에서 평가한 시각 맥락과 별도 결정 시점 몸을 분리했다. 30km/h 732/732, pace731/731에서 각자 평가 시점의 yaw/속도 유효. 선행 몸은 결정 시점 기준 각각 중앙 45.58/51.45ms 오래돼 현재 몸으로 취급하지 않는다. 카메라 노출/물리 발생 동기·회로 통합·학습·주행은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 선행 몸 수신의 결정 시점 유효성:** 21채널 반사실을 원래 sensor 계약으로 구성하니 영상 렌더 전 수신이 30km/h 기록 292/732, pace 기록 394/731에서 결정 시점 yaw/속도 신선도 조건을 넘었다. 기존 actor 몸은 전부 유효였다. 전체 회로 재생은 결측 필수 입력으로 거부됐고 값을 채우거나 임의 재설정하지 않았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 네 시야 렌더 전 몸 수신 경계:** 새 30km/h 후보 732/732와 제동 pace 진단 731/731에서 네 시야 렌더 시작 하한보다 먼저 도착하고 host 상한 50ms 이내인 native 수신을 찾았다. 기존 actor 몸 packet과는 전부 달랐으며, pace의 속도 차이 중앙/95백분위/최대는 0.031/2.037/4.574km/h다. 물리 발생·노출 동기는 미검증, 입력 교체·학습 없음. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 새 제동 이력의 비행 그래프 하중 개입:** fit 금지 pace 진단의 원본 몸 패킷 49개를 고정 회로와 몸 adapter에 재생했다. 속도 목표를 30km/h로 고정하고 adapter의 네 하중만 제동 전 평균으로 치환할 때 제동 중 37개 출력의 조향/가속/제동 평균 절대 차는 0.000555/0/0.0000348이었다. 영상 없는 오프라인 반사실이며 실제 pace 과제 재현·주행 성능·생리 검증은 아니다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-31 — epoch1 제동 구간 pace 진단:** 이동 2회로 0.505160에 접근한 뒤 외부 60→100→0→60 과제를 실행해 0.505160–0.584101, 최고100.985km/h, 네 시야 731결정을 기록했다. 원본 재생 오차0, 이동 중 brake>0.05·speed>1km/h 62결정의 같은 복사본 AI true 62/62. 외부 과제 진단·fit 금지, 실제 영상/물리 시간 정합과 생리·독립 주행은 미검증이다. 종료 후 paused/full-brake/FREE. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — epoch1 새 30km/h 학습 후보:** 보호 구간 transit 두 번 후 TRAIN 0.287229에서 별도 후보를 수집했다. 전체 경로 0.287229–0.331417·바퀴 이탈 0, 네 시야 732결정 원본 재생 오차0·같은 native 복사본 AI true 732/732. 정지 조향 보정 기반 제안 표적은 578행이나 제동 표적은 모두0이다. 시간 정합·주행 전달·독립 평가가 미검증이며 후보는 fit 금지다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 45ms 카메라 transit 진단:** 선택형 주기로 카메라 준비 예산을 늘린 새 기록은 spline 0.028391→0.114856에서 종료0, 유효 732결정·camera wait miss 0이었다. 그러나 카메라 그룹 중복은 인접 결정 151회로 직전 40ms transit의 98회보다 많다. 보호 구간 이동·fit 금지이며 paused/full-brake/FREE 확인. 이 주기의 학습 적합성과 물리 동기는 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 접근 2 성공·접근 3 요청 거부:** epoch1의 transit 02는 0.941895→0.028391, 종료0·731결정·최대 60.89km/h·바퀴 이탈 0이었다. transit 03은 CSP가 복합 사전 조건으로 요청을 거부해 AI API 호출·결정 0, 프로세스 종료1. 어느 조건이 거부됐는지 확정 불가. 후속 GET-only는 같은 0.028391·paused/full-brake/FREE/background; 두 기록 모두 fit 금지다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 재시작 후 이동 전용 주행 1:** epoch 1에서 spline 0.856431→0.941895, 최대 61.10km/h, 네 시야 유효 731결정으로 종료0. telemetry 976개에서 바퀴 이탈 0이나 lap valid는 모두 false다. 사전 transit·fit 금지; 후속 GET-only paused/full-brake/FREE/background 확인. 아직 TRAIN 0.27–0.63 밖이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 정지 조향 원본 독립 감사:** 32개 native 원본 접두부·해시·복원값·packet 순서·정지·전후 AI off를 확인했다. 요청 0/+0.6/-0.6/0의 native 중앙값은 0/+0.843750/-0.843750/0, 양 끝 기준 native gain은 1.4062499다. 중간값 선형성·주행 전달·과거 기록 설정 연속성·실제 단위는 미검증이며 후보 학습은 계속 금지다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 재시작 후 조향 보정:** 새 live 정지 진단에서 59개 진행 native packet 모두 AI off·CSP AI off였다. 별도 정지 보정은 32샘플, 요청 0/+0.6/-0.6/0에 SDK 중앙값 0/+270/-270/0, 전후 native AI off 32/32였다. pause 복원. 정지 전달만 확인했으며 단위·주행 중 전달·영상/물리 동기와 기존 60km/h 자료 학습 자격은 미검증이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 교사 권한 검증:** 새 60km/h 후보의 native AI 표식은 확인됐으나, 이후 CSP AI off와 진행하는 native AI true가 불일치해 조향 보정·학습은 보류했다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 새 학습 후보 수집:** 사전 선언된 30초 기록은 지정 구간과 원본 재생을 통과했다. 시각·물리 발생 시각과 교사 표적 검증 전이라 학습 불가다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — GPU 정지 재현 검사:** 같은 네 시야 전송 900그룹은 정지 상태에서 성공했다. 직전 주행 중 147ms 지연의 원인과 주행 중 안정성은 미확정이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 수집 병목:** 접근 transit 03은 차량은 정상 정지했으나 GPU Flush 지연으로 네 시야 기록이 실패해 학습에서 제외했다. 원인을 조사 중이다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 학습 구간 접근:** 사전 fit 금지 transit 2회 후 paused 상태이며 학습 구간 도달과 새 수집 자격 검증은 남았다. [상세](spatial-transit-20261031.md).
+
+**2026-10-31 — 네 시야 속도·제동 진단:** 외부 속도 과제에서 최고 101km/h 및 이동 중 제동 기록을 수집해 원본 재생을 확인했다. 진단 역할로 학습에는 사용하지 않는다. [상세](pace-multiview-diagnostic-20261031.md).
+
+**2026-10-31 — 움직임 중 네 시야·몸 진단:** 3초 AI 구간의 77결정과 네 시야 원본을 재생해 일치를 확인했다. 실제 노출/물리 표본 시각과 교사 조작 정합은 미검증이며 학습 불가다. [상세](experiment-course-correction-20261031.md).
+
+**2026-10-31 — live 감각 수신 시각:** 정지 live 상태에서 네 시야 렌더 호출과 native 물리 수신을 같은 host clock으로 기록했다. 실제 노출·물리 표본 발생 시각의 동기는 미검증이다. [상세](experiment-course-correction-20261031.md).
+
+**2026-10-31 — 목표 재확인 및 시계 진단:** 사용자 목표를 대전제에 명시하고 정지 네 시야의 CSP/host 시계 범위를 측정했다. 실제 영상 노출과 차량 물리 시각의 동기 검증은 남았다. [상세](experiment-course-correction-20261031.md).
+
+**2026-10-31 — 네 시야 정지 재검사:** 새 세션의 전·좌·우·후 각 두 장을 확인했다. 시야 간 렌더 시작 간격과 물리 clock 미정합이 남아 주행·학습 수집 자격은 아직 없다. [상세](experiment-course-correction-20261031.md).
+
+**2026-10-31 — 브레이크 복구:** 정지 축 반응 관측 후 CSP pause 및 FREE 상태를 확인했다. 현재 시작 위치는 기존 제동 수집 범위 밖이며 새 카메라/소스 자격이 필요하다. [상세](experiment-course-correction-20261031.md).
+
+**2026-10-31 — 재실행 후 준비:** CSP 세션 시작은 성공했으나 정지 중 실제 브레이크가 0이라 pause 사전검사가 요청 전 중단됐다. 수집·학습은 미실행이다. [상세](experiment-course-correction-20261031.md).
+
+**2026-10-31 — 수집 오프라인 점검:** 시뮬레이터 프로세스가 보이지 않고 heartbeat가 오래되었다. 이전 수집 봉인과 현재 카메라·시각 소스에 차이가 있어 실시간 재적격화가 필요하다. [상세](experiment-course-correction-20261031.md).
+
+**2026-10-31 — 목표 대조:** 방향 균형 지속 시각 학습도 양 조향 일치 개선에 실패했다. 다음은 독립 코너·제동 데이터, 감각 시간 정합과 폐루프 검증을 우선한다. [계획과 결과](experiment-course-correction-20261031.md).
+
+**2026-10-31 — 운전 목표 중심 후속 실험:** 지속 시각 경로를 학습했으나 known DEV에서 한 이력이 악화하고 양 코너 부호 일치가 개선되지 않아 미배포다. 독립 코너·제동 데이터와 폐루프 검증이 필요하다. [계획과 결과](experiment-course-correction-20261031.md).
+
+**2026-10-31 — 지속 시각 경로 개입:** 임의 ± 가중치 fixture는 저장 방향 자극과 두 주행 이력의 조향을 바꿨지만 학습된 모델·생리·실주행 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 지속·순간 운동 분리:** 방향 시간 경계에 중립 초기화된 지속 경로를 추가하고 합성 자극과 저장 이력 8개에서 성분을 확인했다. 지속 경로의 학습·운전 기여·생리·실제 바람은 미검증이며 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 몸·시각 시간 경계 결합:** known DEV 두 이력에서 몸 경계 전이로 조향 오차가 감소했으나 시간 시각 경계의 추가 효과는 작고 한 이력은 무조향보다 오차가 크다. 실제 바람·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 공동 회로 몸 감각별 개입:** 실제 저장 네 시야/몸 이력에서 기울기·하중·온도·바퀴 회전 값을 각각 0으로 치환하면 조향/전진 출력이 변했다. 고정 이력의 비물리적 반사실이며 실제 타이어 적응·풍원·동기·생리·주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 상대풍 결측 표현:** 풍속·수신 시각을 지어내지 않고 해당 결정의 무효 상대풍 관측을 만드는 경계를 추가했다. 관련 9개 검사와 실제 저장 739관측의 기존 예측 SHA 일치 확인; 실제 풍원·동기·생리·자율주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 공동 감각의 합성 바람·기울기 개입:** 저장 네 시야/몸과 방향 시간 경계에서 합성 ±10m/s 측풍 및 기울기 0 치환은 조향·전진 출력을 바꿨다. 바람 포트 계수는 임의 fixture, 실제 바람·동기·생리·주행 미검증이며 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 시각·몸·바람과 방향 시간 공동 흐름:** 기존 공동 경계와 방향 시간 HS/VS 경계를 연속 상태로 연결했다. 실제 저장 739관측 재생은 기존 후보와 최대 차 2.24e−7, 관련 테스트 9개 통과다. 바람은 전부 결측, 60→30km/h 반사실·물리 동기/생리/실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 방향 시간 경계의 균형 손실 학습:** TRAIN 6이력의 조향 양·음·중립을 균형 가중해 경계만 6회 갱신했다. known DEV의 양 조향 부호 일치는 원본/후보 0/13·7/15로 같고 조향 RMSE는 무조향보다 높았다. 제동·바람·물리 동기·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 방향 시간 gain의 TRAIN 조향별 감사:** 선택한 64배 후보는 양 표적 499개 중 부호 일치가 원본과 같은 239개, 음 표적 1,507개는 1,453→1,461개였다. 거의 중립 오차는 악화했다. 학습 이력의 사후 분석이며 실제 주행·생리 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 방향 시간 강도 TRAIN 선택:** 30km/h TRAIN 조향 MSE로 0·1·4·16·64배 중 64배를 선택했다. known DEV 조향 RMSE 02는 0.068259→0.067900, 07은 0.093337→0.093429이며 둘 다 무조향보다 높다. 생리적 배수·바람·제동·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 방향 대립 시간 신호 반전:** 외부 known DEV에서 시간 경계의 대립 delta를 반전해도 후보 대비 평균 조향 차는 0.000395, 부호 대조는 그대로 140/493이었다. 원본 시각 직접 경로는 유지한 인위적 개입이며 60→30km/h 반사실·물리 동기/바람/실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 방향 시간 경계의 실제 저장 네 시야:** known DEV 739관측에서 직접 하행까지 유지한 원본·후보 모두 음수 737, 20m 경로 부호 대조 140/493이었다. 기록60→모델30km/h 반사실, 동기·바람·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 방향 대립 시간 경계 자극 재생:** 저장된 FlyVis 중앙 자극을 한 시야 16칸에 복제해 실제 비행 그래프에 재생한 16조건 중 반대 방향 간 조향 최대 차이는 후보가 11개에서 증가, 5개에서 감소했다. 방향 정답·생리·실제 네 시야/주행은 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 방향 대립 시간 경계와 비행 회로:** 네 시야 T4/T5의 방향·시간 차이를 HS/VS 포트에 투영하는 공학 경계를 추가하고 30km/h TRAIN 6이력에서 학습했다. known DEV 조향 RMSE는 0.068259→0.068179, 0.093337→0.093321로 무조향보다 높다. 바람·동기·제동·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 시간 상태·방향 대립 fold:** T4/T5 반대 방향 차이의 빠른/느린 상태를 추가했고 상태를 평균 치환하면 세 이력의 예측이 달라졌다. 두 이력은 치환 시 오차가 늘고 하나는 줄었으며 04 음 방향은 0/100이다. 공학 근사·동일 서킷·생리/동기/실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — T4/T5 방향 차이 fold:** 네 시야에서 반대 방향 신호를 뺀 정적 시각 비교군은 05 한 방향에서 개선했으나 04 음 방향 0/100, 06 음 방향 20/49로 양방향 일반화에 실패했다. 단일 readout의 결과이며 시간·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 시야 개입 학습:** 원본과 각 단일 시야 평균 치환을 함께 학습한 이미지 좌표 비교군은 개입 변화량이 12조건 중 8개에서 줄었지만, 두 이력에서 원본 전체 오차가 늘고 한 이력의 음 코너 일치는 0/49였다. 생리·동기·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 네 시야 예측 개입:** 이미지 좌표 fold의 전후좌우 각 시야를 TRAIN 평균으로 치환하면 예측이 모두 달라졌다. 일부 이력에서 시야 하나를 치환하면 teacher chord 오차가 오히려 줄었다. 공학적 반사실·동일 서킷·생리/동기/실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 시각 방향 균형 fold:** 좌·직선·우 표적의 손실 비중을 맞춘 이미지 좌표 시각 후보는 내부 holdout 05·06에서 음 방향이 좋아졌지만 양 방향과 전체 오차가 악화했다. 04의 음 방향 일치도 9/100에 그쳤다. 동일 서킷, 생리·바람·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 이미지 좌표 시각 fold 재현:** 세 TRAIN 이력 각각의 망막·운동 ridge 분할을 재현하고 계수와 전체 예측을 보존했다. 04 직선 근사 yaw 평균은 0.0591rad/s로 기존 등록 시각 후보 0.1127보다 작았지만 음 코너 부호는 2/100만 일치했다. 생리·물리 동기·실주행 미검증, 비교군 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 시각 속도 직선 진단:** 사후 직선 근사 466관측에서 시각 속도 후보는 전부 canonical brake >0.1, 일정 60km/h 대조는 0개였다. 고정 몸·동일 서킷 내부 fold로 실제 제동이나 이탈은 아니며 임의 gain 후보는 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 시각 속도·실제 그래프 재생:** 저장된 739관측 내부 fold에서 시각 예측 속도/운동 평균/60km/h 고정의 목표 평균은 48.147/51.052/60km/h, canonical 평균 제동은 0.516/0.417/0.026이었다. gain은 임의 공학 가설, 고정 몸 반사실·바람/동기/실주행 미검증이므로 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 시각 선행 속도 연구 경계:** 네 시야 예측의 20m chord 부호로 yaw, 굽음 크기로 외부 레이싱 상한 이하 속도 명령을 구성해 physical maneuver에 연결했다. 계수는 공학 가설이며 합성 경계 검사 17개만 통과, 시각 예측 정확도·제동·생리·실주행 미검증 및 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 제동 수집 위치 확인:** GET-only native 관측에서 paused·AI off·vJoy FREE·비전면과 lap0 위치 0.86016017을 확인했다. 기존 B2 시작 영역 0.49–0.54 밖이며 현재 소스의 live 수집 자격은 별도다. 이동·재시작·배포·수집은 없었다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 제동 수집 준비 상태:** 과거 수집 봉인 105개 소스 중 현재 3개가 달랐고 설치 카메라는 B2 수집 후보와 다르다. 관련 회귀 34개 통과했지만 현재 수집 자격은 별도 확인해야 한다. 신규 수집·배포·차량 제어는 없었다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 외부 이력 제동 표본 감사:** 60km/h 네 이력의 native 제동은 739관측 중 각각 마지막 2·2·3·2개에만 있다. 종료 경계에서 권한·물리 시각 미확인이라 코너 제동 학습 표적으로 쓰지 않았다. 신규 수집 자격은 재확인이 필요하며 actor 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 동일 과제 전체 운동 학습:** 30km/h TRAIN 6이력에서 직접 운동 경로를 살리고 시간 경계를 6회 갱신했다. known DEV 조향 RMSE는 0.068259→0.068137, 0.093337→0.093308이나 무조향 0.052572·0.093186보다 높다. 제동·바람·동기·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 전체 운동 입력 시간 경계 학습:** 직접 하행 운동을 유지하고 TRAIN 세 이력에서 시간 경계를 3회 갱신했다. known DEV에서 원본·초기·새 후보 모두 음수 조향 737/739, 20m 경로 부호 대조 140/493이었다. 60→30km/h 반사실, 실제 바람·동기·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 회전율 시간 가중 대조:** 렌더러 시간 간격으로 native 각속도 평균을 가중해도 외부 네 이력의 축별 기하 기준 통과 여부는 바뀌지 않았다. 가중은 물리 동기 미검증인 진단 근사이며 기존 유효성 계약·actor는 유지했다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 회전율 오차 분포:** yaw 기하 기준에 실패한 두 외부 이력에서 오차 상위 5%가 제곱오차의 78.8%·72.1%를 차지했다. 시간 창은 중첩되고 물리 동기 및 원인은 미검증이므로 유효성 기준이나 actor는 변경하지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 외부 기록 회전율 재검토:** 네 외부 이력에서 기존 기하 기준 통과는 롤 2/4, 피치 0/4, yaw 2/4였다. yaw 실패 두 이력도 상관은 높지만 절대 오차 기준을 초과했다. 기존 yaw 유효 계약의 근거는 과거 두 기록에 한정되며 일반 조건의 보증이 아니다. 물리 동기·오차 원인과 실주행은 미검증, 계약과 actor는 변경하지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 몸 감각 유효성 확인:** 외부 known DEV 739관측에서 피치·롤 자세와 yaw 회전율은 모두 유효했지만 roll·pitch 회전율과 선형가속도는 모두 무효였다. 상대풍도 실제 원천 미검증으로 결측이다. 관련 경계 테스트 12개 통과; 물리 동기·인과 기여·실주행 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 직접 하행 운동 경로 비교:** 같은 known DEV 739관측에서 직접 경로를 켜면 원본 조향 양수는 2개였으나 모두 코너 부호 평가 구간 밖이었다. 여섯 HS/VS 고정 개입을 포함해 유효 구간 일치는 모두 140/493이다. 60→30km/h 반사실, 실제 바람·물리 동기·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-31 — 제한된 시각 포트 검사:** known DEV 739관측에서 원본과 HS/VS 좌우에 ±0.5 log-odds를 가한 여섯 인위적 고정 조건 모두 조향 음수였다. 직접 하행 운동 평균 고정, 60→30km/h 반사실이며 모든 입력의 도달 가능성을 증명하지 않는다. 초기 집계 오류는 별도 보존 후 수정 재실행했다. 실제 바람·물리 동기·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시간 경계 변화분 강도 대조:** 외부 TRAIN에서 갱신 전→후 시간 투영 차이에 0·1·4·16·64배를 적용했다. TRAIN 양방향 균형 BCE는 각각 0.703633/0.703467/0.703065/0.702415/0.702209였지만 중립 0.693147보다 높았고 조향 부호는 모두 음수였다. TRAIN에서 고른 64배의 known DEV도 739관측 전부 음수, 부호 대조 140/493·균형 BCE 0.701182였다. 배수는 학습된 생리 값이 아니며 60→30km/h 반사실·같은 서킷, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 외부 시간 후보의 TRAIN 고정 재생:** 학습에 사용한 04·05·06 세 이력을 갱신 후 고정 재생해도 각 739관측의 조향 의도는 모두 음수였다. 세 이력 합산 양방향 균형 BCE는 초기 시간 후보 0.703633→갱신 후보 0.703467이었지만 중립 출력 0.693147보다 높다. 이 결과는 해당 학습/손실/3회 갱신의 한계이며 그 원인을 확정하지 않는다. 60→30km/h 반사실·20m 경로 보조 표적·생리/실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 외부 TRAIN 양방향 경로로 시간 경계 추가 학습:** 기존 시간 후보에서 시작해 외부 장착 TRAIN 3이력의 20m teacher 경로 부호를 손실에만 사용하여 이력당 1회씩 총 3회 갱신했다. known DEV에서 원본·초기·갱신 후보 모두 739관측 조향 음수, 경로 부호 대조 140/493이었다. 균형 BCE는 갱신 후보 0.704921로 중립 0.693147보다 높았다. 경로 부호는 즉시 조향 정답이 아니며 60→30km/h 반사실·같은 서킷·생리/실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시간 경계의 외부 장착 네 이력 검증:** 이전 6이력 시간 경계 학습에 쓰지 않은 외부 장착 4이력에서 원본·후보는 각 739관측 모두 조향 의도가 음수였다. 20m teacher 경로의 양/음 곡률은 합계 924/607관측이고 부호 대조는 모두 924/1531이었다. 시간 후보는 조향값을 바꿨지만 부호는 바꾸지 못했다. 60km/h 기록에 30km/h 과제를 준 반사실·직접 하행 운동 평균 고정·반복 사용 같은 서킷이며 경로 부호는 즉시 조향 정답이 아니다. 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 학습된 시간 경계의 FlyVis 방향 반응:** 저장된 중앙 FlyVis 반응으로 밝은/어두운 경계·두 반대 방향쌍·네 시야 16조건을 재생했다. 시간 경계 후보는 반대 방향 간 조향 의도 최대 차이를 13조건에서 늘리고 3조건에서 줄였다. 차이가 커진 것만으로 방향 부호·생리·운전의 정답은 아니다. 중앙 반응 16칸 복제, 한 시야씩 자극한 합성 공간 입력이고 직접 하행 운동은 평균으로 고정했다. actor 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시간 운동 경계의 TRAIN 6이력 학습:** 원래 TRAIN 4,449관측을 그대로 유지해 시간 경계만 이력당 한 번씩 총 6회 갱신했다. 직접 하행 운동 입력을 평균으로 고정한 known DEV 조향 RMSE는 원본→후보가 02에서 0.068832→0.068709, 07에서 0.096714→0.096647였으나 무조향 0.052572·0.093186보다 높았다. 시간 trace 입력을 평균으로 치환하면 추가 효과가 사라졌다. 양수 제동 표적·생리·물리 동기·독립 주행은 미검증, 후보 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시간 경계의 저장 FlyVis 방향 반응:** 저장 중앙 T4/T5의 밝은/어두운 4방향·3개 자극 속도를 각 시야에 합성 투입한 결과 반대 방향의 빠른−느린 상태 차이 RMS는 시야·조건별 0.721–1.476이었다. 다만 조작된 운동 특징 중 26.2–30.4%가 기존 TRAIN 정규화 clip에 걸렸다. 중앙 반응 16칸 복제와 한 시야 자극이며 자연 장면·생리·조향 검증이 아니다. 투영은 0, 학습/배포 0. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시간 차이 운동 시각 경계:** 네 시야 T4/T5 특징의 직전 입력을 원래 결정 간격에 유지하고 빠른/느린 상태 차이를 HS/VS에 투영하는 0 초기화 연구 경계를 추가했다. 저장 TRAIN 64관측과 원 비행 회로에서 중립 출력 차이 0, 시간 상태 차이 최대 norm 41.2474, 출력 기반 연결성 gradient norm 0.0005934를 확인했다. 50/200ms는 공학 가설이고 FlyVis 동역학 자체와 구분한다. 학습·생리·물리 동기·실주행 검증은 없으며 actor 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 운동 특징 변화량별 시간 대조:** 직전 2초 지연 대조의 공통 유효 구간을 teacher 오차가 아닌 시각 특징 변화량의 각 이력 상위 25%로 나누었다. 현재/2초 전 운동의 조향 RMSE는 상위 구간 02에서 0.01540/0.01620, 07에서 0.01446/0.01398이었다. 이력별 결과 방향이 달라 현재 특징의 우위를 일반화할 수 없다. 기준은 정규화된 저장 feature 변화이지 물리 optic flow가 아니며 같은 서킷·반복 DEV·현재 몸과 과거 시각의 반사실, 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 직접 하행을 포함한 운동 시각 지연 대조:** known DEV의 3초 이후 공통 유효 구간에서 원래/0.5초 전/2초 전 운동 특징의 조향 RMSE는 02에서 0.016709/0.016716/0.016738, 07에서 0.016729/0.016792/0.016902였다. 무조향 기준은 각각 0.006974·0.029548이다. 과거 영상 특징과 현재 몸을 짝지은 인공 반사실이며 물리 지연·독립 주행·생리는 미검증이다. 후보 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 직접 하행 경로를 포함한 네 시야 운동 대조:** 같은 known DEV 02·07의 16조합에서 직접 하행 운동 고정을 풀자 전체 운동 치환의 조향 평균 절대 변화가 고정 시 0.000358/0.000517에서 0.002927/0.003553으로 커졌다. 조향 RMSE는 고정/해제/무조향이 02에서 0.05857/0.05703/0.05257, 07에서 0.09547/0.09200/0.09319였다. 직접 경로에는 학습된 공학 경계가 포함되고 비선형 상호작용이 있어 실측 생리 기여율이 아니다. 반복 DEV·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 실제 저장 네 시야 운동 특징의 16조합:** 같은 서킷의 known DEV 02·07에서 4개 시야 T4/T5 특징의 모든 원본/평균 조합을 고정 비행 회로에 재생했다. 전체 운동 치환의 조향 평균 절대 변화는 0.000358·0.000517, 4개 단독 효과 합과 전체 효과의 차이는 0.00000257·0.00000258이었다. 기존 7조건 결과와 정확히 일치했다. 직접 하행 운동 포트를 평균으로 고정한 공학적 반사실이며 작은 상호작용이 생리적 독립성이나 주행 능력을 뜻하지 않는다. 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 저장 FlyVis 90°/270° 방향 대조:** 밝은/어두운 중앙 경계 반응을 네 시야별로 고정 비행 회로에 재생하자 원본 조향 의도의 반대 방향 최대 차이는 조건별 0.000590–0.005083이었다. 이전 0°/180° 실험에 직교 방향을 추가한 것으로, 중앙 반응을 16개 공간 칸에 복제하고 한 시야씩 자극한 합성 대조다. 실제 전후좌우 동시 장면·생리·코너 판단·주행 검증은 아니며 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 운동 시각과 속도 되먹임의 인과 대조:** 기존 저속 목표 반사실에서 네 시야 T4/T5 운동 특징을 TRAIN 평균으로 바꾸면, 속도 되먹임 후보의 마지막 50관측 평균 제동 요청은 0.49425→0.48887이었다. 기본 회로는 0.04511→0.01599였다. 시각 입력 치환과 공학 gate의 상호작용은 저속 150관측의 forward 의도 평균 절대값 0.01991이다. 저장 특징 반사실·같은 이력·고정 몸·합성 목표이며, 운동 시각의 생리적 기능이나 실제 제동 성능 검증은 아니다. 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 속도 되먹임을 더한 정지 경계 가설:** 목표속도와 유효 차량 속도의 양의 차이를 정지 포트 gate에 쓰는 별도 공학 가설을 추가했다. 인위적 1.8km/h 목표 반사실의 마지막 50관측 제동 요청 평균은 중립/좁은/속도 되먹임 0.0451/0.0523/0.4943이었다. 정상 30km/h known DEV의 제동 요청 >0.01은 중립→후보 5→5/583, 253→258/578이었다. 계수는 학습되지 않은 가설·v5 후보 이식이며 고정 몸 이력, 같은 서킷, 미검증 바람/동기·생리·실주행의 한계가 있다. 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 저속 목표에서 정지 게이트 반사실:** 저장된 몸 속도 30.83–30.89km/h 구간에 인위적으로 목표 1.8km/h를 준 150관측 중 마지막 50관측의 평균 제동 요청은 중립/넓은/좁은 경계 0.0451/0.4944/0.0523이었다. 좁은 경계는 이 급격한 목표 감속 조건에서 추가 제동 반응이 약했다. 몸은 가상 목표에 반응해 변하지 않은 기존 기록이며 실제 감속·정답·생리·주행 검증은 아니다. 후보 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 좁은 정지 게이트를 시각·몸 회로에서 대조:** 목표 속도 게이트를 기존 2m/s에서 0.1m/s로 좁혔다. 같은 30km/h known DEV 02·07 전체에서 후보와 중립 출력은 수치적으로 같았고, 인공 30→0→30km/h 반사실의 정지 마지막 50관측 제동 평균은 기존과 동일한 0.52968이었다. 목표 0.5m/s에서 게이트는 0.00674로 줄어 저속 제어를 약화시킬 수 있다. 과거 사후 512배 공학 후보·같은 서킷·합성 목표이며 실제 주행·생리·정지 성능 검증은 아니고 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시각 결합 정지 후보의 주행 구간 부작용:** 같은 30km/h 과제의 알려진 DEV 02·07에서 제동 표적은 모두 0인데 제동 요청 >0.01은 중립/후보가 각각 5→25/583, 253→294/578로 증가했다. 조향 RMSE는 0.06826→0.06804, 0.09334→0.09328로 약간 변했으나 둘 다 무조향 기준보다 나빴다. v5 사후 512배 후보의 v7 이식이며 동일 서킷·반복 DEV, 동기·생리·실주행 미검증이다. actor 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시각·몸 회로에 정지 경계 결합 반사실:** 기존 몸 전용 정지 후보와 v7 시각 회로의 graph·목표 포트 순서가 같음을 확인하고 연구용 결합 경계를 추가했다. 저장 네 시야·몸 이력에서 임의로 목표를 30→0→30km/h로 바꿨을 때 정지 마지막 50관측의 평균 제동 요청은 경계 0/후보에서 0.0518/0.5297이었다. 기존 후보는 TRAIN에서 사후 512배로 선택된 공학 가설이며 v5→v7 이식 및 다른 페달 변환, 실제 차량 반응·시각 동기·생리는 미검증이다. 목표 변화에 따른 실제 몸 반응이 아닌 오프라인 반사실이며 actor 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 동일 30km/h 과제의 연속 회로 평가:** 알려진 DEV 02·07의 원래 적용 조작 수신 표적에 대한 조향 RMSE는 모델/무조향이 각각 0.06826/0.05257, 0.09334/0.09319였다. 가속 RMSE는 모델/무가속이 0.12363/0.18809, 0.13643/0.18784였다. 유효 제동 표적은 전부 0이어서 제동 대응은 평가할 수 없다. 같은 서킷의 반복 사용 DEV·물리 명령 시각 미검증·바람 결측이며 실제 자율주행이나 독립 검증이 아니고 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 모델 요청과 native 페달 기록의 동시점 진단:** 같은 결정에 저장된 이동 중 735관측 중 모델의 제동 요청이 0.02를 넘고 native 가속 관측도 0.02를 넘은 경우가 315개였다. 30km/h 이하 28관측 중에도 13개가 있었다. 모델 과제는 30km/h, 원 기록 과제는 60km/h이며 두 값의 물리 동기·AI 소유 시간대/미래 조작 라벨은 검증되지 않았다. 연속 관측은 독립 표본이 아니므로 운전 정답이나 실패율로 해석하지 않는다. actor 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 연속 회로의 과제 입력과 페달 요청:** 연속 감각 경로에서 방향 과제값은 0만 허용하고 현재 체크포인트의 속도 과제는 0–30km/h로 제한했다. 원본 이력 739관측 재생은 이전 출력과 최대 2.46e-7 차이였고, 그 출력을 기존 부호 변환기로 해석하면 가속 요청 357·제동 요청 382관측이었다. 페달 최소 양수 투영 후 각각 331·358관측이다. 60→30km/h 반사실의 계산된 요청일 뿐 실제 적용·적절한 제동·운전 성능은 미검증이며 actor에 배포하지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 연속 시각·몸·바람 감각 재생:** 연구용 `FlightSensoryStream`은 직전 감각 입력을 다음 결정까지 유지하고 신경 상태를 보존하며 명시적 에피소드 재시작에서만 초기화한다. 외부 장착 04의 네 시야·몸 739관측과 738개 원래 간격을 재생한 출력은 기존 원본 회로 재생과 최대 2.46e-7 차이였다. 바람은 미검증 결측이며 60→30km/h 과제 반사실이다. 실제 actor·동기화·생리·운전 검증은 아니며 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 상대풍 관측 시각 경계:** 바람 관측에 유효성을 계산한 결정 시각을 보존하고, 실험용 시각·몸·바람 결합 회로의 `drive_observed`가 정확히 그 결정에서만 이를 받도록 했다. 원본 회로·저장 TRAIN 9관측에서 미검증 바람은 중립, 합성 유효 바람은 감각 포트에 도달, 다음 결정으로 재사용은 거부됐다. 이는 수신시각 경계와 합성 입력 시험일 뿐 실제 바람·물리 동기·생리·운전 검증이 아니다. 기존 저수준 `drive` 및 실제 actor에 자동 연결하지 않았고 후보 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — VS 후보의 이력별 제외 검증:** 외부 장착 TRAIN 세 이력 중 하나씩 제외하고 나머지 둘로 VS 경계만 학습한 뒤 제외 이력을 재생했다. 20m 교사 경로 부호 대조는 원본→후보가 04에서 122→62/231, 05에서 359→273/467, 06에서 285→239/340으로 세 경우 모두 악화했다. 운동 특징을 평균으로 치환하면 원본과 후보의 조향 차이는 최대 3.38e-7이었다. 같은 서킷 이력이며 기초 회로까지 독립인 시험은 아니다. 경로 부호는 즉시 조향 정답이나 랩 성능이 아니며 60→30km/h 반사실·생리·실주행 미검증, 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — VS 후보의 운동 시각 지연 대조:** known DEV의 공통 473관측에서 원본/0.5초 전/2초 전 운동 특징의 20m teacher 경로 부호 대조는 199/196/169개였다. 양 표적 일치는 130/120/85, 음 표적은 69/76/84로 서로 다르게 변했다. 현재 몸과 과거 영상을 짝지은 오프라인 반사실이며 실제 지연·생리·주행 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 운동 시각→VS 보조 표적 학습:** 외부 장착 TRAIN 3이력에서 teacher 20m 경로 부호를 입력이 아닌 인공 VS 좌우 보조 표적으로 사용해 VS 경계만 200회 학습했다. known DEV에서 20m 표적에 대한 조향 부호 대조는 원본 140/493→후보 215/493이었으나 고정 양의 조향 기준 353/493보다 낮다. 모든 운동 특징을 평균으로 치환하면 후보가 다시 140/493이 됐다. 전류는 거의 0·1까지 포화하며 표적은 생리나 즉시 조향의 정답이 아니다. 60→30km/h 반사실·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 실제 저장 영상의 VS 입력 분포:** 외부 장착 known DEV에서 원본 VS 포트 입력은 0.0590–0.1983, 학습 후보는 0.0412–0.3059였다. 좌측 평균−우측 평균은 후보에서 −0.09768~0.00476으로 이전 인공 ±1 좌우 차이와 달랐다. 이는 공학적 입력 전류이며 신경 생리나 실제 조향 가능 범위의 증명은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — VS 운동 입력 전용 학습:** 외부 장착 TRAIN 3이력에서 VS 34행만 학습하고 HS 8행을 동결해 24회 갱신했다. 기존 DEV의 조향 부호는 원본 음/양 737/2, 후보 738/1이며 20m 경로 부호 대조는 둘 다 양 140/140·음 0/353으로 개선되지 않았다. VS 제한과 학습률 50배를 함께 바꿨으며 60→30km/h 과제 반사실·known DEV이므로 생리·실주행 증거는 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 고정 비행 회로의 시각 포트 조향 범위 표본:** 기존 TRAIN 한 이력에서 좌/우 VS 포트에 1/0의 인공 전류를 주면 조향 의도가 양수 737/741, 반대 전류는 음수 741/741이었다. HS만 같은 방식으로 바꾼 두 조건은 모두 음수였다. 동일 몸·시간과 직접 하행 운동 평균을 유지한 모델 반사실이며 실제 시각·생리·주행 검증이나 전체 도달 범위의 증명은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 운동 경계 강도 TRAIN 선택:** 기존 외부 장착 TRAIN 3이력에서 학습 운동 delta 0·1·8·32·128배를 고정 회로로 대조했다. 클래스 균등 BCE는 0.703593→0.702040으로 128배가 최저였지만 중립 기준 0.693147보다 높았다. TRAIN에서 선택한 128배를 known DEV에 재생해도 원본과 모두 739관측 조향 음수로 양/음 teacher 곡률 부호 대조 140/140·0/353이었다. 기존 60km/h 이력에 30km/h 과제를 준 반사실이며 생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 양방향 선행 경로 보조 학습:** 외부 장착 TRAIN 3이력의 네 시야 FlyVis·몸 이력에서 20m teacher 경로 좌우를 손실에만 사용해 고정 비행 그래프의 평균 기준 운동 경계만 24회 갱신했다. 별도 known DEV의 원본·후보 모두 조향 의도는 739관측 중 음수 737·양수 2였고 경로 부호 대조는 양 140/140·음 0/353으로 개선이 관찰되지 않았다. 모델 목표 30km/h vs 원 기록 60km/h의 반사실이며 교사 곡률은 즉시 조향의 완전한 정답이 아니다. 생리·바람·제동·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 양방향 외부 장착 이력의 고정 비행 회로 재생:** 저장 네 시야 FlyVis·body21 739관측을 원본/평균 기준 후보에 재생했다. 20m 교사 경로의 양·음 곡률은 140·353관측인데 두 모델의 전체 입력 조향 의도는 음수 737·양수 2였고 곡률 부호 대조는 양 140/140·음 0/353이었다. 60km/h 교사 주행을 30km/h 목표로 재생한 반사실·다른 카메라 장착의 known DEV이므로 실제 주행이나 독립 검증은 아니며 경로 곡률 부호는 즉시 조향의 완전한 정답이 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 기존 DEV의 양방향 선행 경로 검증 결여:** 저장 teacher 20m 경로의 |곡률|>0.001/m인 DEV 02·07은 각각 한 방향 61·552개, 반대 방향 0개였다. 직접 하행 운동을 평균으로 고정한 원본·새 후보의 두 이력 조향 의도는 전체 742·741관측 모두 같은 부호이며, 표적 부호 일치는 TRAIN 다수 방향 고정 기준과 같았다. 동일 트랙의 사후 진단이며 실제 양방향 인식·주행 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 평균 기준 고정 후보의 이동 경계 반응:** 저장된 FlyVis 밝은/어두운 경계와 0°/180° 반응을 각 시야의 합성 공간 입력으로 고정 비행 회로에 재생했다. 후보와 원본의 반대 방향 조향 차이는 시야별 최대 0.000152–0.000923 달랐고 평균 입력 기준 오차는 1.53e-7이었다. 이는 중앙 반응 복제의 모델 실험이며 실제 겹눈 공간·생리·코너 주행 검증이 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 평균 기준 고정 운동 시각 후보:** T4/T5 운동 특징이 TRAIN 평균일 때 기존 시각 입력을 유지하는 학습 경계를 추가하고 TRAIN 6이력에서 운동 편차 가중치만 72회 갱신했다. 기존 DEV 조향 RMSE는 원본→후보 02에서 0.06883166→0.06883214, 07에서 0.09671389→0.09672037로 미세 악화했다. 운동 평균 치환 시 원본과 후보의 오차는 각각 완전 일치했다. 테스트 9개·Ruff 통과, 생리·제동·실주행 미검증 및 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 새 후보의 운동 시각 기여 대조:** 직접 하행 운동 입력을 고정하고 64관측 후보의 네 시야 운동 특징을 TRAIN 평균으로 치환해도 조향 RMSE는 기존 DEV 02 0.066575→0.066573, 07 0.096085→0.096135에 그쳤다. 원본 대비 후보의 조향 개선 대부분이 운동 특징 치환 후에도 남아, 이 조건에서 운동 시각 활용에 따른 개선으로 보기 어렵다. 저장 특징 반사실이며 생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 동일 갱신 간격의 시각 시간 기울기 비교:** 같은 6개 TRAIN 이력·64관측당 1회·72회 갱신에서 8관측 기울기 누적과 64관측 전파를 비교했다. 기존 DEV 조향 RMSE는 8/64가 02에서 0.066632/0.066575, 07에서 0.096100/0.096085로 차이가 작고 둘 다 무조향보다 나빴다. 제동 표적은 없으며 생리·실주행 미검증, 후보 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — HS/VS 64관측 학습 대조:** 원래 고정 회로와 TRAIN 6이력 전체로 시각 경계만 72회 갱신했다. 기존 DEV 조향 RMSE는 원본/8관측/64관측/무조향이 02에서 0.068832/0.058571/0.066575/0.052572, 07에서 0.096714/0.095475/0.096085/0.093186이었다. 8관측은 552회 갱신해 조건은 동등하지 않으며 두 후보 모두 무조향 기준에 미달한다. 제동·생리·실주행 미검증, 미배포. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시각 경계의 시간 기울기 비교:** 기존 TRAIN 128관측과 고정 회로에서 8·32·64관측 기울기 절단을 비교했다. 출력 최대 차이는 2.38e-7, 시각 경계 기울기 norm은 0.000110·0.000282·0.000300이었다. 단일 구간의 신호 차이이며 더 긴 학습이나 주행 개선은 검증되지 않았다. 파라미터 갱신·actor 0. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시각 운동 효과와 몸 회전 부호:** 8개 저장 이력에서 원래 운동 특징과 평균 대조의 조향 차이를 직전 yaw와 비교했다. 반대 부호 비율은 TRAIN 00 2/423, TRAIN 01 4/736, 기존 DEV 02 3/41, DEV 07 290/433으로 이력마다 달랐다. 평균중심 채널 교환 대조도 별도 보존했다. 전체 이력의 반사실이며 부호만으로 안정성·생리·주행을 판정할 수 없다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 운동 방향 채널 교환의 기준값 대조:** 네 시야의 T4/T5 반대 채널을 그대로 교환한 8개 이력의 조향 변화 평균은 0.0111–0.0154였다. 사후 대조로 TRAIN 평균을 고정하고 변화분만 교환하면 0.000234–0.002284였다. 알려진 DEV 조향 RMSE는 원본 0.058571·0.095475에서 각각 0.058604·0.095426으로 변했다. 특징 반사실일 뿐 실제 반대 영상의 시각망 재실행·생리·주행 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — T4/T5 인덱스의 캐시 대조:** 기존 8개 이력 각각의 운동 뉴런 5,768개가 manifest가 가리키는 현재 FlyVis 캐시의 타입·격자 좌표와 전부 일치했다. 8개 테스트·Ruff 통과. 과거 node 배열 해시가 남지 않아 당시 캐시와 바이트 동일성은 미검증이며 생리·실주행 증거는 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 네 시야 운동 시각의 등록 검증:** 저장된 T4/T5 채널·시야 선언과 721개 수용기 좌표·body ray를 카메라 기하에 대조하는 경계를 추가했다. 기존 8개 이력은 모두 기하 일치, 이전 yaw 진단 예측 최대 차이 0이며 순서 오류·중복 인덱스 거부 테스트 7개와 Ruff 통과. 선언된 뉴런 타입의 원본 connectome 독립 검증·생리·실주행은 아직 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 실제 코너 진단의 네 시야 밝기 변화:** 학습 불가로 지정된 corner4 기록 347구간에서 시야별 직전 망막 밝기 변화와 다음 구간 회전을 사후 비교했다. 부호 평균의 회전 상관은 전·좌·우·후 0.029·−0.020·0.124·−0.003이며 큰 양·음 회전 6·12구간은 모두 기록 앞 절반에 집중됐다. 이는 밝기 기술통계이지 광학 흐름·FlyVis·주행 검증이 아니다. 학습·actor 0. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시각·몸 센서 명시적 에피소드 초기화:** 네 시야 retina와 producer 시각 retina에 명시적 재시작 API를 추가해 이전 시야 대비·capture·generation·몸 이력과 producer 시각 이력을 함께 지운다. 재시작 후 새 객체와 출력이 완전히 같고 첫 프레임의 운동 대비는 무효다. 연속 상태는 유지하며 자동 초기화하지 않는다. 테스트 13개·Ruff 통과, runtime lifecycle 연결과 실차 검증은 아직 없다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — DNb06 개별 연결 제거 대조:** 네 시야·몸 이력 8개에서 사후 선택한 네 개의 우측 DNb06 입력 연결을 하나씩 제거해 원본과 운동 평균 대조를 함께 재생했다. PS213 연결 제거에 따른 조향 의도 차이의 차이 평균 절댓값은 두 학습 이력에서 0.0000302·0.0000224였고, 제거 전 운동 시각 효과는 0.001962·0.001622였다. 기준 재생 오차 0, 단일 스텝 행렬 제거 검산 오차 0. 고정 모델의 반사실이며 생리·실주행 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 실제 영상 이력의 DNb06 입력 분해:** 기존 8개 네 시야·몸 이력에서 재생 출력과 신경 상태는 이전 감사와 완전 일치했다. 원본 운동 시각은 양수이고 운동 평균 대조는 비양수인 우측 DNb06 시점은 훈련 2개 이력에서 168·83개, 나머지 6개에서 0개였다. 선택된 구간의 입력 차이는 PS352·PS213·DNge043·VST2 등 고정 모델 연결 항으로 분해됐다. 사후 선택된 관측이며 연결 절제나 생리 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시각 자극의 DNb06 입력 차단 진단:** 저장된 경계 자극의 9조건을 재생해 이전 출력·신경 상태와 완전히 일치시켰다. 반응이 거의 없던 두 번째 DNb06은 반대 방향 간 net 차이가 있지만 0.16초부터 모든 조건에서 net ≤0이라 모델의 `relu(tanh(net))`에서 차단된다. 실제 뉴런의 생리나 전체 주행 조건으로 일반화할 수 없는 합성 공간 자극 진단이며 가중치 변경·배포는 없다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 정지 목표 이력의 실험적 hysteresis:** 목표 ≤0.02m/s에서 stop 상태를 켜고 ≥0.1m/s에서 해제하는 공학적 상태 경계를 기존 DNg 포트에 연결했다. 기존 몸 이력의 0↔0.05m/s 반복 반사실에서 brake 범위는 좁은 gate 0.835–0.994, hysteresis 0.992–0.994였고 0→0.5m/s 해제는 두 조건 모두 약 0.245초였다. 0.05m/s 요청은 정지를 유지하는 명시적 절충이며 신경/물리 상태는 재생 중 유지했다. 오프라인·미배포·실제 차량 및 생리 미검증, 관련 테스트 5개 통과. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 정지→저속 전환과 목표 떨림 반사실:** 원본 1903의 정차 몸 이력을 유지하고 목표만 0→0.5m/s로 바꿨을 때 좁은 gate는 약 0.245초 뒤 제동 출력 <0.02, 넓은 gate는 기록 끝까지 미도달이었다. 0↔0.05m/s 0.4초 반복 시 좁은 gate의 4초 제동 범위는 0.835–0.994였다. 목표는 인위적이며 차체 반응은 재계산되지 않아 실제 재출발·안정성 검증이 아니다. 후보 미배포. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 정지 강도 후보의 저속 부작용과 대안:** 원래 stop gate로 목표 1m/s·실제 몸 속도 <0.2m/s인 사후 진단 186관측의 평균 제동이 0.7569였다. zero 목표 부근에서만 정지 신호를 주는 0.1m/s 공학적 gate 후보는 같은 반사실에서 0.000489, 목표 0의 평균 제동은 0.98847로 유지했다. 몸 이력은 실제이나 고정 목표는 인위적이고 차량 반응이 재계산되지 않은 오프라인 시험이다. 기존 1903 진단에서 전제동 결과가 유지됐으나 생리·실차·독립 검증은 아니며 미배포다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 정지 신호 강도와 회로 표현 가능성:** 기존 학습 후보의 포트 계수 방향을 고정하고 0·1·8·64·512배를 TRAIN에서 사후 비교했다. 512배 조건은 지속 전제동 평균 0.9935이며 별도 기존 1903 진단에서도 0.9935·전제동 MSE 0.7362→0.0327이었다. 이는 강한 공학적 개입·외부 목표속도 기반의 오프라인 결과이며 생리/안전한 실제 주행이나 독립 평가가 아니다. 가속 MSE는 0.04486→0.04565로 악화했고 후보 미배포다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 전체 이력 중 계수 고정 제동 학습:** 1909 TRAIN의 각 전체 재생 중 정지 경계 계수를 고정하고 TBPTT64 기울기를 누적해 재생당 한 번씩 총 4회 갱신했다. TRAIN 전제동 MSE 0.731633→0.717796, 알려진 1903 진단 0.736177→0.722664로 줄었다. 그러나 3초 초과 전제동 163관측의 진단 평균 출력은 0.00974(목표 1), 기존 codec 기준 154개는 0으로 투영되어 정지 유지 미해결·미배포다. 고정 weights 재생은 explicit episode restart이고 독립 주행·시각·생리 검증이 아니다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 정지 가중 학습 중 출력·기울기 추적:** 1909의 유지 전제동 164관측은 목표속도 0·차속 거의 0이었다. 4배 가중 학습을 동일하게 재현해 기록하자 학습 중 164개 모두 brake 0이었고, 뒤의 64개·51개 유지 구간은 전체 기울기가 0이었다. 초기 및 최종 고정 재생의 해당 출력은 0보다 커, 학습 중 이어지는 상태/갱신이 만든 차이를 별도 보존한다. 실차·생리·독립 검증은 아니다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 지속 제동 출력과 가중 학습 확인:** 1903 진단에서 3초 초과 전제동 163관측의 원본/후보 제동값은 모두 clamp 내부였고 중립에 가까워 평균 각각 0.000143/0.001134였다. 1909 TRAIN의 유지 표적 164관측에 제동 손실 4배를 적용해 11회 갱신했으나 기존 제동 전용 후보와 계수·고정 출력이 완전히 같았다. 초기 그래프에서 유지 구간 기울기는 비영이며 결과가 같은 유일한 원인은 미확정이다. 실차·시각·바람 검증 없이 미배포다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 제동 전용 정지 경계의 큰 학습률 대조:** 기존 1909 TRAIN 전체 이력과 64관측 구간을 유지하고 Adam 학습률만 0.001→0.01로 바꿔 11회 갱신했다. 고정 재생 제동 MSE는 TRAIN 0.193343→0.193649, 알려진 1903 진단 0.196665→0.196998로 악화했고 3초 이상 전제동 163관측의 평균 출력은 0이었다. 단일 사전 정의 대조이며 실제 주행·시각·바람 검증이 아니고 미배포다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 제동 손실만으로 정지 포트 학습:** 고정 비행 그래프에서 정지 경계만 제동 손실로 11회 갱신하자 TRAIN 제동 MSE 0.193343→0.192965, 기존 별도 진단 0.196665→0.196291로 소폭 감소했다. 그러나 진단의 전제동 3초 초과 163관측에서 후보 평균 제동은 0.00113(표적 1)으로 지속 정지 문제는 미해결이다. 별도 기록도 이미 알려진 동일 트랙 진단이며 실제 주행·생리·시각/바람 검증은 아니다. 후보 미배포. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 포트별 정지 경계의 가속·제동 기울기:** 원본 TRAIN의 고정 회로를 64관측 단위로 재생해 두 페달 손실 기울기를 따로 계산했다. 16구간 중 양쪽이 0이 아닌 구간은 4개이며 그중 1개는 cosine −0.997로 거의 정반대였다. 나머지 3개는 같은 방향이었고 절댓값이 작았다. 원본 출력은 완전히 재현됐지만 구간 경계에서 기울기는 끊기므로 학습 실패의 원인을 확정하지 않는다. optimizer·actor 0. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 포트별 정지 학습의 긴 시간 기울기:** 8관측 대신 64관측 단위로 기울기를 전파하면서 원래 986상태의 신경 상태·시간을 유지해 한 번 학습했다. 15회 갱신 후 같은 TRAIN 제동 MSE는 0.193343→0.193515, full-brake MSE는 0.731633→0.732284로 여전히 악화했다. 구간 경계에서는 기울기가 끊기며 새 시각·실차·독립 검증은 아니다. 후보는 미배포다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 포트별 정지 신호의 비행 회로 학습:** 기존 1909 TRAIN 986상태에서 고정 그래프·페달 readout은 유지하고 DNg 목표 포트 29개에 별도 정지 가중치를 101회 학습했다. 같은 TRAIN 제동 MSE 0.193343→0.193567, full-brake MSE 0.731633→0.732481로 악화해 후보를 배포하지 않았다. 이전 collector 소스 두 개의 현재 해시는 달라 원래 해시의 보존본을 오프라인 출처 검사에 한정해 사용했다. 실제 시각·바람·주행 검증은 아니다. [상세](body-feedback-input-intervention-20261030.md).
+
+**2026-10-30 — 실제 이력에서 고정 회로의 yaw 피드백 부호:** 기존 몸 yaw 포트 제거 재생을 분해한 결과, 회전 크기 >0.02rad/s인 알려진 개발 기록의 41구간 중 40개, 433구간 중 429개에서 회전 입력에 따른 좌회전 의도 차이는 직전 yaw와 반대 부호였다. 전체 이력을 0으로 바꾼 반사실 비교이며 국소 뉴런 반응이나 실차 안정화 검증이 아니다. 앞서 yaw 제거 시 교사 오차가 소폭 줄었던 결과도 그대로 유지한다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 실제 코너 기록의 바람 후보 크기:** 두 기록에서 바람 후보 크기의 중앙값은 각각 0.0810·0.0813m/s, 차량 이동 중 바람/차량 속도 비율 중앙값은 0.49%·0.48%였다. 날씨 속도 API는 두 기록 모두 0으로 원천 차이는 미확인이다. 독립 바람 효과 학습 증거로 사용하지 않는다. 상대풍 변환이 유한 입력의 연산 오버플로로 무한값을 유효하게 내보내지 않도록 수정했으며 테스트 6개·Ruff 통과. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 기존 시각·몸 이력에서 인과 회전 평균의 회로 영향:** 저장된 네 방향 FlyVis 반응과 몸 감각 8개 이력(학습 6·이미 알려진 개발 2)을 고정 비행 그래프에 재생하고 결정시점 yaw의 직전 100ms 평균을 몸 포트에만 주었다. 개발 조향 RMSE는 0.058571→0.058585, 0.095475→0.095485로 소폭 악화했다. 원본 기준 재생 오차는 0, 각 이력 첫 3시점은 평균 부족으로 원본을 유지하고 mask를 저장했다. 원본 native 패킷을 다시 정렬한 실험이나 새 FlyVis 학습·실주행이 아니며 후보 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 회전 구간 후보의 신선도 수정 및 다른 기록 비교:** 마지막 패킷이 가장 늦은 렌더 시작 상한에서도 50ms 이내여야 유효하도록 수정했다. 기존 두 기록에서 선택 구간·예측은 동일하다. 거의 직진인 별도 77구간의 구간 평균 RMSE는 0.000337, 최신 패킷은 0.000335rad/s로 개선이 확인되지 않았다. 양방향 회전은 없어 독립 코너 검증이 아니며 물리 동기화·actor 적용은 미검증이다. 관련 테스트 7개·Ruff 통과. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 미래 패킷을 제외한 몸 회전 구간 경계:** 렌더 시작 하한 이전 host 수신만 사용하고 기록 부족·50ms 초과 공백을 무효로 하는 구간 평균을 추가했다. corner4 이동 347구간의 오프라인 수평 방향 변화율 비교에서 해당 평균 RMSE는 0.00342rad/s, 최신 패킷 하나는 0.00716이었다. 이는 후향 단일 기록의 비교로 물리 시간·축·생리·실제 조향 개선은 미검증이며 actor에 연결하지 않았다. 테스트 2개와 Ruff 통과. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — native 회전 패킷 구간 적분 대조:** 같은 이동 347구간에서 호스트 수신 시각의 모든 회전 패킷을 오프라인 보간·적분하면 중간 시계 경계 기준 방향 변화율 RMSE는 0.00312rad/s로, 기존 양 끝 패킷 평균의 0.00446보다 작았다. 양의 회전 6구간 RMSE는 0.01575로 음의 회전 12구간의 0.000923보다 크다. 미래 수신도 쓰는 후향 진단이며 물리 시각 동기화·actor 적격성은 증명하지 않는다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 새 양방향 기록의 회전축 대조:** 이동 중 347개 인접 구간에서 native 각속도 축 1과 후보 수평 방향 변화율의 상관은 0.928, 원점 기울기 1.024다. 방향 변화율 ±0.02rad/s를 넘는 구간의 부호는 각각 6/6·12/12 일치했지만 양 방향 RMSE는 0.0255·0.00191rad/s로 차이가 컸다. 물리 시간 동기화·독립 축 단위 검증 및 학습/actor 적격성을 뜻하지 않는다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 양방향 회전 시각·몸 진단 수집:** 기존 150ms 중단 제한을 유지하고 카메라 주기 90ms·최대 600그룹으로 변경한 30초 AI 진단이 정상 종료됐다. 422그룹 중 이동 348그룹 전부 및 전체 359그룹에서 네 렌더 전에 차체 패킷의 호스트 수신이 입증됐다. 63그룹은 무효다. 수평 방향 변화율 ±0.02rad/s 초과는 각각 6·12구간이며 이 값은 진단이다. 원본 1,688개 이미지와 4×721 망막·native 배열은 D에 보관했다. 물리 노출 동기화·축 등록·FlyVis 학습 및 actor 주행은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 두 번째 코너 진단 조기 종료:** 이어지는 30초 AI 기록은 카메라 stale 제한으로 API 실패·안전 정지했다. 실패 전후 원본 263그룹에는 이동 211구간 중 방향 변화율 +0.02 초과 65개, −0.02 미만 43개가 있었다. 종료 직전 프레임 시각 간격은 235ms였고 기존 보호 제한은 150ms다. 1,052개 이미지와 native 원본을 D에 해시 보관했으며 원래 서비스를 복원했다. 실패 기록은 학습 불가이고 시각·몸 물리 동기화는 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 네 시야·몸 진단의 실제 코너 기록:** 기존 CSP lifecycle의 30초 엔진 AI 제한 주행에서 267개 네 시야 그룹·native 몸 기록을 확보했다. 최대 속도 61.23km/h, 이동 224프레임이며 수평 방향 변화 범위는 0.829rad다. 이동 인접 223구간 중 한쪽 방향 변화율이 +0.02rad/s를 넘은 구간은 38개, 반대 방향은 0개다. 1,068개 PNG를 D에 해시 보관하고 4×721 망막으로 투영했다. 물리 동기화·바람·축 등록 및 FlyVis 학습은 미검증, actor 미배포이며 원래 카메라 서비스는 복원했다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 최근 네 시야 진단의 회전량 확인:** 원본 해시를 검증한 저속 AI 기록 5개는 각 이동 구간 77개에서 수평 차체 방향 변화율이 +0.02 또는 −0.02 rad/s를 넘은 구간이 없었다. 최근 카메라·몸 결합 기록에서 회전 부호·동기화를 검증하기에는 회전 자극이 부족하다. 이 수치는 영상 진단용 선택 기준이며 생리 검증이 아니다. 이전의 별도 yaw 축 대조 증거는 유지한다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 시각·몸 수신 순서 경계 수정:** 수신 시각이 네 시야의 가장 이른 렌더 시작 하한과 정확히 같으면 선행을 증명하지 못하므로 제외한다. 기존 240그룹 원자료를 다시 처리한 결과 105개 일치·135개 미일치와 전체 입력 배열 SHA256이 이전과 같다. 단위 테스트 4개와 Ruff 통과. 물리 샘플·노출 동기화나 actor 적격성은 여전히 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+**2026-10-30 — 기존 실제 주행 기록의 몸 회전 입력 개입:** 4방향 시각 반응과 몸 감각을 기록한 기존 8개 이력(학습 6, 기존 개발 2; 총 5,932 관측)을 고정 회로로 재생했다. 몸 yaw 입력 포트만 0으로 바꾸면 두 개발 이력의 평균 절대 조향 출력 차이는 각각 0.000676, 0.002151이었다. 교사 조향 RMSE는 각각 0.058571→0.058394, 0.095475→0.094827로 작아져 현재 이 입력의 주행 개선 효과는 입증되지 않았다. 하행 yaw 포트만 바꾼 차이는 각각 0.00000342, 0.00000918였다. 시각 경계의 일부 직접 운동 특징은 학습 평균으로 고정한 실험이고 독립 평가나 실제 주행 검증이 아니다. 기존 FlyVis 저장 반응을 재사용했고 원래 회로 기준 재생은 이전 결과와 정확히 일치했다. [실험 상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 240그룹의 네 방향 망막 투영과 렌더 전 차체 native 값·host 수신 표시를 D에 결합했다. 105그룹만 수신이 증명되며 135그룹은 무효다. 축 등록·물리 동기화·FlyVis 실행은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 네 시야 렌더 전 수신이 확실하고 host age 상한 50ms 이내인 몸 패킷만 선택하는 경계를 추가했다. 기존 240그룹 중 105개, 이동 78개 전부에서 선택됐으나 물리 노출 동기화·actor 적격성은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 새 저속 AI 진단의 CSP–host 시계 경계(4.226ms)와 native 수신을 비교했다. 가까운 107쌍은 렌더 전 48·후 40·불확실 19이며 물리 노출 동기화는 미검증이다. 960개 PNG는 D에 hash 보관했다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 실제 저속 AI 250그룹 전부에서 네 렌더 전후 CSP 그래픽 프레임과 차량 timestamp가 같았다. 그래픽 갱신값이므로 실제 노출·물리 시간 일치는 미검증이다. 원본 영상은 D에 hash 검증 보관했다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 선렌더 저속 AI 진단 250그룹의 네 이미지 hash를 게시 후 host에서 기록하고, 종료 후 원본 및 D 보관 ZIP과 모두 대조했다. 물리 노출·몸 시간 정합과 학습/actor 적격성은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 저속 AI 선렌더 진단의 네 방향 1,000개 PNG와 250그룹을 D에 해시 보관하고 4×721 망막 입력으로 투영했다. 캡처 당시 이미지 hash·물리 시각 정합은 없어 학습·actor에는 부적합하다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 기존 AI가 실제로 움직인 각 78프레임에서 네 시야 선렌더 후보의 렌더 시작 간격 중앙은 12.86→1.16ms였다. 서로 다른 단일 저속 진단이며 물리 노출·배우 주행은 미검증, 원래 서비스는 복원했다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 정지 차량의 가상 시야를 회전시키는 26프레임 비교에서 새 렌더 순서의 시야 시작 간격 중앙값은 13.50→1.09ms였다. 실제 차량 이동·물리 노출 정합은 미검증이며 원래 서비스를 복원했다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 정지 진단에서 네 시야 먼저 렌더 후 저장하는 후보는 렌더 시작 간격 중앙값 13.85→1.18ms였다. 각 4프레임·첫 프레임 큰 지연, 이동·물리 노출 미검증이며 기존 서비스로 복원했다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 실제 76결정 기록에서 네 시야 렌더 시작 차이는 중앙 13.55ms·최대 24.04ms였다. 몸 수신은 시작보다 뒤였으나 영상 노출·물리 샘플 시각은 확인되지 않아 동기 감각으로 인증하지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 합성 yaw의 입력 포트 개입에서 조향 intent 변화는 몸 감각 포트에 주로 의존했고 전진 intent는 하행 포트에 주로 의존했다. 특정 고정 모델의 반사실 결과이며 실제 페달·생리 기능은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 합성 yaw 실험에서 DNb06 두 상태를 동일 시각의 무회전 이력으로 고정하자 조향 intent가 소폭 변했다. 고정 모델의 개입이며 실제 비행 생리·주행 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 고정 그래프에서 yaw 경계 포트 201개 중 195개와 시각 포트 42개 모두 좌우 DNb06에 비영 모델 간선 경로가 있다. 구조적 도달 가능성일 뿐 실제 신호 결합·생리 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 고정 비행 그래프에서 합성 왼쪽 운동 특징과 yaw −0.5·0·+0.5rad/s를 조합했다. 해당 조건의 시각–yaw 상호작용은 작고 DNb06_R은 변하지 않았다. 합성 경계 실험이며 생리·주행 검증은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 저장된 네 방향 운동 반응으로 몸 yaw를 추정하는 진단 readout을 TRAIN 묶음 교차검증으로 fit했다. known DEV 중 둘은 무회전 기준보다 나빠 배우에 연결하지 않았다. 비행 회로나 원본 시각망 학습은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 기존 네 방향 운동 반응과 몸 yaw의 상관을 원본 14이력에서 비교했다. TRAIN에서 고른 왼쪽 운동 채널은 DEV 3개에서 음의 상관을 보였으나 TRAIN 1개는 양의 상관이었다. 시간 정합·방향 선택성은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 고정 시각 readout의 절단을 제거하는 사후 대조에서 known DEV 세 이력 모두 곡률 RMSE가 약간 악화했다. 극단은 주로 운동 특징이며 단일 구간의 큰 변화도 있어 무절단 후보는 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 기존 네 방향 시각 readout의 입력 분포를 원본 14이력으로 점검했다. 알려진 외부 DEV의 36.3% 관측에서 896개 중 적어도 하나가 기존 정규화 절단 범위를 넘었지만, 이것이 실패의 원인인지는 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 실제 제동 몸 이력에서 고정 목표 30·15·0km/h의 모델 평균 제동은 0·0.278·0.697이었다. 하중 치환의 제동 변화는 작았다. 외부 목표를 주는 영상 없는 오프라인 진단이며 실제 주행은 미검증이다. [상세](body-feedback-input-intervention-20261030.md).
+
+> 2026-10-30: 실제 제동 진단의 몸 이력과 고정 과제 명령을 비행 그래프로 재생했다. 하중 치환은 조향·가속 출력에 작은 변화를 냈지만 제동은 두 조건 모두 0이었다. 영상 입력 없는 진단이며 실제 주행은 아니다. [상세](body-feedback-input-intervention-20261030.md).
+
+> 2026-10-30: 학습 금지된 실제 제동 진단 기록에서 전륜 하중 비율이 이동 제동 중 증가했고, 기존 몸 감각 후보의 201개 경계 출력이 하중 치환에 반응했다. 전체 회로·조작 효과는 미검증이며 후보는 미배포다. [상세](body-feedback-input-intervention-20261030.md).
+
+> 2026-10-30: 종료된 이전 카메라 요청이 재시작 후 반복 오류를 내던 문제를 고쳤다. 실제 정지 세션에서 배포 뒤 대기 상태와 새 네 방향 진단 2프레임을 확인했다. 동시 노출·배우 주행은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 기존 AI 이동 기록의 속도·차체 축 투영에서 1m/s 초과 78개 전부 전방 속도가 양수였다. 후보 상대풍과 시간 기록도 진단했지만 바람 원천·물리 동기화는 미검증이며 actor에 넣지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: PS213→DNb06_R의 glutamate 부호는 직접 확인된 생리값이 아닌 기존 모델 가정이다. 단일 연결 부호 대조에서 R 상태는 크게 변했지만 알려진 DEV 조향 변화는 작고 일관되지 않아 실제 부호·운전 효과는 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 모델에서 PS213→DNb06_R 입력을 제거하면 오른쪽 상태가 크게 활성화됐지만 known DEV의 조향 오차는 개선됐다고 볼 수 없었다. 모델 부호 가정의 반사실 개입이며 실제 생리·주행은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 원래 8개 시각·몸 이력에서 DNb06_R은 일부 구간에 반응했지만 6개 이력은 결정 시점 양의 순입력이 1회뿐이었다. 고정 모델에서 양·음 입력 항을 분해했으며 실제 초파리 생리나 운전 기여는 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 네 방향의 합성 운동 특징 펄스 64조건에서 DNb06_L은 반응했으나 DNb06_R은 거의 반응하지 않았다. 세 시점의 R 모델 순입력은 모두 음수였다. 합성 모델 진단이며 실제 초파리 생리·차량 주행은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 네 중간 하행 후보 상태를 고정한 회로 개입에서 DNb06의 출력 변화가 가장 컸고 앞·좌·우·뒤 운동 특징 각각에 대한 모델 반응도 확인했다. 알려진 이력의 반사실 실험이며 생리·실제 주행은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 측정 연결 기반 비행 부분 그래프에서 HS/VS→DNg02 직접 간선은 없고 두 홉 경로를 확인했다. 운동 출력으로 이어지는 중간 하행 후보도 분류했으나 구조 연결만으로 생리 기능·차량 주행은 입증되지 않는다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 몸 감각 후보의 유효 표시가 해당 기록에서 상수 편향처럼 작용함을 확인했다. 이를 중심화해 552회 재학습하자 이전 후보보다 악화는 줄었지만 두 알려진 DEV 모두 기존 시각 기준보다 조향이 나빠 배포하지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 전후좌우 시각을 유지한 차체 감각 경계를 6개 TRAIN 이력으로 552회 학습했지만 알려진 DEV 두 이력의 조향·전진 오차가 모두 악화했다. 바람은 결측이고 제동 표적은 없어 후보를 배포하지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 전후좌우 시각·몸 감각·합성 바람을 같은 비행 그래프에 주는 공동 경계를 구현했다. 원래 TRAIN 9관측에서 시각/기울기 입력 변화와 바람 경계 기울기를 확인했으나 실제 바람 학습·생리·차량 제어는 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 기존 AI의 약 3초 이동 중 바람 후보 248프레임을 진단 전용으로 기록했다. 시간 근접 76프레임에서 차량 속도 차이 중앙값 0.041km/h였으나 바람 API 의미·방향은 미검증이다. 원본 앱은 복원했고 파리 actor 주행은 아니다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 실제 정지 시뮬레이터의 바람 후보 네 프레임을 기록하고 원본 앱을 복원했다. 한 API 벡터 크기는 0.08567m/s인데 날씨 API는 0으로, 의미·방향·시간 정합은 미검증이다. actor와 학습에는 쓰지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30 이전 단계: 바람·차량 속도와 차체 축을 같은 CSP 업데이트에서 읽는 정지 진단 전용 후보를 만들고 모의 데이터와 LuaJIT 문법을 검사했다. 실제 앱에 배포하지 않았고 바람 데이터·방향·시간 정합과 actor 주행은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: CSP SDK에서 m/s 바람 벡터 후보를 확인하고, 검증된 바람·차량 속도만 차체 좌표 상대 공기 속도로 바꾸는 결측 대응 경계를 추가했다. 관련 테스트 8개 통과; 실제 바람 데이터·좌표·시간·생리·운전은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 사용자 요구에 따라 시각·차체 기울기와 함께 상대 바람을 처리하는 감각 경계를 추가했다. 결측은 무효이며 합성 바람의 기울기가 실제 고정 비행 그래프에 전달됨을 확인했다. 실제 바람 센서·학습·actor 운전은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 새 실제 네 방향 영상 76개가 기존 비행 스트림의 시간·원본 영상 검사와 4×721 망막 투영·몸 인코딩을 통과했다. 일부 몸 각속도/가속도는 무효로 유지하며 이번 실행은 FlyVis·비행 신경망이나 actor를 실행하지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 실제 CSP 엔진 AI 3초 기록에서 전후좌우 76결정이 모두 유효했고 원본 영상·시각·몸 입력 재생이 저장값과 정확히 일치했다. 이는 파리 actor 주행이 아니며 MMF/shadow·물리 노출 정합·자율 완주는 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 기존 실제 네 방향 TRAIN 영상 739결정을 원본 메타데이터와 픽셀로 전체 재생했다. 기존 망막은 저장 배열과 정확히 일치했고 producer 시계 방식과의 대비 차이는 평균 2.03e-8이었다. 새 기록·actor·물리적 노출 정합은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30 이전 단계: producer 렌더 시각의 선택형 카메라 기록·망막 입력·원본 메타데이터 비교 재생 경로를 연결했다. 합성 및 기존 회귀 테스트 35개 통과; 실제 새 기록·actor·물리 노출 정합은 미검증이며 MMF/shadow 조합은 거부한다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30 이전 단계: host 시각 하한 변경이 프레임 간 운동 시간 계산을 왜곡할 가능성에 대비해 producer 렌더 시각 간격을 쓰는 선택형 망막 경계를 구현했다. 인공·기존 회귀 테스트 7개 통과; 레코더/actor 미연결, 실제 노출 동기화와 주행은 미검증이다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 1909의 986개 결정 중 236회는 직전과 동일한 4방향 capture를 재사용했다. 방향별 렌더 시작 하한의 범위는 중앙값 0.927ms, 최대 11.115ms이나 실제 노출 동기화나 카메라-몸 ray 정합은 검증되지 않았다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 직접 하행 운동 입력을 고정한 상태에서 네 방향 저장 운동 특징을 개별 치환하자 각 방향의 조향 readout이 변했지만, 알려진 DEV에서 좌우 비가산 항은 작고 방향별 실제 운전 이득은 입증되지 않았다. 기존 조향·제동 실패와 실제 주행 미검증은 유지한다. [상세](visual-yaw-causal-replay-20261030.md).
+
+> 2026-10-30: 정지 과제 기울기 감사: 1909 TRAIN의 3초 이상 전제동 164행에서 오차 MSE 0.999799이고, TBPTT8의 해당 22개 창 모두 정지 계수에 대한 국소 기울기가 0이 아니었다. 과거 창을 통한 장기 기울기는 잘려 있어 전체 시간 민감도를 입증하지 않는다. 후보는 여전히 실패·미배포이며 실제 주행과 생리 기능은 미검증이다. [상세](body-feedback-input-intervention-20261030.md).
+
+## 최신: 정지 과제 하행 입력 학습 실패 (2026-10-30)
+
+선언한 목표 속도에서 기존 하행 입력을 조절하는 공학적 정지 과제 계수를 1909 TRAIN 전체로 101회 실제 갱신했다. 고정 TRAIN 및 별도 기존 1903 진단에서 제동과 전제동 오차는 모두 소폭 악화했다. 생리 검증·실제 주행은 없고 후보는 배포하지 않았다. [원본과 한계](body-feedback-input-intervention-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 전제동 지속 구간 실패 (2026-10-30)
+
+원래 TRAIN의 연속 fullbrake에서 3초 이후 유효 164행은 원래 모델과 몸 후보 둘 모두 예측 제동이 0.1 미만이었다. 0.5–1초 반응 뒤 유지가 무너지는 오프라인 모델 결과이며 실제 차량·독립 검증은 아니다. [원본과 한계](body-feedback-input-intervention-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 별도 1903 진단 기록의 몸 감각 후보 비교 (2026-10-30)
+
+원래 진단·fit불가 역할을 유지한 986개 기록에서 두 고정 몸 감각 후보를 재생했다. 같은 복사본 기반 진단 기준 981행에서 가속 오차는 낮지만 제동·전제동 오차는 둘 다 원래 모델보다 컸다. 시간 정합·지리 독립·실제 학생 주행은 검증되지 않았다. [원본과 한계](body-feedback-input-intervention-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 제동 가중과 조향 보존 몸 감각 학습 (2026-10-30)
+
+기존 모델 조향 출력에 대한 손실과 제동 가중치를 넣어 몸 경계를 123회 새로 갱신했다. 같은 TRAIN 가속 오차는 줄고 조향 변화도 이전 후보보다 작아졌지만 제동·전제동 오차는 기준보다 악화했다. 초기 모델의 별도 페달 기울기에서 양쪽이 동시에 유의한 창은 123개 중 2개였다. [원본과 한계](body-feedback-input-intervention-20261030.md). 실제 주행은 미검증이며 아래는 이전 시점 기록이다.
+
+
+## 최신: 차체 감각 경계 실제 123회 학습 (2026-10-30)
+
+기존 1909 TRAIN 986상태에서 고정 비행 graph·페달 계수 위의 몸 감각 adapter만 123회 갱신했다. 같은 TRAIN의 가속 MSE는 0.040814→0.035159로 감소했으나 제동은 0.193343→0.196526으로 악화했고 조향 출력도 달라졌다. 감각 개입은 바퀴 회전 영향이 상대적으로 컸다. 독립 주행·시각 통합·생리 검증은 없으며 후보는 배포하지 않았다. [원본과 한계](body-feedback-input-intervention-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 차체 감각→비행 감각 경계 실험 (2026-10-30)
+
+기울기·하중·온도·바퀴 회전의 마스크 보존 공학 adapter를 추가했다. 실제 원본 그래프와 986개 body 상태에서 초기 입력은 정확히 동일했고 원본 간격 8개를 통과한 경계 gradient가 존재했다. 학습·생리 기능·시각 통합·실제 주행은 아직 미검증이다. [원본 검사와 한계](body-feedback-input-intervention-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: HS/VS 학습 후 운동 시각 유용성 (2026-10-30)
+
+직접 하행 운동 입력을 고정한 조건에서 학습된 HS/VS 경로의 네 방향 운동 특징은 두 known DEV에서 조향 출력을 바꾸고 오차를 아주 작게 줄였다. 두 이력의 오차는 여전히 무조향 기준보다 크며 생리 기능·실제 트랙 주행 이득은 미검증이다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 직접 하행 운동 시각 고정 후 HS/VS 학습 (2026-10-30)
+
+기존 직접 하행 입력의 운동 시각 변화만 평균으로 고정하고 HS/VS 입력을 TRAIN 6이력에서 552회 갱신했다. 같은 조건의 알려진 DEV 조향은 개선됐으나 두 이력 모두 무조향 기준보다 나쁘다. 제동·생리 기능·실제 주행은 미검증이다. [실행과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 네 방향 시각→HS/VS 경계 학습 (2026-10-30)
+
+고정 v7 직접 하행 명령·신경 그래프를 유지하고 네 방향 시각→HS/VS 공학적 입력만 원래 TRAIN 6이력에서 552회 실제 업데이트했다. 알려진 DEV 조향 RMSE는 02에서 0.068259→0.059816, 07에서 0.093337→0.091734이나 02는 조향 0 기준 0.052572보다 나쁘다. 직접 하행 경로 영향은 여전히 크고 제동·생리·실제 학생 운전은 미검증이다. [원본과 범위](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 공학적 직접 하행 입력 고정 (2026-10-30)
+
+HS/VS 시각 입력은 유지하고 직접 steering/goal 포트만 운동 시각 평균 대조 값으로 바꾸자, 고정 v7 출력이 전체 운동 시각 치환 결과에 가까웠다. 현재 구조의 직접 공학 경로 영향이 크다는 모델 내 증거이며 생체 경로 기여율·실제 주행 성공은 아니다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: HS/VS 상태 고정 대조 (2026-10-30)
+
+네 방향 운동 시각 치환과 HS/VS 상태만 대조 상태로 고정한 v7 재생에서 후자의 DNg02 상태 및 조향 출력 변화가 훨씬 작았다. 공학적 직접 하행 경로 등 HS/VS 밖 영향이 크다는 가능성이지 생체 경로 기여율이나 실제 주행 증거는 아니다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 운동 시각 개입과 비행 뉴런군 반응 (2026-10-30)
+
+기존 네 방향 시각→v7 반복 비행 회로의 운동 특징을 평균으로 치환해 두 알려진 개발 이력을 재생했다. HS/VS·DNg02·날개 운동 후보 상태에 변화가 있었으나 직접 공학 입력과 내부 전달, 생리 기능·실제 주행 기여는 분리되지 않았다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: TRAIN 묶음별 시각 readout 학습 횟수 선택 (2026-10-30)
+
+네 방향 공학적 readout의 업데이트 10·50·150을 TRAIN 수집 묶음별로 검증해 150을 선택했다. 선택 후보는 모든 TRAIN holdout 묶음과 알려진 DEV 3개에서 상수 기준보다 곡률 오차가 컸다. 저자 시각망·비행 회로 업데이트나 학생 배포가 아니며 [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 수집 묶음별 교차검증 시각 readout (2026-10-30)
+
+11개 TRAIN의 3개 수집 묶음으로 ridge 규제를 선택하고 고정 후 알려진 개발 3이력을 평가했다. 세 이력 모두 teacher 경로 곡률 예측이 TRAIN 평균보다 나빴다. 원래 시각망·비행 회로 학습이나 actor 배포가 아니며 실제 코너 인식과 유효랩은 미검증이다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 네 방향 시각 readout에 보존 TRAIN 11이력 사용 (2026-10-30)
+
+기존 역할을 유지한 11개 TRAIN 이력의 네 방향 망막·운동 특징으로 공학적 readout을 실제 200회 갱신했다. 알려진 개발 3이력 모두에서 교사 곡률 RMSE가 단순 평균보다 나빴다. 저자 시각망 업데이트·비행 회로 연결·실제 학생 배포는 없고 실제 코너·랩타임은 미검증이다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 네 방향 시각 비선형 readout 학습 (2026-10-30)
+
+보존된 네 방향 망막·운동 특징의 공학적 readout을 TRAIN 세 이력에서 실제 200회 학습했다. known DEVELOPMENT 곡률 오차는 0.01430/m로 단순 평균 0.00799/m보다 나빴고 한 방향 353행의 부호는 0개 일치했다. 생리 뉴런 학습·비행 회로 연결·학생 배포는 아니며 [원본과 범위](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: readout 전 반복 신경 상태 대조 (2026-10-30)
+
+두 실제 회로 입력과 중점 입력을 동일 시간으로 재생한 결과 readout 전 9,728개 반복 상태에도 비선형 차이가 있었다. 전체 상태 평균은 작으며 개별 경로의 생리 기능·코너 인식·실제 주행 기여는 미검증이다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 반복 회로의 입력 중점 대조 (2026-10-30)
+
+원래 좌우 입력 변화의 합은 일부 허용 범위를 벗어나 재생하지 않았다. 두 실제 회로 입력의 범위 내 중점 대조는 두 알려진 개발 이력에서 반복 회로+readout의 비선형성을 확인했다. 이는 초파리 생리 회로 고유 기여나 실제 주행 검증이 아니다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 좌우 상호작용 단계 분리 (2026-10-30)
+
+기존 네 방향 동시 시각→비행 회로의 두 알려진 개발 이력을 단계별 재생했다. 좌우 비가산 효과는 반복 신경 그래프 이전의 공학적 통합 boundary에서 이미 나타났고 하행 입력·출력에서도 관측됐다. 신경 회로 고유 기여나 운전 성공을 입증하지는 못했다. [원본과 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 네 방향 동시 시각과 비행 회로의 좌우 개입 (2026-10-30)
+
+기존 학습 v7의 네 방향 동시 시각→공학적 경계→반복 비행 회로를 두 알려진 개발 이력으로 재생했다. 좌우 각각 및 동시 평균 대체에서 신경 출력의 비가산 상호작용이 관측됐으나 발생 단계·생리 기능·실제 운전 기여는 미검증이다. 기존 조향/제동 실패도 유지한다. [원본 및 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 앞·좌·우·뒤 시각 반응 개입 (2026-10-30)
+
+각 화면의 망막·운동 특징을 하나씩 평균으로 바꾸는 내부 이력별 검사에서 네 방향 모두 예측에 영향을 주었다. 왼쪽 개입은 일부 곡률 부호 일치를 크게 낮췄지만 정확도가 일관되게 개선되는 것은 아니며 경계·코너 인식이나 생리 기능 검증은 아니다. [결과와 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 앞·좌·우·뒤 겹눈 구조 (2026-10-30)
+
+사용자가 좌우 영상도 겹눈 구조로 처리할 것을 확인했다. 네 시점의 앞·좌·우·뒤 영상 16개와 저장된 방향별 망막·운동 반응 형식·캡처 시각을 표본 검사했다. 방향/시간 기능·좌우 코너 인식과 실제 주행은 미검증이며 앞 영상의 소수 경계 표식은 전체 시각 목표를 대신하지 못한다. [결과와 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 실제 영상 도로 경계 시범 표식 (2026-10-30)
+
+TRAIN 앞화면 4장에서 도로 경계 한쪽의 이미지 좌표 구간을 수동 표시하고 원본 capture와 연결했다. 불확실한 소규모 표식이며 독립 검수·학습·실제 주행 검증은 아니다. [오버레이와 근거](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 영상과 신경 반응 표본 정합 (2026-10-30)
+
+TRAIN 세 이력의 앞화면 18장에 대해 원본 영상 해시·capture ID·decision clock이 저장된 시각 반응과 일치한다. 표본만 검사했으며 노출·시뮬레이션 시간과 코너·경계 표식은 미검증이다. [화면 및 결과](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 원본 카메라 화면 확인 (2026-10-30)
+
+기존 TRAIN의 front 영상 3장을 보관 ZIP에서 원본 hash와 대조해 확인했다. 두 장은 직선에 가까운 경계, 한 장은 오른쪽 굽은 도로와 안쪽 연석이 보인다. 수동 탐색 3장일 뿐 경계 픽셀 정답·코너 거리·모델 인식이나 독립 평가가 아니다. [화면 출처와 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 실제 Monza 교사 자료 후보 (2026-10-30)
+
+설치된 트랙의 코너 구간 metadata, AI 경로와 3D 메시를 읽기 전용으로 확인했다. 구간 좌표와 기록 영상의 정합 및 화면상의 경계·코너 표식은 미검증이며 actor 입력으로 사용하지 않았다. [원본 감사와 다음 검증](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 서킷 장면과 다음 코너 인식 요구 (2026-10-30)
+
+사용자는 시각으로 서킷 구조물·경계와 다음 코너를 파악해 운전해야 한다고 확인했다. 현재 교사 경로 곡률은 이를 대체하거나 입증하지 않는다. 곡률 균형 가중 학습도 이력별 방향 편향을 해결하지 못했다. 독립 경계·코너 교사 표식과 시각 예측·인과 검증이 필요하다. [실험과 범위](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 시각 운동 채널 개입 (2026-10-30)
+
+기울기 보정 없는 영상 좌표의 고정 readout에서 운동 신경 채널을 학습 평균이나 1초 전 상태로 바꾸면 이력별 예측이 달라졌다. 다만 실제 운동 반응이 항상 더 정확하지 않아 운동 시각 기능이나 자율 주행을 입증하지 못했다. [수치와 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 기울기 보정 없는 시각 반응 시험 (2026-10-30)
+
+네 화면의 보존된 망막·운동 반응을 고정 영상 좌표에서 처리한 내부 TRAIN 이력별 시험에서 병합 readout의 경로 곡률 오차는 세 경우 모두 학습 평균보다 낮았다. 그러나 한 기록의 음 방향 부호는 100행 중 2행만 맞아 양방향 코너 인식·실제 주행은 미검증이다. 최종 독립 시험이 아니며 [원본과 한계](visual-yaw-causal-replay-20261030.md)를 따른다. 아래는 이전 시점 기록이다.
+
+
+## 최신: 시각 반응의 경로 방향 예측 검사 (2026-10-30)
+
+세 TRAIN 이력 교차 검증에서 저장된 시각 신경 특징을 사용한 선형 20m 경로 곡률 예측은 세 경우 모두 학습 평균보다 오차가 컸다. 직접 몸 입력은 없지만 시각 특징 등록에는 기울기가 쓰여 순수 시각 실험은 아니다. 코너 거리·레코드라인·실제 학생 주행은 미검증이다. [결과와 데이터 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 기록이다.
+
+
+## 최신: 몸 감각 직접 운동 입력 개입 (2026-10-30)
+
+원래 986개 몸 기록과 고정 명령으로 직접 운동 입력을 검사했다. yaw 각속도·차속은 반응했지만 기울기·하중·타이어 온도·바퀴 회전 값은 바뀌어도 직접 입력이 변하지 않았다. 시각 경로와 시간 전개는 검사 범위 밖이고 무효 각속도·가속도는 판정할 수 없다. [원본 및 한계](body-feedback-input-intervention-20261030.md). 학생 실제 주행은 미검증이며 아래는 이전 시점 기록이다.
+
+
+## 최신: 학습 이력별 시각 잔차 검증 (2026-10-30)
+
+TRAIN 세 이력을 하나씩 제외한 세 fold에서 고정 시각 잔차의 yaw 근사 오차가 모두 몸 전용보다 컸다. 개발 기록은 이번 검증에서 열지 않았으며 최종 독립 시험·실제 학생 주행은 아니다. 저자 시각망 갱신과 학생 배포는 0이다. [결과와 한계](visual-yaw-causal-replay-20261030.md). 아래는 이전 시점 이력이다.
+
+
+## 최신: 시각 방향 회로 재생 및 잔차 후보 평가 (2026-10-30)
+
+1917 오프라인 내부 holdout에서 실제 시각 yaw 근사 RMSE 0.16593, 몸 전용 0.07221 rad/s였다. 1919의 알려진 개발 기록에서도 시각 잔차 0.08361, 몸 전용 0.03626으로 후보가 비교를 통과하지 못했다. 새 1909 영상의 저자 시각망 재생은 조직 코드 무결성 정책 차단으로 실패했다. 학생 배포·유효 자율 랩은 0이며 레코드라인 추종은 미검증이다. 기존 페달 fit 123회는 유지되고 별도 몸 baseline 200회는 저자 시각망 학습이 아니다. [실험·제약·원본 증거](visual-yaw-causal-replay-20261030.md). 아래 상태와 다음 작업 표현은 해당 시점의 이력이다.
+
+
+## 현재: 새 TRAIN 첫 페달 fit 완료, 학생 라인 추종은 미검증
+
+갱신 2026-10-30T16:47:19.284517+09:00. 새 1909 TRAIN986상태를 원래 시간·마스크와 함께 전부 유지해 TBPTT8/한 번의 순회/Adam1e-3로 **실제123회 업데이트**했다. 두 DNg 페달 계수만 바뀌었고 고정 backbone·readout·DNa fingerprint는 동일하다. 학습18.32초/전체59.81초, 같은 TRAIN 평균 페달 MSE0.12065442→0.11707838(2.9639% 감소)다. fullbrake1 오차·정지 hold는 미해결이며 시각 조향·학생 트랙/레코드라인 추종·유효랩 검증은0이다. 전체 비행·겹눈·몸 되먹임·변속·하중/타이어·셋업·빠른 레이싱 라인 목표는 active·미완료다.
+
+[원본 실행·범위·다음 시각 조향 연결](first-new-train-pedal-fit-20261030.md). 원본955d16/session36427→d528e1 종료0, source drift0, 새 작은 두 계수 checkpoint를 보존했다. 현재 fit는 조건부 zero-yaw/속도 과제의 페달 학습이며 레코드라인 학습 성공이 아니다. 아래의 GPU/fit0·미봉인·다음 gradient 표현은 이 첫 fit 이전 진행 시점의 기록이며, 프로젝트 대전제와 원본 이력은 유지한다.
+
+**현재 t1908–t1913 — 새 TRAIN986상태 원시 감사·전체 로딩 통과:** 별도 nonce를 수집 전에 봉인한1909가 종료0으로 완료됐다. 평균30.4928ms·최대47.795ms·80ms 초과0·wait0·7배열 차0이며, 원래986상태/body21·clock을 삭제 없이 보존했다. 실제13 same-copy/105개 소스와 원본 heartbeat·배열 감사를 통과했다. [원본 증거와 현재 범위](flight-teacher-authority-and-heartbeat-runtime-20261030.md)를 따른다.
+
+원래1274개 pose 표본이B 안에 있지만 연속 기하는 미인증이며 heldout 독립성을 주장하지 않는다. root가 관측된 전체 이력의 첫 offline fit을 이 범위로 허용했고 입력 계약을 정리 중이다. 124TBPTT8 window·123supervised update는 예산이며 새 모델/GPU·optimizer·학생·유효 랩은0이다. 이전 진단은 fitfalse로 유지하고 전체 목표는 **active·미완료**다. [저장공간 보존·복원 제약](cold-storage-cleanup-20261030.md). 아래는 이전 시점 기록이다.
+
+**진행 t1875–t1878:** [현재 병목과 실제 검증](flight-teacher-authority-and-heartbeat-runtime-20261030.md). 새 R2 camera3는 교사 시작 요청이 거부돼 관측0으로 실패했다. Source 카메라 상태 파일 동기 쓰기430ms와150ms freshness 차단을 좁혀 조사했으며, 실제30ms 제어 주기 개선은 미판정이다. 실패 뒤 정상 제어권 반납과 원본5,786검사·trace10,788검사를 확인했다. 현재 차량은 paused·전제동·FREE/no lease이고 새 운전fit·학생배포·유효랩0이다. 다음은 활성 주행 중 반복 상태 쓰기 제거의 좁은 source 검토다. 아래는 이전 시점 기록이다.
+
+
+**진행 t1871 R2–t1874:** [현재 검증 기록](flight-teacher-authority-and-heartbeat-runtime-20261030.md). 새 TRAIN 697관측은 82.979ms 간격 한 번으로 전체 fit 불가다. 제어 예산을 상태 읽기 앞부터 30ms로 측정하고 고정 RAM에 지연 구간을 기록하는 R2가 CPU 56검사·독립 246소스/66CPU 사례를 통과했다. 실제 새 3초·30초 검증은 아직 미실행이며 운전fit·학생배포·유효랩은 0이다. t1867-r2 보관 971파일/14.39MB와 실제 목적지 7,749검사를 완료했다. 전체 목표는 active·미완료다. 아래는 이전 시점 기록이다.
+
+
+**진행 t1823–t1869:** [실제 교사 기록과 신경 페달 검증](flight-teacher-authority-and-heartbeat-runtime-20261030.md). 새HOST V4진단3초72/30초703관측은7배열차0·80ms초과0·정상handoff를통과했다. 별도사전선언·nonce로새TRAIN697관측/1000영상을수집했으나원래82.979ms간격1개가80ms기준을넘어후보전체fit불가다.모든697상태·fullbrake1=189를보존했고새운전fit·학생배포·유효랩0이다.현재24200/807/generation `733364ULL:0.0013066`/위치.4202456/lap0/paused·fullbrake·FREE·no lease.다음은미계측배우구간의고정RAM trace와새cadence source자격이며전체목표active·미완료다.아래는이전시점기록이다.
+
+**최신 t1733–t1762:** [v2 신경제동 실제 연결과 source timing](flight-embodiment-v2-and-source-timing-20261030.md). 고정 MN anchor의 CPU·GPU 자격을 통과하고 실제67신경요청/최고1.47kmh/0.73m 이동을 기록했다. 독립4,015검사와 원래67관측 전체CPU재생(최대출력차2.45e-7)을 통과했고, 양의신경제동10요청과뒤native응답을 확인했다. 종료용 fullbrake·타력인과대조 미실시는 구분한다. heartbeat 파일쓰기 최대73.41ms도 직접 계측했다. async 발행·same-copy 교사기록의 실통합과 새 운전fit은 다음 단계다. 이번 fit0/학생배포0/유효랩0. 새 엔진24200에서 AIoff·fullbrake·FREE를 확인하고 APIpause했다. 아래는 이전 시점 기록이다.
+
+**최신 t1704–t1731:** [새 고속 자료와 운동 출력 한계](flight-pace-data-and-motor-learning-20261030.md). 교사 최고100.98km/h의 새 TRAIN 후보2개/1,469관측을 보존했다. 첫737관측은 원시 재생 차0·최대43.27ms를 통과했고, 두 번째는9회 영상 대기·350ms 공백으로 실패해 사전 기준에 따라 수집을 중단했다. 두 후보 모두fit=false다. 동결 운동 출력의 제동 상한(.2884/.5803)과 교사brake1의 불일치도 독립 검증했다. 운전fit0/학생배포0/유효랩0. 차량은pause·전제동·vJoy해제 상태다. 아래는 이전 시점 기록이다.
+
+**최신 t1685–t1703:** [native신경제동 실제연결](flight-native-neural-actuator-20261030.md) 및 [시각망 시간·이력별 학습](flight-visual-temporal-fold-learning-20261030.md). 실제68신경요청/58.04ms/작은brake4개의native응답을검증했다. 보조readout1,200회와실제저자시각망1,116회비교학습·독립감사도완료했으나모든6모델body-only보다부족해시각미통과/학생미배포/유효랩0이다. t1700엔진45604·AIoff·1단·정차·brake1·vJoyFREE·비전면,이번job모두종료. 다음은자료다양성과회로안의가감속/조향·하중/타이어학습이다. 아래는이전시점기록이다.
+
+**후속 최신 t1687–t1695:** [native 몸 시계와 신경 페달 codec 실제 연결](flight-native-neural-actuator-20261030.md). 실제68신경요청/최대58.04ms/작은제동4개 native응답과독립전체재생을확인했다. t1691현재1단·AIoff·정차·brake1·vJoyFREE. 시각8간격학습graph메모리자격/이력별보정·보조readout1200업데이트도완료했으나시각미통과·저자망추가비교학습t1696은실행중이며전체결과판정은아직이다. 하중/타이어의motor인과경로·시각자율주행·유효랩은미완료다. 아래는이전기록.
+
+**최신 t1676–t1684 (2026-10-30):** [페달 cutoff·codec·자료 감사](flight-actuator-codec-and-data-audit-20261030.md). t1672/73 원본과 전체69신경상태 독립 재생을 확인했다. 새 Neutral 정차35단계/282관측에서 양 페달 cutoff를(.0195,.02]로 좁혔고, 원래 canonical을 보존하는 명시적 codec의120요청이 native 정착값과 최대1.2e-8 차이였다. t1678의 SDK timeout 실패도 보존했다. codec은 학습 성과가 아니며 이번 optimizer0/시각 자율주행0/유효 랩0이다.
+
+TRAIN 전용 감사에서20m진입5/탈출9, 움직이는 제동표본0을 확인했다. 알려진 DEV를 쓰지 않는 전체 이력별3fold/동일 optimizer window8의detach2대8 계획을 고정했으며 아직 새 학습은 실행하지 않았다. 느린 SDK 동기표본의 최대353ms는 신경80ms 계약을 미통과하므로 native 몸 감각과 진단 경로를 분리하는 것이 다음 실제 제어 과제다. 최종 t1683은 엔진45604/AIoff/Neutral/gas0/brake1/vJoyFREE/비전면이다. 아래는 이전 시점 기록이다.
+
+**새 세션 인계:** [HANDOFF-20261030.md](HANDOFF-20261030.md)에 t1667–t1675 최신 상태를 정리했다. 새 엔진의 native AI-off가 확인됐고, 실제 파리 운동 회로69개 제어 요청과 neutral 페달 cutoff 계측까지 완료했다. 시각 학생 자율주행·유효 랩은 아직0이다. 아래는 이전 시점의 기록이다.
+
+최신 [물리 목표→비행 운동 회로 연결 검사](flight-physical-maneuver-20261030.md): 새 rad/s·m/s 계약으로 목표 회전은 DNa04/05, 몸 yaw는 보호된 haltere, 속도 오차는 DNg02 경로에 따로 연결했다. 좌우·가감속·yaw 피드백 주입과739관측 전체 재생/운동뉴런 request 재계산을 통과했다. 신경 회로 내 가감속·조향 결합이 남아 있고 실제 차량 응답은 미검증이다. 시각 선행 판단 미통과/학생 미적용/유효 랩0. 아래는 이전 기록이다.
+
+최신 [실제 파리 시각망 전체 학습·검사](flight-author-visual-learning-20261029.md): TRAIN3 전체에서 저자의 학습 가능 시각망 파라미터를 1,107회 업데이트했다. 676개 값이 변경됐고 고정2,959개는 동일하다. 개발 MSE .252290→.218660(13.33% 개선), 두 시각 제거 비교보다 낫지만 yaw/속도 물리 근사보다 부족해 전체 기준은 실패다. 학생 배포/유효 랩0, 새 job 모두 종료. 아래는 이전 기록이다.
+
+최신 [새 코너 학습·감각 역할 진단](flight-exterior-learning-and-sensory-roles-20261029.md): TRAIN3/개발1 총2,956관측의 전체 원시 감사·몸21 보존·실제 저자 시각망 재생을 완료했다. GPU 보조 경계1,000회 학습 뒤 시각 후보와 몸/시각 결합 후보 모두 개발 기준 미달이다. 시각 평균 대체가 오히려 개선됐고, 유효성을 유지한 타이어 온도 평균 대체도 개선됐다. 다음은 앞길 기하와 접지·속도·운동 제어의 센서 경로 분리 및 TRAIN 방향 불균형 대조다. 학생 미적용/학생 유효 랩0, 새 job 모두 종료. 아래는 당시 상태의 이전 기록이다.
+
+
+이전 기록 [센서 저장 지연 분리·새 코너 수집](flight-publisher-worker-and-corpus-20261029.md): 게임 콜백 안의85.4ms 파일 쓰기를 실측해 최신1개 대기 슬롯의 별도 작업자로 옮겼다. 실제 배포/정차8묶음/3초75·30초740관측과 원시 차0·80ms 초과0, 몸16→21 보존, 실제 파리 시각망 동결 GPU 재생을 통과했다. 작업자 저장 최대110ms 동안 콜백 발행 최대0.34ms였으나 모든 공백의 해결을 주장하지 않는다. t1625 새 지리 구간 수집이 실제 실행 중이며 첫transit737관측/누락0과 독립 감사를 완료했다. TRAIN0/개발0, 학생 미적용/optimizer update0이다. 아래는 당시 상태 기록이다.
+
+
+이전 t1597 기록 [120FPS 실측·수집 실패·내부 지연 계측](flight-framecap120-and-publisher-timing-20261029.md): t1577에서 실제120FPS와 새 엔진을 적용했다. 30초737관측/누락0/원시차0 및 동결 시각망 재생은 완료했으나 t1593 첫transit이 카메라 stale로 실패해 새 TRAIN0/개발0이다. t1596 전체414묶음 감사의 복사→ACK 최대6.3ms로214ms 공백을 설명하지 못한다. 내부 Python 센서의 단계별 최대 지연 계측을 추가했고 관련44검사는 통과했으나 게임에는 미배포다. 학생 미적용/학습 진행 없음. 아래 과거 설정·상태는 당시 기록이며 최신 판단은 연결 문서를 따른다.
+
+
+이전 t1573 기록 [새 전방 눈 주행 검증·수집 실패](flight-exterior-stream-qualification-and-corpus-20261029.md): revision3 일반 스트림과 기준 native 패킷 priming을 구현했다. 3초74관측/30초739관측·영상누락0·원시차0·80ms 초과0, 실제 초파리 시각망 동결 GPU 재생/몸21 보존까지 완료했다. 관련278검사/Ruff 통과. 후속 geographic 수집은 개발1/학습0에서 첫TRAIN의2.132초 엔진 갱신 공백으로 종료1이다. 실패는 fit 불가/학생 미연결이다. 실제 약553FPS인 무제한 설정의 별도120FPS 비교안을 준비했지만 실제 설정 변경/엔진 재시작은 아직0이다. 다음은 기존 native AI-off 소유권 가드를 새 상태에서 확인하고 별도 FPS 조건을 검증하는 것이다. 아래 과거 source/generation·미구현/다음 작업은 해당 시점의 기록이다.
+
+
+이전 기록 [실시간MMF/코너자료](ac-live-mmf-v3-and-spatial-data-20261029.md): 247검사/Ruff,3초·30초60교사시험/실제slot원시재생차0. geographic corpus는3번째train에서실패했으나완료train2개1479관측은원시감사와실제Flyvis GPU재생을완료했다. author weight불변/update0이며새학습·학생배치는아직0이다. 다음은시각경계학습이다.
+
+이전 기록 [공유메모리 정차 검증](ac-paused-mmf-qualification-20261029.md):230검사/Ruff,실제32화면의동일shotPNG차0,독립원시재생차0. metadata·ACK프레임파일0. 새API는8정차묶음전용이며기본recorder연결/주행자격은아직없다. 새코너자료0/파리시각조향개발실패/학생미배치는그대로다.
+
+이전 기록 [구간별 수집/원본 공백](flight-spatial-corpus-and-source-interruption-20261029.md): spatial collector를 추가하고73검사/Ruff를 통과했지만 첫 transit는635ms 원본 영상 공백으로 실패했다. 새train/dev자료0개, 원시재생차0은 task 성공이 아니다. 공유메모리 metadata/ACK는 설치SDK 선언 확인 단계이며 아직 구현/배포 전이다. 소유job 모두terminal/학생미배치.
+
+이전 기록 [비동기 영상 저장](ac-async-frame-persistence-20261029.md): 관련66검사/Ruff와3초준비/30초60km/h 교사시험/독립 원시감사를 통과했다. 739관측/카메라대기누락0/배열재생차0이며 저장은 수신과 분리했다. 파리 시각 조향은 개발 실패·학생 미배치이고 calibration 자료의 fit은 금지다. 아래 과거30초 실패·미구현 기록은 해당 시점의 결과다.
+
+이전 기록 [조향 종료와60km/h 시험](flight-steering-terminal-and-speed60-pilot-20261029.md): 조향 개발 검증은 실패했고, 고속 교사는61.14km/h에 도달했지만 카메라 지연으로30초 이전 중단됐다. 현재 소유 job은 모두 종료했고 학생 제어는 미적용이다.
+
+새 레이싱 목표 입력 명세를 추가했다(10검사/Ruff). 기존0..30km/h goal의 제한을 그대로 고속 모델에 해석하지 않는다. 실제 고속 교사/학생 주행은 아직 미검증이다.
+
+갱신:2026-10-29,Asia/Seoul. 목적은 [대전제](PROJECT_CHARTER.md),다음 작업은 [현재 문맥](CONTEXT.md)을
+따른다. 이 문서의 수치는 해당 모델/실험의 범위이며 일반적인 운전 능력이나 생리학적 기능을 뜻하지 않는다.
+
+
+**현재 시각→조향·가감속 학습은 미통과이며 새 파리 actor 배치는0이다.**
+
+[영상 수신 지연 분해](ac-batched-copy-and-serial-persistence-20261029.md): 묶음 GPU복사는 빨라졌으나30초수집은 실패했다. 이전 프레임 저장·전처리141ms가 다음 영상 읽기를138ms 막은 사례를 확인했다. 다음은 별도 버전의 실시간 수신/비동기 저장 분리이며 아직 구현·학생 적용 전이다.
+
+[60km/h 교사 프로파일](ac-speed60-profile-preparation-20261029.md) 구현/224검사 완료, 당시 배포 전 준비였다. 후속 실제61.14km/h 시험은 partial 실패다.
+당시 소스/배포 불일치는 t1478 배포로 해소했다. 검사를 우회하지 않는다.
+[조향 경로 후속 실험](flight-steering-reflection-and-motor-training-20261029.md): 원본 광학 재현오차0,
+반사 증강 사전학습의 개발 실패를 보존했다. 실제 고정 운동 회로 조향 명령층 학습 t1473는 종료0/개발 미통과다.
+[실제 제동 경로](flight-actual-brake-feedback-20261029.md): 관련219검사/Ruff, 배포·실행·독립native 감사 완료.
+30.83km/h에서 브레이크1과 속도/하중 반응 확인. 개발용 강제 개입이며 fitting/최적 주행 라벨은 아니다.
+[새 영역 개발 계측](flight-new-region-speed-transition-20261029.md): background 30초 739관측/누락0/원시재생차0.
+속도 지시 변경 뒤 실제 브레이크 표본0이므로 타력 감속 자료다. 개발 역할/fit 금지, actor 학습·배치 없음.
+[최신 내부 검증/v4 경로 감사](flight-preview-history-generalization-20261029.md): GPU 2,400업데이트,
+학습 구간 적합은 가능하나 whole-history 일반화 집계 실패. v4 완전 이력 캐시는 추가했지만
+TRAIN 경로 범위는 기존 반복이며 실제 제동도 없다. 새 경로/속도/제동 자료가 다음 과제다.
+[후속 공간 표현 비교](flight-preview-spatial-comparison-20261029.md): 원래 GPU 요약의 재현 오차 0,
+6개 표현의 고정 회귀 비교 완료. 모든 개발 방향 예측은 평균/0방향 기준 미달이며 단순 해상도 증가는 미해결이다.
+[추가 앞길 방향 검사](flight-road-preview-diagnosis-20261029.md): 원래 영상 시점의 5/10/20m 표적 생성과
+기존 시각 특징의 고정 선형 비교를 구현했다. 단위 검사 7개는 통과했으나 두 개발 구간의 방향 예측은
+평균/0방향 기준에 미달했다. 코너 검증 범위도 부족하며, 실제 actor 학습·주행 성공을 뜻하지 않는다.
+[v7구현·24회학습·개발결과](flight-embodied-command-learning-20261029.md)를기준으로한다.
+
+| 항목 | 구현/검증 범위 | 미완료 |
+|---|---|---|
+| 겹눈/저자시각회로 | 독립4시점45,669뉴런모델·원래시간재생·제한된실제회전반응 | 도로preview·안정주행기여·T4d contrast 등 |
+| 몸감각 | 기존16보존+명시적차량속도/바퀴5의새21계약 | 실제파리감각튜닝·선형가속/roll/pitch각속도등록 |
+| 명령/운동 | 고정9,728뉴런/1,311,145연결운동모델에학습경계추가·양head기울기확인 | 생리·실제폐루프·빠른몸경로통합 |
+| 공동학습 | GPU24회·고정마지막checkpoint·개발2구간비교 | 조향기준·coast회귀·잘못된제동으로미승격 |
+| 빠른몸피드백 | 별도6km/h제한교란6/6효과·중앙값13.17% | v7은50ms모델이며이자격을상속하지않음 |
+| 최종주행 | 자료수집/인터페이스와일부몸반응검증 | 가감속/제동·하중/타이어/셋업·학생완주·빠른라인/랩타임 |
+
+현재알려진학습/평가/수집job은모두terminal이다.
+과거상태의원문은 [연혁](implementation-status-history-through-v7-20261029.md)에보존했다.
+
+## 근거를 확인할 위치
+
+- 현재 구조/출력:`runs/ac-current-brain-output-audit-20261029-t992`.
+- 비행 기준 누락:`runs/ac-fly-flight-coverage-20261029-t1008`.
+- 원자료 비행 후보:`runs/fly-flight-source-audit-20261029-t1007`.
+- 비교용 모델/무결성:`runs/ac-shared-lateral-recovery-training-20261029-t949`.
+- 60m검증:`runs/ac-recovery-publication60-audit-20261029-t968`.
+- 240m실패:`runs/ac-recovery-model240-audit-20261029-t972`.
+- 최근 전체 감각 이력:`runs/ac-local-launch-full-audit-20261029-t1004`.
+- 봉인 자료:`runs/ac-local-launch-sealed-20261029-t1005`.
+- 시각 부품 기술 실행: `runs/flyvis-gpu-smoke-20261029-t1013`.
+- 원시 깜박임 반응: `runs/flyvis-flash-response-20261029-t1015`.
+- 원시 이동 경계 반응: `runs/flyvis-edge-response-20261029-t1016`.
+  두 반응 실행의 `physiological_reproduction_verified`와 `AC_integration_verified`는 모두 false다.
+- 확장 반응/분석: `runs/flyvis-edge-author-grid-20261029-t1019`, `runs/flyvis-author-grid-analysis-20261029-t1021`.
+  [결론과 한계](flyvis-component-response-20261029.md).
+- 시각 실행 경로: `runs/flyvis-author-path-parity-20261029-t1022`.
+- 새 비행 후보/독립 감사: `runs/fly-flight-routes-20261029-t1023`, `runs/fly-flight-routes-audit-20261029-t1024`.
+  [구조와 한계](fly-flight-route-candidate-20261029.md).
+- 가상 몸 기하/전체 시각 대조: `runs/ac-virtual-body-geometry-20261029-t1026`, `runs/ac-virtual-body-sealed-replay-20261029-t1028`.
+  [계약과 한계](ac-virtual-body-v1-20261029.md).
+- 실제 영상 새 시각 회로: `runs/ac-flyvis-continuous-camera-replay-20261029-t1029`, `runs/ac-flyvis-camera-replay-audit-20261029-t1030`.
+  [변환·시간 상태·한계](ac-flyvis-camera-replay-20261029.md).
+- 여러 시점 시각 운동 기능 어댑터: `runs/visual-self-motion-reference-v2-20261029-t1032`, `runs/visual-self-motion-reference-audit-20261029-t1033`.
+  [합성 시험과 실제 적용 경계](visual-self-motion-adapter-20261029.md).
+- 실행 비행 후보/실제matrix대조: `runs/flight-circuit-scene-probe-20261029-t1035`, `runs/flight-circuit-scene-audit-20261029-t1036`.
+  [후보 구조와 미완료 항목](flight-circuit-prototype-20261029.md).
+- 새 비행 초기학습/재생: `runs/flight-initial-stable-training-20261029-t1039`, `runs/flight-initial-training-audit-20261029-t1040`.
+  [평균출력편향·미승격·다음자료](flight-initial-training-20261029.md).
+- 출처 고정:`assets/external/flyvis-source-20261029/source.json`.
+
+## 완료 판정
+
+**목표 미완료.** 비행 후보의 오프라인 학습과 경계 결합은 실행했으나, 유용한 시각 기여와
+새 구조의 자율 경로 추종·이동 안정화는 검증하지 못했다. 정차 조향은 아래 t1147/t1150,
+저속 조향 이동과 실제 yaw 입력의 출력 기여는 t1154/t1157 범위에서 확인했다.
+v6를 운전 모델로 승격하지 않았다.
+[연구 계획](research-plan.md)의 운동 시각·가상 몸/비행 제어·인과적 기여·실제 주행을 검증해야 한다.
+
+이전 구현·실험 기록은 [재정리 전 현황](implementation-status-before-flight-20261029.md)에 보존했다.
+‘최신’이라는 과거 문구가 이 현황을 덮어쓰지 않는다.
+
+## 최근 자료 확대
+
+새30km/h 백그라운드 교사742관측/737표적을 봉인하고 새 몸/시각망으로 전체 재생했다.
+원본재생오차0, 최대간격41.387ms. 모두우조향·제동0으로 데이터불균형은해결되지않았다.
+초기 비행모델(t1039)은그대로며새학습/실제제어승격은하지않았다.
+[자료·검사·제약·증거](flight-diverse-data-20261029.md)를 따른다.
+
+## 다중 속도 v4의 당시 기능 판정 — 미승격
+
+`t1070/t1071`에서새v4목표계약의5전체기록4747관측/학습2195표적으로6epoch학습했다.
+원본graph고정/상태수치감사는통과했지만,시각제거가개발조향오차를줄였고전진은속도별평균보다나빴다.
+`t1073`인공yaw네조건은모두같은방향추가조향으로반응해회전억제부호를통과하지못했다.
+실제plant/초파리생리시험은아니며,후보의실제AC조작은0회다.
+추가주행증류보다몸회전피드백/운동출력대응과시각경로기능검토가우선이다.
+[전체근거/그림/다음작업](flight-speed-learning-feedback-20261029.md).
+
+## t1077 몸 경계 보정 — 모형 내 부호만 통과
+
+`t1075`경로분리와`t1076`최소투영으로몸yaw입력201계수만수정했다.
+`t1077`의보정미사용4장면×4pulse부호16/16,몸제거/zero전달graph의추가출력차이0을확인했다.
+다른파라미터/원본graph는같다. 실제plant·생리·시각주행성공은아니며일부원본주행손실은악화했다.
+t1077당시미구현이던steering port/몸보호는이후v5/t1081에서구현·검사했다.
+[수치/출처/다음작업](flight-yaw-boundary-calibration-20261029.md).
+
+## v5 보호 기준 구현
+
+DNa04/05조향/ DNg02추진명령경계와optimizer제외FrozenLinear body를구현했다.
+`t1081`의4747관측turn=0전환출력오차0,실제AdamW5회후body/readout변화0·억제부호16/16유지.
+학습계수는25380개다. 시각주행·실제plant/완주검증은미완료다.
+`t1082/t1083`은HS/VS수치전달과조향DN의rate모형문턱을확인했다. 유용한인식/생리검증은아니다.
+[현재구현/남은작업](flight-separated-commands-20261029.md).
+
+## 당시 v6 실험과 입력 감사
+
+`t1086`의 시각 경계는 6epoch/216회 업데이트를 완료했고 상속한 v5 상태는 불변이었다.
+모형 내 회전 억제 부호 16조건은 유지했지만, 시각 제거가 개발 조향 오차를 줄여 기능 판정은 실패다.
+실제 차량 제어에 적용하지 않았다. 제동 학습·생리 기능·완주·랩타임 최적화는 미검증이다.
+보조 주행선을 실제 OFF로 바꾸고 정상 카메라 수집은 OFF 확인을 요구하도록 했다.
+과거 영상 전체의 주행선 부재는 미확인이다.
+[실행 근거와 다음 작업](flight-visual-learning-and-aid-audit-20261029.md).
+
+## 당시 t1103/t1107 — 안정성 개선, 합동 개발 검증 실패
+
+전체 원래 이력을 고정 가중치로 재생하는 손실 감소 조건을 추가해 6epoch/6제안을 수락했다.
+학습 기록 3개는 새 시각 제거보다 개선됐고 v5 상속 상태는 불변, 학습 장면의 회전 억제 부호 8/8이다.
+별도 고정 개발 평가 2개 중 1개가 전체 시각 제거보다 나빠 합동 검증은 실패다. 후보는 운전 미승격이다.
+감각 소비자의 주행선 OFF/비진단 metadata 검사를 추가하고 실제 OFF 9프레임의 해시를 감사했다.
+25회 계측 요청은 정지 중 native 새 packet 부족으로 1회 뒤 실패했으며 학습에서 제외했다.
+[정확한 수치·한계·근거·다음 작업](flight-visual-optimizer-diagnosis-20261029.md).
+
+## 당시 t1109~t1119 — 입력 증거 확보, 경로 추종 미검증
+
+새30초 기록742관측/958프레임 전체의 주행선 OFF·raw 해시·actor 재생 오차0·관측 공백80ms 초과0을 확인했다.
+몸 v1과 고정 저자 시각 회로의 전체 재생/정렬/상태 감사를 마쳤다. 기존 후보를 고정해 평가했고 재학습은 하지 않았다.
+평균 시각 제거 대조는 통과했지만 좌조향41표적은 모두 놓쳤고 거의 직진 구간은 조향0보다 나빴다.
+실제 학생 제어/기전 기여/완주/레이싱 최적화는 미검증이며 후보는 미승격이다.
+몸 기하 대조는 자세 pitch/roll·yaw 통과, 나머지 각속도2축 실패로 기존 마스크를 유지했다.
+[수치·원본·제동 부재·다음 작업](flight-aid-free-recording-and-tracking-20261029.md).
+
+## 당시 t1120~t1127 — 학습 좌조향 개선, 전이/중립은 미해결
+
+모형 전류32조건×학습5장면에서 양방향 조향 경로를 확인했다. 전역 도달 가능 집합이나 생리 시험은 아니다.
+학습 좌40/우1579/중립576의 손실 비중을1/3씩으로 조정해 학습 좌조향0/40→39/40으로 개선했다.
+v5 상속 상태는 불변, 원래 이력 유지, 학습 yaw 억제8/8과 독립 저장 재생 오차0을 확인했다.
+알려진 OFF 기록은 좌0/41→9/41이나 우68/68→39/68이며 중립 편향·합동 개발 검증 실패가 남았다.
+비행 회로를 우회하는 선형 진단은 비교용이고 차량에 연결하지 않았다. 실제 운전 후보는 미승격이다.
+[수치·통제 조건·실패·다음 작업](flight-steering-capacity-and-balanced-learning-20261029.md).
+
+## 당시 t1128~t1141 — 실제 영상과 회로의 온라인 추론 연결
+
+FlightStream으로 네 시점→고정 저자 시각 회로→몸 v1/선택 비행 회로를 원래 시간/상태 계약으로 연결했다.
+원본742관측의 단계별 대조 및 실제 게임3초79관측/30초742관측 전부의 추론·원본 재생을 확인했다.
+30초 처리 중앙값30.82ms/최대36.70ms, 원본 의도 최대 차이2.72e-7,80ms 공백/숨은 reset0이다.
+GPU 초기 비용은 별도 scratch 준비로 관측 밖으로 옮겼고, 내부 tick 묶음은 dt/시간/이전 입력을 유지했다.
+차는 교사 AI가 운전했다. 모델의 학생 출력 전송은0이며 행동/생리/학생 완주 검증은 미완료다.
+[구현·실패 원본·검사·실제 계측·다음 단계](flight-live-stream-integration-20261029.md).
+
+## 당시 t1142~t1151 — 비행 회로의 실제 정차 조향
+
+t1147에서 후보 t1121의 조향 의도를100회 적용했다. 초기·정리 포함 SDK 요청은107개이며,
+페달은 전 구간 가속0/브레이크1로 덮어썼다. 고정 좌우 과제 명령에 실제 조향 응답이 따랐다.
+t1150은 전체 원본100관측 재생 최대 차이1.83e-7, OFF109프레임과 독립 native316패킷을 확인했다.
+최대 관측 간격45.019ms/80ms 초과0, 처리 중앙값31.724ms/최대35.997ms다.
+최종 중립·소유권 해제·정차·pause를 확인했다. UI조작0, t1151은 카메라off/AIoff/비전면이다.
+이는 실제 정차 조향 연결의 증거다. 영상 경로 추종·이동 균형·학습한 가감속·완주·랩타임은 미검증이다.
+[불일치 진단·실패 보존·단위/부호·원본 대조](flight-stationary-steering-20261029.md).
+
+## 당시 t1152~t1157 — 저속 이동과 몸 회전 피드백
+
+실제 후보 조향+시험용6km/h 페달 제어기로225관측을 기록했다. 최고6.0207km/h/위치 변화7.1813m,
+독립 native643패킷/235카메라 프레임, 최대 관측 간격47.792ms/80ms 초과0이다.
+정차/제동75관측은 조향0,이동150관측은 비행 후보 조향을 적용했다. 요청은 초기/정리 포함232개다.
+전체 원본 GPU 재생 차이9.69e-8,몸 yaw0 동일 입력 재생 대비 좌우 모두 회전을 누르는 출력 기여를
+확인했다. 실제 full/yaw0 주행 비교·교란 복원·시각 경로 추종·학습된 가감속은 여전히 미검증이다.
+처리 중앙값28.931ms/최대34.977ms. t1156은 paused/AIoff/cameraoff/gas0/brake1/창 비전면이다.
+[정확한 제어 구분·대조·실패·프로세스 종료·다음 시험](flight-moving-body-feedback-20261029.md).
+
+## 당시 t1158~t1171 — 실제 피드백 제거 비교, 효과 미입증
+
+full/yaw0 경계를 원래225관측으로 독립 검증하고 실제 각257관측 주행/원본 재생을 확인했다.
+최대 의도 차이9.31e-8/1.79e-7,독립 native773/729패킷,주행선OFF287/267프레임이다.
+교란 host 지속시간324.366/298.302ms의 차이가10ms기준을 넘어 비교는 유효성 실패다.
+위치·baseline속도/yaw는 일치 조건 안이지만 raw IAE 차이를 안정화 개선/악화로 판정하지 않는다.
+계획한12회 중완료2회,운영실패5회는 원자료 그대로보존했다. 후보는미승격이다.
+파일 읽기 충돌의10ms 한정재시도·연속5정차 표본 확인·지연/GC기록을 추가했다.
+지연71.49→96.20ms 뒤 관측99.45ms실패를 확인했으며그 구간 GC는약0.094ms다.
+새 관련20검사/기존lifecycle143검사통과. t1170은paused/AIoff/cameraoff/gas0/brake1/창비전면.
+[수치·실패·시간 일치 조건·다음 구현](flight-physical-yaw-comparison-20261029.md).
+
+
+## 학습 데이터 저장 구조 — 2026-10-29
+
+[참조 병합 및 중복 저장 검토](dataset-reference-storage-20261029.md): 새 병합은 payload를 복사하지 않고 원본 manifest·episode 해시를 검증해 참조한다. 27개 검사와 실제 NAS 저장 확인을 통과했다. 후속 정리로 중복 사본 214개, 약 10.34GB를 삭제했고 고유 원본 67종·고정 manifest는 유지했다. 기존 경로는 별도 참조표로 해석한다. 학습·차량 동작·성능 판정은 변경하지 않는다.
+
+
+### 과거 중복 정리 완료 — 2026-10-29 11:28 KST
+
+[삭제·경로 호환 검증](historical-episode-compaction-20261029.md): 214개 사본 삭제, 고유 원본 67종 유지, 기존 manifest 변경 0건. 참조표와 공통 로더로 옛 데이터 경로를 해석한다. 29개 검사와 실제 18 episode/11,999 decision 로딩, 과거 경로 임시 복원·재정리를 확인했다. 모델 성능·학습·차량 동작 판정은 변경하지 않는다.
+
+
+**2026-10-30 — 저장된 FlyVis 경계 반응의 비행 회로 재생:** 사전 학습 FlyVis가 기록한 움직이는 경계 자극의 중앙 T4/T5 반응(0°·180°, 19, 밝은 경계)을 5ms 간격으로 고정 비행 회로에 재생했다. 각 시야에서 중앙 반응을 공간 16칸에 복제한 합성 대조이며 나머지 시야와 직접 하행 운동 입력은 TRAIN 평균으로 고정했다. 반대 방향 자극 간 출력 최대 차이는 전방 두 출력 0.00758·0.000235, 나머지 시야 첫 출력 0.00151–0.00368이었다. DNb06 두 뉴런 중 하나는 반대 방향 차이가 최대 약 0.000326–0.00227, 다른 하나는 6.6e-11 이하였다. 공간적 실제 망막 재현·생리 기능·주행 능력을 증명하지 않고 후보는 미배포다. [상세](visual-yaw-causal-replay-20261030.md).
+
+
+### 2026-10-31 네 시야 운동 신호 개입
+탐색적으로 선택한 코너 transit 739결정의 원본 FlyVis 출력과 몸 감각을 7개 독립 recurrent 이력으로 재생했다. 원본 두 반복은 조향/전진 intent 차이 0이었다. front/left/right/rear 운동 채널을 각각 학습 평균으로 대체한 경우 평균 절대 변화는 조향 0.03050/0.02395/0.01112/0.01859, 전진 0.06600/0.04608/0.09283/0.06394였다. 각각 738/739결정에서 적어도 한 출력 차이가 2e-6을 초과했다. 네 방향을 모두 대체하면 평균 변화는 0.04885/0.15060이다. 이는 각 채널이 이 고정 회로 출력에 영향을 준다는 이력 수준의 관측이며, 방향 판별 정확도·파리 생리·시각 선행 예측·운전 성능을 증명하지 않는다. 밝기는 유지했고 평균 대체는 실제 카메라 결손이 아니다. 고정 15km/h 목표와 fit 금지 transit, 물리/노출 동기 미검증 제약을 유지한다. 첫 실행은 다른 구조 checkpoint 선택으로 초기 중단했고 원본을 보존했다. 성공 결과 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-yaw-corner-motion-view-ablation-v2/`, 원본 사건 대조·통계 재계산 `.../20261031-yaw-corner-motion-view-ablation-audit/`(모델 독립 재실행은 아님). 학습/차량 제어 0, 테스트 12개 통과. 다음은 방향/속도별 입력에 대한 운동 시각 반응과 회로 기여를 생리 근거 및 독립 데이터와 대조하고, 실시간 freshness·가감속/변속/셋업 적응을 검증한다.
+
+
+### 2026-10-31 FlyVis 보류 속도 방향 판독
+기존 저자 모델의 인공 이동 경계 12방향×6속도×2대비에서 중심 T4/T5 8종의 자극 중 최고 반응을 사용해 대비별 선형 cos/sin 판독기를 훈련했다. 각 평가 속도는 해당 판독기의 학습에서 제외하고 나머지 다섯 속도 60조건으로 정규화·학습했다. 144개 보류 조건의 원형 오차 중앙값 4.53°, 평균 5.58°, ±15° 137/144, 90° 미만 144/144다. 속도·대비별 상세 결과와 144개 예측은 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-flyvis-speed-heldout-direction/`; 원본 재추출·독립 최소제곱 재계산은 `.../20261031-flyvis-speed-heldout-direction-audit/`이며 각도 최대 차 2.28e-13°다. 첫 감사는 부동소수 각도의 정확 일치 조건으로 중단됐고 수치 비교로 수정했다.
+
+이는 결과를 이미 살펴본 동일 공개 모델·동일 인공 자극 집합의 탐색 진단이며, 자극 유형·모델·실제 영상에 대한 독립 일반화 또는 생리 정확성은 아니다. 속도는 보류했지만 각 방향과 대비는 훈련에도 있다. 공학 판독기는 actor에 연결하지 않았고 비행 회로의 방향 판독이나 차량 성능도 검증하지 않았다. T4d 밝기 대비 불일치는 그대로다. 실제 모델 재학습·차량 조작은 0이다. 다음은 실제 네 시야의 공간/시간 응답으로 방향 회로의 부호와 이력별 기여를 검증하고 실시간 freshness 및 가감속·변속·셋업·유효 완주/랩타임 과제를 계속한다.
+
+
+### 2026-10-31 몸 상태 검증 GPU 동기화 감소
+`ExperimentalVisualBodyAirflow.advance`의 기존 state 유한성·drive 유한성·state [0,1] 범위 조건은 유지하고 GPU scalar 판정을 합쳐 host 대기를 줄였다. 에피소드 state·시간 적분·결측 처리·보호 경계는 바꾸지 않았다. GPU 단독 200쌍 교차 순서 격리 실험에서 검증 중앙/95/최대는 기존 0.2405/0.6095/0.8967ms, 변경 0.1648/0.2924/0.5636ms였다 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-body-validation-sync-benchmark/`). 시간은 해당 조건식 단독이며 동시 시각 처리나 실제 운전 지연 개선을 뜻하지 않는다. NaN/무한값/범위 이탈과 형상/시간 오류 거절 등 관련 19개 테스트 통과.
+
+원본 53장면+334몸 사건 재생 `.../20261031-combined-body-validation-original-replay/`의 events와 frame-comparison SHA는 변경 전과 동일, split CUDA 387건 state/drive/trace/intent 최대차 0이다. `.../20261031-combined-body-validation-bridge-proof/`에서 이전 카메라 원본 74결정 재생 및 state 최대차 9.54e-7; 실제 물리/노출 시각과 동시 실시간 부하는 미검증이다. 실시간 증거 검사에 변경된 몸 회로 소스 해시를 추가하고 새 proof 조합을 통과시켰으며 해당 소스 해시만 고친 임시 proof는 거부했다. 감사 첫 시도는 시스템 기본 문자 인코딩으로 실패해 UTF-8로 수정했다. AC 조작·학습 0. 직전 live shadow freshness 0/103 병목은 아직 해결되지 않았고, 이 수십 마이크로초 차이를 전체 해결로 주장하지 않는다. 다음은 원본 full 경로의 host/GPU 동기 및 동시 GPU 경합을 줄이고 변경된 경로를 실제 shadow에서 자격 검증한다. 조향·가감속·변속·셋업 적응 및 유효 완주/레이싱 라인·랩타임 목표 유지.
+
+
+### 2026-10-31 운동 시각 고정 채널 추출
+시간 경계의 정규화된 4×9×16 입력에서 움직임 4×8×16 채널을 GPU boolean mask 대신 같은 순서의 고정 슬라이스로 추출한다. 저장된 mask가 원래 계약과 같은지 최초 및 tensor 변경 때 확인하고 불일치는 거부한다. 값과 입력 gradient의 정확한 일치, 변경 mask 거부를 포함한 관련 15개 테스트 통과. GPU 단독 200쌍 교차 실험에서 이 추출 연산 중앙/95/최대는 mask 0.1749/0.5546/0.6864ms, slice 0.0952/0.2720/0.4051ms였다 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-temporal-motion-index-benchmark/`). 다른 GPU 작업과 함께 측정한 실시간 이득은 아니다.
+
+원본 387사건 `.../20261031-static-motion-index-original-replay/`에서 기존 events/frame-comparison SHA와 동일, split CUDA state/drive/trace/intent 차이0, reset0이다. `.../20261031-static-motion-index-bridge-proof/`의 원본 카메라 74결정 재생은 state 최대차 9.54e-7이다. 실시간 proof의 시간 경계 소스 의존성을 추가했고 변경 전 proof는 거부, 두 새 proof 조합은 통과했다. 이전 학습/실험의 정확한 소스 해시를 요구하는 도구는 변경된 현재 소스를 과거와 같다고 취급하지 않으며 과거 원본 증거를 유지한다. 실제 실시간 freshness 개선·생리·폐루프 운전은 미검증, 학습/차량 제어 0이다. 다음은 전체 동시 GPU 경로와 host 대기를 계측하고 충분한 개선 뒤 실시간 shadow를 다시 검증한다. 목표의 가감속·변속·셋업 적응, 유효 완주와 레이싱 라인/랩타임 최적화는 그대로다.
+
+
+### 2026-10-31 변경 코드 동시 시각·몸 live shadow — 신선도 실패
+새 코드와 새 proof 조합으로 기존 bounded mailbox·default GPU priority·40ms 영상/10ms 몸·3초 15km/h 교사 조건을 실행했다. 엔진 AI child 종료0·camera275그룹·native4423 copy이며 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-optimized-body-visual-live/`에 원본과 실패를 보존한다. ticker는 현재 몸 receipt stale로 중단됐고 pending visual 소비 전 ticker 중단 오류가 뒤따랐다. 학생 actuator·학습·UI0이다.
+
+독립 raw 감사 `.../20261031-optimized-body-visual-live-audit/`: 104 ticker 출력 중 host freshness 통과 0, 이전 held body >50ms 103/103, 시야 >150ms 44/104. held 중앙/95/최대 82.07/94.99/105.92ms, decision→output 39.66/46.49/53.50ms다. `.../20261031-optimized-body-visual-live-gpu-audit/`: body event 중앙 38.90ms, visual event 중앙 16.44ms. GPU event는 제출 공백·대기·계측 오버헤드를 포함한다. 이 단일 실험과 이전 bounded-wait 0/105는 독립 실행이라 변경 효과나 원인을 인과적으로 확정하지 않는다. 실시간 운전 자격은 실패이며 물리/노출 시각 및 생리·폐루프·제동/변속/셋업·유효 완주/랩타임은 미검증이다.
+
+시험 종료 직후 CSP paused/AI off였지만 frozen native packet 222987은 AI true여서 그대로 두지 않았다. CSP API restart/start/pause/resume 후 `.../20261031-optimized-live-reset-native-audit/`에서 기준 이후 새 packet 59/59 AI false·정차/브레이크/오프라인을 확인하고 `.../20261031-optimized-live-reset-final-pause/`로 pause했다. 최종 확인 PID12432, generation `15533904ULL:0.0013473`, epoch8, paused·AI/probe/camera off·offline. 다음은 원본 시각 모델과 몸 회로가 GPU를 공유할 때 내부 host/GPU 대기와 kernel 제출을 분리하는 제어된 오프라인 동시 부하 시험 및 정확한 계산 경로 개선이다. 초파리 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차 몸에 연결하고 몸 기울기·회전·하중·타이어 되먹임을 바탕으로 조향·가감속과 빠른 레이싱 라인/랩타임을 학습하는 목표를 유지한다.
+
+
+### 2026-10-31 원본 FlyVis 동시 부하 대조
+동일 원본 53영상·334몸 사건/387 update를 순서와 원래 state 그대로 재생했다. 몸 단독→기록 망막 영상을 반복하는 FlyVis 5ms×8 tick/40ms 목표 부하와 동시 실행→몸 단독 반복 순서이며, 세 원본 events/frame-comparison SHA는 동일하다. 각 update의 host 구간과 시각 worker 구간은 별도 저장했고 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-contention-independent-audit-v2/`에서 해시·사건·중첩을 독립 재계산했다. 결과는 `.../20261031-contention-body-alone/`, `.../20261031-contention-body-plus-flyvis/`, `.../20261031-contention-body-alone-after/`다.
+
+몸 update 중앙/95ms는 단독 전 8.18/13.34, 동시 14.70/25.68, 단독 후 9.41/13.53이다. 동시 실행의 시각 workload 309회 중 몸 구간과 겹친 몸 update는 160/387이고 겹친 경우 중앙/95 23.85/25.99ms, 겹치지 않은 경우 12.72/15.60ms다. 단독 최대 약480ms는 최초 cold 시작을 포함한다. 이는 제한된 한 순서의 오프라인 비교다. 시각 worker는 CPU 제출과 GPU를 함께 사용하므로 GPU 커널 점유율이나 GPU 단독 원인을 증명하지 않는다. 반복 망막 영상은 계산 부하용이며 원래 시간의 실제 시각 이력 또는 live freshness가 아니다. 이 결과는 동시 부하가 실제 원본 몸 재생을 지연시킨다는 직접 근거이며, 직전 live 중앙 39.66ms의 전체 원인·실제 운전/생리 자격을 설명하지는 못한다. 최적화·학습·차량 제어0. 다음은 동일 부하 조건에서 host 제출/동기와 GPU 실행을 분리하고 원래 회로·결측·state를 유지하는 계산/스케줄 개선을 검증한다. 조향·가감속·변속·셋업 적응, 유효 완주·빠른 라인/랩타임 목표 유지.
+
+
+### 2026-10-31 시간 경계 유효성 동기 묶음
+기존 원본 이력 무부하/시각부하의 Python cProfile을 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-contention-profile-alone.pstats` 및 `.../20261031-contention-profile-loaded.pstats`에 보존했다. 시각 부하 시 초기화·추가 warmup 및 torch device wrapper가 함께 기록되어 두 전체 통계는 동등한 순수 CPU/GPU 비교가 아니다. 설치 torch profiler는 CPU activity만 지원한다. 시간 경계에서 GPU scene/시야 유효성 두 판정과 세 과거 trace 유한성 판정을 각각 묶어 host scalar 대기를 줄였다. 기존 검사는 유지하고 잘못된 scene, 각 trace의 NaN, 시야 결측과 gradient 등 관련 19개 테스트를 통과했다.
+
+같은 387개 원본 사건의 동시 FlyVis 부하 replay `.../20261031-temporal-batched-checks-contention/`은 변경 전 events/frame-comparison SHA와 같다. 변경 전 단일 동시 시험 중앙/95 14.70/25.68ms, 변경 후 단일 동시 시험 13.16/24.19ms; 실제 host 구간이 겹친 경우 전 160개 중앙23.85ms, 후143개 중앙22.39ms다. 실행 간 overlap·부하·환경이 달라 수치를 인과적 향상이나 실시간 통과로 판정하지 않는다. 새로운 split proof `.../20261031-temporal-batched-checks-split-proof/`는 387건 state/drive/trace/intent 차이0, bridge proof `.../20261031-temporal-batched-checks-bridge-proof/`는 74결정 state 최대차9.54e-7이며 두 proof 조합을 검사했다. source-exact 과거 proof는 새 소스에 재사용하지 않는다. 실제 live freshness·물리/노출 시간·생리·가감속/변속/셋업·완주/라인/랩타임은 미검증, 학습/차량 제어0이다. 다음은 GPU 실행과 host 제출을 직접 구분할 수 있는 계측 경로를 찾거나, 동일 회로를 보존한 계산 스케줄 변경 후 동시 부하와 실제 shadow에서 검증한다.
+
+
+### 2026-10-31 FlyVis 묶음 크기 동시 부하 비교 — 채택하지 않음
+기록 망막 영상의 반복 부하에서 원래 FlyVis 5ms×8단계를 통째로 제출한 경우와 2단계씩 네 번 제출한 경우를 같은 몸 원본 387사건으로 비교했다. 먼저 하나의 같은 초기 시각 state/영상에서 8단계 최종 전체 node activity를 대조했으며 8 대 8 반복의 최대차 7.15e-7, 8 대 2×4 최대차 4.77e-7이다. 이는 단일 8단계 비교이며 긴 시각 이력의 전체 동등성 증명이 아니다. 두 몸 사건 결과 SHA는 동일하다. 원본 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-visual-chunk8-contention/`, `.../20261031-visual-chunk2-contention/`, 독립 시각/몸 host 시간 계산 `.../20261031-visual-chunk-contention-audit/`.
+
+몸 처리 중앙/95ms는 8단계 묶음 13.99/24.82, 2단계 묶음 14.16/25.79다. 실제 host 구간이 겹친 몸 148 대 186건의 중앙은 22.77 대 22.08ms다. 시각 8단계 전체 완료 중앙/95는 각각 11.61/12.48 대 16.60/18.24ms다. 단일 순서·실행의 차이로 인과적 수치 확정은 불가능하지만, 이 결과는 몸 지연의 뚜렷한 개선 없이 시각 완료가 늦어진 사례다. 2단계 분할을 실제 경로에 채택하지 않았다. CPU 제출·GPU 대기는 분리되지 않고 반복 영상 부하는 실제 카메라/physiology/live freshness가 아니다. 학습·차량 제어0. 다음은 동일 상태·결측을 유지하면서 GPU 반복 제출/동기화와 실시간 소비 구조의 다른 병목을 검토한다. 조향·가감속·변속·셋업 적응과 유효 완주/빠른 라인·랩타임 최적화 목표는 유지한다.
+
+
+### 2026-10-31 CPU 희소 회로 thread 수 비교 — CPU 이전 미채택
+동일 9728노드/1311145엣지 회로·원본 387사건·연속 상태를 GPU 및 CPU CSR로 재생하며 CPU intra-op thread 2→4→8→1 순서로 시험했다. CPU-only body 경로 중앙/95ms는 각각 thread1 33.84/48.85, thread2 38.89/51.24, thread4 38.95/50.91, thread8 39.14/49.98이다. 각 실험에서 GPU 대비 CPU state/drive/trace/intent 최대차 5.18e-7, 원본 events SHA 동일이다. 실행별 증거 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-cpu-body-threads1-after/`, `.../20261031-cpu-body-threads2/`, `...threads4/`, `...threads8/`. `.../20261031-cpu-body-thread-audit/`는 설정·결과·사건 hash를 확인했으며 개별 CPU 시간 원자료는 저장되지 않아 요약 수치를 독립 재계산하지 않았다.
+
+이는 단일 비무작위 순서의 오프라인 측정이며 CPU 시간에 GPU scene 복사 및 실제 동시 시각 부하는 포함되지 않는다. 이 범위에서는 thread 증설로 CPU 이전의 이득을 보여주지 못했고 live 경로에 적용하지 않았다. 기전·생리·실시간 freshness·폐루프 운전은 미검증, 학습/차량 제어0이다. 다음은 원래 희소 연결·시간 상태를 유지한 별도 CPU 커널 또는 GPU/host 동기 구조 개선을 계측한다. 초파리 겹눈/운동 시각과 비행 유래 균형·운동 회로, 몸 기울기·회전·하중·타이어 피드백, 조향·가감속·변속·셋업 적응 및 빠른 유효 완주/레이싱 라인/랩타임 목표를 유지한다.
+
+
+### 2026-10-31 고정 비행 회로 SciPy CPU CSR 추론 후보
+원래 9728노드/1311145연결·signed weights를 그대로 가진 별도 `scipy_csr_cpu` 추론 backend를 선택형으로 추가했다. CPU float32·고정 가중치·no_grad만 허용하고 gradient 활성화, gradient 요구 state/drive, 다른 장치/형식을 거부한다. matrix 변경 시 cache를 갱신하며 기존 GPU/CPU backend와 학습 기본값은 유지한다. cache 변경, 배치 수치, gradient 거부 등 관련 28개 테스트 통과. 합성 입력의 100단계 전체 state 차이0; 격리 행렬곱 중앙/95ms PyTorch 7.85/11.83, SciPy 0.68/0.84 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-frozen-cpu-csr-kernel-comparison/`). 합성 반응만으로 전체 회로 성능을 주장하지 않는다.
+
+원래 53영상+334몸 사건의 GPU 기준과 각 CPU 경로를 같은 코드에서 독립 비교했다. SciPy `.../20261031-scipy-cpu-original-replay/`와 PyTorch CPU `.../20261031-torch-cpu-original-replay-comparable/`는 각 387사건 GPU 대비 state/drive/trace/intent 최대차 5.18e-7, events/frame-comparison SHA 일치다. CPU 처리 중앙/95/최대ms는 SciPy 5.26/15.37/203.46, 기존 29.72/51.08/170.16. `.../20261031-scipy-cpu-replay-audit/`가 양쪽 원본 timing 387개와 hash에서 수치를 다시 계산했다. 최대값은 초기 cold 및 실행 중 지연을 포함한다. 단일 순서·오프라인 측정이고 GPU scene→CPU 복사·동시 FlyVis 부하·실시간 scheduler는 제외한다. 따라서 배우 자격/실시간 freshness 개선/생리/폐루프 주행을 증명하지 않으며 아직 live에 연결하지 않았다.
+
+수정된 회로 source를 실시간 GPU proof 의존성에 추가하고 `.../20261031-scipy-backend-gpu-split-proof/` 387사건 state 차이0과 `.../20261031-scipy-backend-gpu-bridge-proof/` 74결정 최대차 9.54e-7을 재검증했다. 학습·차량 제어0. 다음은 원본 시각 network GPU와 별도 CPU body가 동시 동작할 때 scene 복사·스케줄·마스크 및 actual output freshness까지 검증하고, 이후 조향·가감속·변속·셋업 적응과 유효 완주/레이싱 라인·랩타임 목표를 계속한다.
+
+
+### 2026-10-31 SciPy CPU 몸 회로와 FlyVis GPU 동시 부하
+동일 원본 387사건, body state·원래 시간·4시야 mask를 유지하고 새 scene GPU→CPU 복사를 CPU update 시간에 포함했다. 원래 FlyVis 모델의 8×5ms 시각 부하를 별도 GPU stream에서 반복한 오프라인 재생 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-scipy-cpu-transfer-flyvis-load/`에서 CPU update 중앙/95/최대 6.55/10.97/17.79ms, 53개 새 scene 복사 중앙/95/최대 0.285/0.489/0.580ms였다. 시각 host 구간과 겹친 CPU update는 69/387, 그 중앙/95 7.23/16.70ms; 나머지 중앙/95 6.50/7.41ms다. 같은 코드의 시각부하 없는 `.../20261031-scipy-cpu-transfer-no-load/` 중앙/95 5.18/15.66ms이고 cold 포함 최대205ms다. 각 조건의 CPU 대 GPU state/drive/trace/intent 전체 387개 차이 최대5.18e-7, 원본 events SHA 일치. `.../20261031-scipy-cpu-visual-contention-audit/`가 저장된 시각·전송·몸 원시 시간과 차이 배열·해시를 독립 계산했다.
+
+두 단일 실행은 부하·overlap이 다르고 GPU 기준/반사실도 순차 실행하므로 실제 CPU-only 시스템의 정확한 시간이나 인과적 개선으로 단정하지 않는다. 원래 망막을 반복한 별도 GPU 계산은 실제 camera timing이 아니고 결정시간은 저장된 host 이력이다. 95백분위가 주기 10ms를 넘는 구간도 있다. 실제 live output freshness, 물리/노출 동기, 센서→행동 폐루프·생리·가감속/변속/셋업·유효 완주/랩타임은 미검증이며 CPU backend는 여전히 비배포, 학습/차량 제어0이다. 다음은 CPU body와 GPU visual의 실제 소유권·복사·결측·상태·freshness 계약을 분리 구현하고 원본 비교 후 shadow로 검증한다. 전체 초파리 겹눈·운동 시각 및 비행 유래 몸 제어와 몸 기울기·회전·하중·타이어 되먹임, 빠른 유효 주행·라인/랩타임 목표는 그대로다.
+
+
+### 2026-10-31 GPU 시각·CPU body shadow 실시간 시험 — 부분 신선도, 미자격
+GPU FlyVis producer와 독립 CPU SciPy 추론 회로를 가진 `CpuBodyLiveShadow`를 구현했다. 새 scene만 GPU에서 복사하고 복사·몸 계산·출력까지의 host 시간을 기준으로 기존 시야/몸 freshness를 평가한다. CPU body CUDA event 사용·잘못된 scene 거부, 복사 독립성 등 관련 18개 테스트 통과. 실제 shadow 객체의 387 원본 사건 재생 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-cpu-body-shadow-original-proof/`: GPU 대비 state/drive/trace/intent 최대차5.18e-7, events SHA 기존과 동일, CPU 처리(복사 포함) 중앙/95/최대7.14/9.45/17.61ms. 시각 부하 동시 재생은 포함되지 않는다. 최신 GPU split/bridge proof와 CPU source·checkpoint·이력 proof를 정확히 확인한 뒤 시험했다.
+
+3초 15km/h 엔진 AI live `.../20261031-cpu-body-live-shadow/`는 child 종료0·카메라276그룹·native4407 copy·학생 actuator/학습/UI0. ticker 250출력 뒤 current body receipt stale로 중단해 run 상태는 incomplete다. 독립 `.../20261031-cpu-body-live-shadow-audit/`에서 output host freshness 242/250 통과, 첫 출력은 이전 held 감각이 없어 기준 불충족, 나머지 7개는 held >50ms, 네 시야 >150ms는0이다. held 중앙/95/최대35.09/44.21/70.93ms, decision→output 중앙/95/최대16.20/23.90/36.57ms; 106 scene을 원본 RGB/packet/시각으로 검증했다. 앞선 GPU live 0/104와 각각 단일 실행·계측 차이가 있어 인과적 속도/일반화 결론은 내리지 않는다. 모든 신선도 통과는 아니며 정지 후 stale 종료까지 포함해 배우 자격은 실패다. 센서 물리 발생/노출 동기, 실제 폐루프 운전·생리·가감속/변속/셋업 및 유효 완주/레이싱 라인·랩타임은 미검증이다.
+
+종료 후 CSP는 paused/AI off였으나 정지된 native packet232012은 AI true였다. 소유 CSP restart/start/pause/resume 후 `.../20261031-cpu-shadow-reset-native-audit/`에서 새 packet59/59 AI false·정차/브레이크/오프라인 확인, `.../20261031-cpu-shadow-reset-final-pause/`로 pause. 마지막 확인 PID12432/generation `15533904ULL:0.0013473`, epoch9, paused·AI/probe/camera off·offline이다. 다음은 7회 held stale 및 최종 current stale의 원본 시간·lifecycle 원인을 분리하고 기준 완화 없이 연속 신선도를 개선해 재시험한다. CPU 경로는 shadow만이며 실제 배우 운전에 미승격이다. 초파리 겹눈/운동 시각과 비행 유래 균형·운동 회로를 자동차라는 가상 몸에 연결하며 몸 기울기·회전·하중·타이어를 되먹임해 조향·가감속·변속·셋업 적응 및 빠른 유효 완주/라인/랩타임을 학습하는 대전제를 유지한다.
+
+
+### 2026-10-31 CPU shadow stale 원인 감사와 thread CPU 계측
+직전 `.../20261031-cpu-body-live-shadow/`의 held stale 7건은 선택시점 기준 최신 packet을 모두 선택했고 선택 receipt 나이는 최대4.85ms였다. 결정→출력은 각24.78–36.57ms, 바로 이전 결정→출력도22.04–36.57ms였다. 전체 결정 간격 중앙/95/최대16.49/24.36/37.23ms (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-cpu-shadow-stale-timing-audit/`). 따라서 7건을 단순히 더 최신 packet 미선택 탓으로 돌릴 근거가 없고, 계산/스케줄 중 이전 입력의 보유 시간이 길어진 것이 관측된다. 첫 출력은 이전 held 부재로 별도다. 기존 기록은 ticker stop 정확 시각이 없어 최종 stale와 pause 선후를 확정하지 못했다.
+
+CPU ticker의 thread CPU 시계와 stale stop 시각·packet을 기록하는 계측을 추가했다. 관련16검사와 새 원본 CPU 387사건 GPU 최대차5.18e-7·GPU split 차이0·bridge74결정 최대차9.54e-7 재확인. 같은 조건의 새 live `.../20261031-cpu-body-threadtime-live/`에서 교사 child 종료0, 출력263개 중 freshness260 통과·첫 held 부재1·held>50ms 2·시야>150ms0, current-body stale 중단·actor/학습/UI0 (`.../20261031-cpu-body-threadtime-live-audit/`). 이 단일 반복은 기준을 모두 만족하지 못했으며 이전 242/250과의 차이를 개선 인과로 판정하지 않는다. stop 시각26340.1756557, 동일 packet242010 최초 receipt26340.1246342, 감지 나이51.02ms이며 lifecycle native-after도 packet242010이었다. 정지와 관련된 원본 관측은 있으나 정확한 CSP pause의 host 시각은 확인되지 않아 인과 확정하지 않는다.
+
+Windows thread_time의 실제 관측은 263개 중 0ms 101개, 15.625ms 143개, 31.25ms 19개로 양자화됐고 98개에서 CPU 숫자가 해당 벽시계 구간보다 컸다. 선언된 API 해상도와 달리 해당 짧은 update에서 계산/대기 시간을 개별 분리하기에 부적합하다 (`.../20261031-cpu-threadtime-independent-audit/`). 이 값을 뺄셈해 대기 원인을 주장하지 않는다. 종료 후 frozen native AI true였으므로 API restart/start/pause/resume, `.../20261031-cputime-reset-native-audit/`에서 새 packet59/59 AI false 확인 후 `.../20261031-cputime-reset-final-pause/`로 pause. 마지막 PID12432/generation `15533904ULL:0.0013473`, epoch10 paused·AI/probe/camera off·offline. 다음은 더 적절한 고해상도 스레드 계측 또는 별도 프로세스 분리로 GIL/CPU/GPU 대기와 ticker 지연을 구별하고 실시간 기준을 유지해 검증한다. 생리·실제 폐루프·가감속/변속/셋업 적응 및 유효 완주·라인/랩타임은 미완료다.
+
+
+### 2026-10-31 별도 CPU body 프로세스의 원본 이력 검증
+기존 고정 SciPy 비행 회로를 소유하는 단일 CPU worker 프로세스를 추가했다. 부모는 기존 4시야 feature·현재/선행 몸 관측·원래 host 결정시각을 순서대로 보내며, worker는 원래 episode의 recurrent state를 유지한다. 이벤트는 한 번에 하나만 처리하고 sequence 불일치·timeout·연결 종료는 명시 실패, 자동 재실행/reset을 하지 않는다. 실제 episode 전에 별도 임시 상태로 원래 계산 cache를 준비하며 새 episode state는 따로 생성한다. 프로세스는 simulator/actuator에 접근하지 않는다. timeout·연결 EOF·순서 불일치와 회로 관련 16개 테스트 통과.
+
+`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-cpu-process-original-replay-warm/`에서 원본 387사건 모두 GPU 기준 state/drive/trace/intent 최대차5.18e-7, events/frame-comparison SHA 일치, worker PID34464 정상 종료0을 확인했다. scene GPU→CPU 복사 및 동기 IPC 왕복 포함 시간 중앙/95/최대7.16/7.89/18.08ms이며, 각 단계 진단 snapshot 왕복과 동시 시각 부하는 시간에서 제외했다. `.../20261031-cpu-process-original-replay-audit/`가 저장된 387개 차이·시간과 hash를 다시 계산했다. warm-up 이전 첫 후보 `.../20261031-cpu-process-original-replay/`, 오류 전송 처리 수정 이후 `.../20261031-cpu-process-original-replay-v2/`도 보존한다.
+
+이 경로는 오프라인 동기 원본 재생만 검증했고 아직 실시간 shadow의 카메라/ticker/신선도 계약에 연결하지 않았다. 별도 프로세스가 GIL 경합을 해결하거나 실제 주행을 개선했다고 판정하지 않는다. 물리/노출 시각·생리·폐루프 조향/가감속/변속·셋업 적응·유효 완주 및 라인/랩타임은 미검증이고 학습/차량 제어0이다. 다음은 독립 CPU process에 실제 GPU 시각 부하를 함께 주고 IPC 시간/순서·종료·stale를 계측한 뒤, 원본 proof와 정확한 source 해시를 묶어 shadow에 연결한다.
+
+
+### 2026-10-31 CPU 독립 프로세스 + FlyVis 부하 및 shadow adapter
+같은 387개 원본 사건과 독립 CPU process를 원래 FlyVis GPU 부하와 비교했다. 새 scene 복사·IPC 왕복 포함 중앙/95/최대ms는 부하 없음 7.12/7.80/18.80, 부하 있음 7.38/8.28/18.41이다. 시각 host 구간과 겹친 CPU update64개 중앙/95 7.45/17.42ms, GPU feature 복사53개 중앙0.297ms다. 자식 실제 계산 중앙6.89ms, 부모 전체 시간과 자식 시간 차 중앙0.477ms(복사·IPC·스케줄 포함). 양 조건 387개 GPU 기준 state/drive/trace/intent 최대차5.18e-7, 원본 events SHA 동일·소유 process 종료0. `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-cpu-process-visual-no-load/`, `.../20261031-cpu-process-visual-load/`, 원시 host 시각과 차이 배열 재계산 `.../20261031-cpu-process-visual-audit/`. 단일 비무작위 순서, 반복 망막 부하 및 GPU 기준/반사실 동시 계산으로 실제 live 동등 시간이나 GIL 해소를 증명하지 않는다.
+
+별도 process를 기존 연구용 ticker에 연결하는 `ProcessBodyAdapter`와 `ProcessBodyLiveShadow`를 추가했다. 고정 task·mask를 검증하고 50ms 응답 timeout·sequence·결측 실패를 감추지 않는다. 실제 adapter 387원본사건 `.../20261031-process-body-adapter-original-proof/`는 GPU 대비 전체 state/drive/trace/intent 최대차5.18e-7, 원본 events SHA 동일, process 종료0; scene 복사·IPC 포함 중앙/95/최대7.26/8.28/18.15ms. `.../20261031-process-body-adapter-proof-audit/`가 해시·차이/시간을 재계산했다. 입력 계약·timeout·종료·기존 shadow 회귀 7검사 통과. 실제 카메라/ticker에서 process adapter를 아직 실행하거나 실시간 proof gate를 만들지는 않았다. 따라서 실시간 감각 freshness·물리/노출 시각·생리·폐루프 주행·가감속/변속/셋업 및 유효 완주/라인/랩타임은 미검증, 학습/차량 제어0이다. 다음은 정확한 source/checkpoint/adapter 원본 proof를 검증하는 독립 live shadow runner 및 실패 시 소유 process 종료 계약을 완성한 뒤 실시간 시험한다.
+
+
+### 2026-10-31 독립 CPU process body live shadow — 출력 신선도 개선 관측, 종료 미자격
+`ProcessBodyLiveShadow`용 독립 runner가 기존 GPU split/bridge proof와 정확한 process adapter·worker source/checkpoint/387사건 proof를 검사한다. 오래된 proof는 거부한다. 준비 실패나 timeout 뒤 소유 worker만 제한 대기 후 종료하고 재시작하지 않으며, 실패 시에도 ticker 원본을 보존한다. 관련6개 테스트 통과; 최종 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-process-body-preflight-final-proof/`에서 원본387사건 GPU 대비 state/drive/trace/intent 최대차5.18e-7·worker 정상종료0이다.
+
+같은 3초15km/h 엔진 AI·GPU FlyVis·CPU process·영상40ms/몸10ms 조건 `.../20261031-process-body-live-shadow/`는 교사 child 종료0·camera280그룹·native4609 copy·worker 정상종료0/강제종료false·학습/학생 actuator/UI0이다. 원본 RGB·native 최초 receipt·clock 독립 감사 `.../20261031-process-body-live-shadow-audit/`에서 출력372개 중 host freshness371 통과; 첫 출력은 이전 held 부재로 불통과, 이후371/371은 통과했다. held>50ms 0, 네 시야>150ms 0; held 중앙/95/최대20.48/24.90/33.20ms, decision→output 중앙/95/최대7.84/9.87/18.92ms. 직전 CPU thread 260/263과 이 process 371/372는 각각 단일 실행이며 조건/시스템 부하 차이가 있어 차이를 인과나 반복 일반화로 확정하지 않는다.
+
+최종 출력27156.5957 뒤 ticker는 packet250087의 최초 receipt27156.5827706이 52.32ms 지난 27156.6350944에 current-body stale로 중단했고 이후 시각 producer도 ticker 중단을 기록해 run status는 shadow_stopped다. 독립 control native-after도 같은 packet250087이지만 CSP pause의 정확한 host 시각은 확인되지 않아 이 종료를 정상 lifecycle이라고 확정하거나 실패를 지우지 않는다. 물리 발생/노출 동기·실제 배우 제어·생리·유효 완주/라인/랩타임은 미검증이다. 종료 직후 CSP AI off지만 frozen native는 AI true여서 API restart/start/pause/resume 후 `.../20261031-process-shadow-reset-native-audit/` 새 packet59/59 AI false·정차/브레이크 확인, `.../20261031-process-shadow-reset-final-pause/`로 pause. 마지막 PID12432/generation `15533904ULL:0.0013473`, epoch11 paused·AI/probe/camera off·offline. 다음은 실제 lifecycle 종료와 unexpected stale를 원본 증거로 구분하는 명시적 종료 계약 및 반복 조건 검증이며, actor/학습에는 승격하지 않는다. 목표는 초파리 겹눈·운동 시각 및 비행 유래 균형/운동 회로와 몸 기울기·회전·하중·타이어 되먹임으로 조향·가감속·변속·셋업 적응 및 빠른 유효 완주·라인/랩타임 최적화다.
+
+
+### 2026-10-31 lifecycle 관찰·owned pause 종료와 process shadow 반복
+직전 반복 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-process-body-lifecycle-observed/`는 raw 감사 `...-audit/`에서 372출력 중 첫 held 부재1·이후371/371 host freshness 통과, held>50ms0·view>150ms0, decision→output 중앙/95/최대7.97/9.35/19.21ms다. 하지만 status는 current-body stale로 중단된 incomplete다. `.../20261031-process-lifecycle-order-audit/`가 671건 fresh 동세대 status 관측과 원본 시각을 확인해 실제 owned active 관측 후 paused/AI off/probe off 관측이 stale stop보다 35.84ms 앞섰음을 확인했다. 정확한 pause 물리 순간과 source 발생/노출 시간은 확인하지 못했고, 이 증거로 기존 run을 성공으로 소급 변경하지 않는다. 종료 후 frozen native AI true를 API restart/start/pause/resume 후 `.../20261031-observed-process-reset-native-audit/` 새 packet59/59 AI false로 확인하고 pause했다.
+
+이를 근거로 동일 세대의 fresh owned active가 먼저 관측된 이후 fresh paused/AI off/probe off가 관측될 때만 새 영상 소비를 멈추고 ticker에 협조 종료를 요청하도록 했다. 초기 pause·오래된/다른 세대·읽기 실패는 종료 신호가 아니며 stale/freshness 기준은 그대로다. 단위 검증9개 통과. 사전 등록한 단일 재시험 `.../20261031-process-body-owned-pause-live/`: 교사 child 종료0·camera260그룹·native4271 copy·ticker/bridge 오류0·worker 종료0/강제종료false·run completed_diagnostic, 학생 actuator/학습/UI0. 독립 raw 감사 `...-audit/`에서 365출력 중 첫 held 부재1·이후364/364 host freshness 통과, held>50ms0·view>150ms0; held 중앙/95/최대20.91/27.40/44.26ms, decision→output 중앙/95/최대8.00/10.78/21.61ms. `.../20261031-owned-pause-shutdown-audit/`는 fresh active 선행, pause 관찰 뒤0.46ms shutdown 요청, 관찰 시각·마지막 tick·child 종료·worker0 및 652개 관측/읽기 오류0을 확인했다. 첫 출력의 held 결측은 통과로 둔갑하지 않았다. 단일 교사 shadow이며 실제 actor·신경 생리·물리/노출 동기·유효 완주/라인/랩타임의 자격은 아니다.
+
+이후 frozen native AI true를 API restart/start/pause/resume 후 `.../20261031-owned-pause-reset-native-audit/` 새 packet59/59 AI false·정차/브레이크로 확인하고 `.../20261031-owned-pause-reset-final-pause/`로 pause. 최종 PID12432/generation `15533904ULL:0.0013473`, epoch13 paused·AI/probe/camera off·offline. 다음은 다른 주행 조건과 반복에서 process shadow freshness·출력의 원본 replay를 검증하고, 필요한 시각·비행 제어의 인과적 기능 및 조향·가감속/변속/셋업 적응, 빠른 유효 완주와 레이싱 라인/랩타임 최적화로 진행한다.
+
+
+### 2026-10-31 완료된 process shadow의 원본 시각·몸 연속 재생
+`20261031-process-body-owned-pause-live/`의 최초 처리부터 몸 context 부재148개를 포함한 네 시야 영상253그룹을 원본 visual_snapshot 시각·이전 영상 유지·동일 FlyVis state로 재생했다. 원본 archive의 모든 처리된 RGB 해시를 확인했고, 실제 공개105그룹·내부 시각 tick2135개를 보존했다. 이 105그룹과 원본 native 최초 receipt·body decision을 소유 process에 순서대로 전달해 365출력 전체를 비교했다. 조향/전진 intent 최대 절대오차 2.24e-7/1.94e-7, 2e-6 초과0/365, 원본 episode 중 reset0·worker 정상종료0이다. 결과 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261031-process-shadow-live-original-replay/`. `.../20261031-process-shadow-live-original-replay-audit/`가 저장된 live 원본 packet·시각·frame과 365개 수치 오차를 독립 재계산했다(모델 자체를 두 번째 독립 재실행한 것은 아니다).
+
+별도 `.../20261031-process-shadow-visual-context-raw-audit/`에서 원본 native copy 이력을 각 영상의 실제 drain 수까지 순서대로 다시 읽어 현재 몸과 네 view prior의 packet·최초 receipt·21값·유효 mask를 검증했다. 처리253그룹 중 현재 몸 부재148, 공개105그룹의 prior 결측4시야는 그대로였고 원본과 모두 일치했다. 이는 host 수신과 기록된 렌더 하한의 관계이며 물리 센서 발생·실제 노출 시각의 동기 증거가 아니다. 본 시험은 teacher 주행 중의 shadow 출력 재현으로 학생 제어, 시각/비행 생리 기여, 실제 제동·변속·셋업 적응, 유효 완주/라인/랩타임 최적화를 입증하지 않는다. fit/optimizer·차량 제어0. 다음은 원래 이력과 별도 조건에서 시각·몸 개입의 기능적 기여 및 process shadow의 반복 freshness를 검증하고 실제 가감속 출력과 폐루프 학습으로 진행한다.
+
+### 2026-11-01 단일 작업자 및 카메라 안전 경계
+단일 통합 회로 몸 ticker와 복사·덮어쓰기 방지 mailbox는 합성 테스트를 통과했으며 실제 live 연결은 아직 없다. Numba `nogil` 변경 전후 기존 원본 200결정의 전체 9728 상태·intent는 정확히 일치한다 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-unified-numba-nogil-fullstate/nogil-parity.json`). camera 마지막 terminal `stopped`와 같은 요청의 heartbeat `failed`가 충돌하여 새 camera 요청을 거부하도록 했다. 관련 25검사 통과. 원인·실제 시각/몸 동시 freshness·차량 운전은 미검증이다. 자세한 현황은 `docs/CONTEXT.md`.
+
+### 2026-11-01 실제 native 몸 + 합성 영상 비제어 시험
+기존 통합 회로에 실제 native 수신과 합성 장면을 공급한 단일 0.8초 시험은 준비 1·shadow 73, 오류 0이다. 최초 packet 수신시각 및 전체 원본 해시는 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-unified-ticker-native-full-circuit/independent-audit.json`에서 확인했다. 실제 카메라·시각 freshness·생리·주행은 미검증이다. 카메라 종료 상태 불일치가 남아 실제 영상 연결 runner는 작성·구문 검사만 했고 실행하지 않았다. 자세한 현황은 `docs/CONTEXT.md`.
+
+### 2026-11-01 보관 영상 + 현재 몸의 동시 처리
+원본 보관 네 시야 16묶음과 실제 FlyVis GPU, 현재 native 몸, 기존 단일 회로 CPU ticker를 동시 실행해 priming1·출력59·거부0을 기록했다 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-archived-visual-live-body-unified/independent-audit.json`). 영상 시각은 합성이며 live camera·생리·주행 검증이 아니다. 본문 결과 저장 후 인터프리터가 남아 소유 자식을 강제 종료한 영수증을 보존했다. camera 상태 충돌은 미해결이다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 카메라 파일 실패 분기 재현
+배포 Lua 모의 실행에서 stopped terminal 후 status 저장 실패와 후속 clock-reply 저장 실패가 같은 failed 상태를 만드는 사실을 확인했다. 현재 오류 대상은 특정하지 못했다. 저장 대상 경로를 오류에 추가하는 source-pinned 후보를 생성·모의 검증했고 배포하지 않았다. Lua·admission 등 236검사 통과. idle clock 4회 응답은 실제 촬영 가능 인증이 아니다. 별도 반복에서 Python main 반환 및 atexit 진입 후 종료 지연을 관측했다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 실제 카메라 multirate 진단
+과거 terminal/status 불일치를 보존하고 엄격한 동일 generation·idle·fresh clock 조건으로 단일 진단 촬영을 허용했다. 실제 네 시야·FlyVis·native 몸·하나의 회로에서 priming1·출력8 후 이전 시야 150.13ms로 guard가 중단했다 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-stationary-unified-multirate-recovery/independent-audit.json`). 카메라 새 terminal/status stopped, 15묶음 보관; 정차 진단·물리 동기와 배우 자격 미검증. 결과 저장 후 소유 인터프리터는 종료 영수증을 남기고 정리했다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 시야 context 선행과 실제 정차 shadow
+과거 시야에 해당하는 몸 context를 FlyVis 계산 전에 선택하고, 출력 몸은 원래대로 ticker가 최신 원본 수신에서 고른다. 관련 14검사 통과. 실제 네 시야 정차 진단에서 priming1·출력49 후 이전 시야 150.15ms로 중단했다. 원본 packet/시야 경계 감사 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-stationary-unified-multirate-early-context/independent-audit.json`. 단일 시험으로 효과를 인과 확정하지 않으며 실제 운전·생리·물리 동기 미검증이다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 유지 영상 선행 계산 실시간 정차 진단
+기존 held-input FlyVis 상태를 최대16×5ms 선행 계산하고 실제 다음 영상 간격에 해당하는 부분만 사용한다. 한 보관 영상·초기 상태, 7간격의 GPU state 최대차9.54e-7 및 합성7검사 확인. 실제 정차 camera 80묶음 중 55 선택·게시, priming1·shadow243·거부0, producer completed·process 정상종료 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-stationary-unified-held-prefix/independent-audit.json`). 장기 이력 동등성·물리 동기·생리·자율 주행 미검증; 생략된 25묶음 원본은 보존했다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 선택 이력 prefix 동등성 및 정차 반복
+실제 선택 영상55묶음/54간격의 원본 유지-input과 prefix 오프라인 누적 재생의 FlyVis 전체 state 최대차9.54e-7·T4/T5 3.58e-7 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-held-prefix-selected-history-parity/result.json`). 별도 정차 반복은 카메라80 중59 선택, shadow247·거부0·정상종료. 원본 픽셀/시간 하한/최초 native receipt 독립 감사 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-stationary-unified-held-prefix-repeat/independent-audit-v2.json`. live 출력 재현·물리 동기·생리·주행 미검증. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 실제 정차 shadow 출력 재현
+원래 선택 RGB55묶음 FlyVis 복원과 최초 native packet·시야 context·244개 결정시각을 단일 회로에 재생하여 준비1·실제 기록 출력243의 조향/전진 최대차1.86e-7/5.96e-8 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-unified-held-prefix-recorded-output-replay/independent-audit.json`). guard clock은 이상적 재생 시간이며 실제 지연·물리 동기·생리·주행 증거가 아니다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 시각·몸 projection 인과 개입
+정차 원본243출력과 별도 AI 교사 주행365결정에서 네 공학적 경로를 각각 제거해 하나의 통합 회로 state/intent 변화를 계산했다. 정차의 과거 회전값은 모두0, 시각×몸 회전 경로 차이0; 교사 주행 회전값은 최대0.633rad/s이며 해당 경로 제거 시 조향 최대차0.0000609다. 다른 경로도 출력에 영향을 보였으나 생리나 운전 정확도 증거가 아니다. 배열 원본 및 재계산 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-unified-moving-teacher-path-ablations/independent-audit.json`. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 미래 경로 방향 실패
+기존 fit 금지 episode03/04/06의 양방향 20m 미래 chord 830개에서 원본 회로 및 운동 시각·공간 대비·추가 몸 경로 각각 제거한 네 조건 모두 조향 음수만 기록했다. 각 episode 양방향 balanced accuracy0.5; episode07은 한 방향만 있어 양방향 점수 불가. 시야별 과거 몸은 모두 결측, 이전에 조사한 상관된 기록이며 미래 chord는 정답 조향/최적 라인이 아니다. 현재 actor 자격 실패. 원본 배열 감사 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-historical-four-episode-path-ablations/independent-audit.json`. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 조향 편향 분해
+정차 및 교사 주행의 저장 state를 원래 b1/b2 readout으로 복원하자 output 차이0, 두 기록의 모든 상태에서 조향 음수였다. 기준 근육차·mix·gain과 좌우 기여는 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-unified-readout-bias-decomposition/result.json`. 고정 합성 중립 anchor를 사후 적용해도 기존 세 방향 평가에서 0.5/0.5/0.262로 해결되지 않았다. 20m 방향 순위 AUC도0.248/0.378/0.0이나 상관된 이력·가정된 부호/미래 chord 기준이며 일반화나 조향 정답이 아니다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 합성 영상·몸 회전 경로 분리
+이미 본 합성 도로 두 개의 양 bend 차는 최종 조향 +0.00405/+0.00128이나 절대 출력은 둘 다 음수. 직선 장면에서 ±0.15rad/s yaw 차이는 현재 몸 경로만 -0.02934, 과거 시야별 몸 경로만 -0.00000986 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-unified-current-prior-yaw-intervention/independent-audit.json`). 이 크기는 특정 합성 입력에 한정되고 몸 반대 반응은 안정화와 양립 가능하다. 생리·주행 검증이 아니다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 합성 시각·몸 회전 공동 학습 후보 실패
+사전 분리 fit3/validation2 합성 도로의 단일 회로 후보는 12 update 후 validation MSE는 감소했지만 yaw0 양 bend 절대 조향은 모두 음수여서 방향 가설을 통과하지 못했다. 이전에 조사한 실제 fit 금지 episode03/04/06의 20m 양방향830결정에서도 기존·후보 모두 음수뿐이었다. validation 원본 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-joint-vision-yaw-disjoint-validation/independent-audit.json`, 실제 평가 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-joint-candidate-historical-path-evaluation-v2/independent-audit.json`. 후보 미배포·배우 미자격. 첫 학습 해시 오류 및 첫 실제 평가 baseline 복원 오류는 실패로 보존했다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 후보 분해 및 synthetic-to-real 시각 진단
+두 synthetic 평가에서 후보 loss 감소는 projection만보다 neutral reference만 바꾼 경우에 더 컸으며 bend 분리는 커지지 않았다 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-joint-candidate-factorization/independent-audit.json`). 기존 synthetic-only 고정 retinal probe는 새 합성 양 bend 순위를 잘 구분했으나 기존 fit 금지 실제 세 양방향 이력에서 score가 전부 음수, 방향 순위 AUC 0.586/0.237/0.403이었다 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-frozen-synthetic-probe-real-history/independent-audit.json`). 사후 진단·부호/경로 가정이며 진단기는 actor에 연결하지 않았다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 영역 차이 위치 진단
+합성-only 고정 진단기의 실제 대비 score 차이는 네 과거 이력에서 전방 시야가 절댓값 합 약71–82%를 차지했다. 전방 pooled retina score 차이는 균일 level보다 공간 패턴 항이 컸다. 다만 정차 실제·합성 화면의 탐색적 하단 35% 회색 가림은 차이를 줄이지 않아 운전석 단독 원인은 입증되지 않았다. 자료 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-frozen-probe-level-pattern-shift/result.json`, `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-exploratory-front-mask-probe/independent-audit.json`. 진단기는 actor가 아니다. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 전방 외형 개입 및 limiter 대조
+동일 synthetic 도로에서 cloud/roadside screen overlay는 고정 probe의 좌우 분리가 유지돼도 기존 단일 회로의 상대 조향 차를 크게 줄였다. contrast limiter 제거 반사실은 cockpit/exposure의 차이는 일부 회복했으나 cloud/roadside에서는 더 작아졌다. 실제 영상의 무제한 경계 포화 기록도 있어 제거하지 않았다. 상세 원본 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-synthetic-domain-no-limit-counterfactual/independent-comparison.json`. screen overlay는 비물리적 진단, 실제/생리·주행 검증 아님. `docs/CONTEXT.md` 참조.
+
+### 2026-11-01 시야별 제한 후보 미채택
+시야별 contrast gain은 다른 시야 feature를 직접 줄이지 않는다는 합성 검사를 통과했다. 그러나 기존 weights/threshold를 그대로 사용한 2개 합성 도로에서 exposure·cockpit 조건의 좌우 상대 조향 차가 오히려 줄고 절대 조향은 계속 음수였다 (`C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-synthetic-domain-per-view-limit/independent-comparison.json`). fit 금지 실제 영상의 경계 포화율은 `C:/Users/jeff4/AppData/Local/flybrain/runtime-runs/20261101-real-scene-per-view-limit-diagnostic/`; 실제 torch와 첫32 장면 parity 최대2.09e-7. 배우 미적용·무학습. `docs/CONTEXT.md` 참조.
