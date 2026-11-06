@@ -1,0 +1,58 @@
+"""Five visual-route factorial on declared TRAIN exchanges and fixed candidate prefixes."""
+import gc,time
+from pathlib import Path
+import numpy as np
+import torch
+from flybrain_drive.evidence import begin_run,write_json
+from flybrain_drive.graph import sha256
+from flybrain_drive.sac_unified_student import read
+from scripts.fixture_adjoint_speed_experiment import FixtureAdjointSpeedExperiment
+from scripts.sac_steering_experiment import snapshot,restore
+from scripts.train_qualified_sac_unified import context
+from scripts.intervene_motion_spatial_same_body import state_digest
+
+ROOT=Path('runs/visual-route-factorial-20261105')
+PARENT=Path('runs/fixture-adjoint-learning-20261104')
+ROUTES=['scene','optical_static','dn_static','dn_motion','visual_motion']
+
+class RouteExperiment(FixtureAdjointSpeedExperiment):
+ def route(self,bit):
+  h=self.holder;e=h['episode'];i=h['index']
+  if h['route_mask']&(1<<bit):e,i=h['donor']
+  j=int(self.maps[e][i]);return self.extras[e][i:i+1],self.features[e][j:j+1]
+ def _visual(self,module,args,value):
+  static,_=self.route(1);_,fine=self.route(4);return value+self.optical(static[:,64:])+self.motion(fine)
+ def _descending(self,module,args,value):
+  static,_=self.route(2);_,fine=self.route(3);steer,power=value;current=self.calibration(static,fine,self.dn(static));self.last_current=current.detach().clone();self.last_descending=(steer+current).detach().clone();return steer+current,power
+ def step(self,i,learn=False):
+  if learn:raise ValueError('Route factorial is read-only')
+  h=self.holder;h['index']=i;e=h['episode'];d,c,_=self.items[e];de,di=h['donor'] if h['route_mask']&1 else (e,i)
+  with torch.no_grad():
+   _,mu=self.model.experimental_recurrent_speed_decision(decision_time=float(d['decision_time'][i]),racing_goals=self.goals,scene_features=torch.tensor(self.items[de][0]['scene'][di:di+1]),scene_valid=self.views,body_context=context(d,c,i));return self.head(mu)[0]
+
+
+def main():
+ torch.set_num_threads(1);plan=read(PARENT/'plan-01.json');checkpoint=PARENT/'input_adjoint-fit-01/ports.pt';assert sha256(checkpoint)==read(checkpoint.parent/'result.json')['checkpoint_sha256'];e=RouteExperiment(plan,fixture_input_adjoint=True);cp=torch.load(checkpoint,map_location='cpu',weights_only=True);e.calibration.load_state_dict(cp['current_calibration']);e.body_port.load_state_dict(cp['body_port']);e.speed_policy.load_state_dict(cp['speed_policy']);e.calibration.requires_grad_(False);e.body_port.requires_grad_(False);e.speed_policy.requires_grad_(False);evaluation=PARENT/'input_adjoint-evaluation-01';er=read(evaluation/'result.json');assert sha256(evaluation/'candidate-prefix-states.pt')==er['prefix_states_sha256'];states=torch.load(evaluation/'candidate-prefix-states.pt',map_location='cpu',weights_only=True);tasks=plan['image_tasks'];assert len(tasks)==10 and all(t['episode'] in [0,1] for t in tasks)
+ out=begin_run(ROOT/'diagnostic-01',dict(program_sha256=sha256(__file__),parent_checkpoint_sha256=sha256(checkpoint),prefix_states_sha256=er['prefix_states_sha256'],routes=ROUTES,tasks=tasks,seed=None,optimizer_updates=0,actor_qualified=False,vehicle_control_sent=False,scope='Five-route2^5 factorial. Same recipient body/native/clocks/downstream recurrent prefix. Artificial mixes of donor features retain donor upstream history; neither physical counterfactual truth nor unseen-track evaluation. TRAIN tasks only; no new reserved texture read.'));enabled=gc.isenabled();gc.disable();saved={};reports=[];identity_error=0.;identity_lr=0.;start=time.perf_counter();result=dict(status='failed',actor_qualified=False,vehicle_control_sent=False,optimizer_updates=0)
+ try:
+  with np.load(evaluation/'predictions.npz') as original:
+   for number,task in enumerate(tasks):
+    episode,begin,end=task['episode'],task['begin'],task['end'];prefix=states[episode,begin];prefix_hash=state_digest(prefix);rows=[]
+    for mask in range(32):
+     pred=[];currents=[];descending=[];muscles=[]
+     for donor in [task['left_donor'],task['right_donor']]:
+      restore(e.model,prefix);assert state_digest(snapshot(e.model))==prefix_hash;e.holder.clear();e.holder.update(mode='real',episode=episode,counterfactual_images=True,route_mask=mask);branch=[];bc=[];bd=[];bm=[]
+      for offset,i in enumerate(range(begin,end)):
+       e.holder['donor']=(episode,donor+offset);branch.append(e.step(i).numpy());bc.append(e.last_current[0].numpy());bd.append(e.last_descending[0].numpy());bm.append(e.last_muscles[0].numpy())
+      pred.append(branch);currents.append(bc);descending.append(bd);muscles.append(bm)
+     prediction=np.asarray(pred);current=np.asarray(currents);mu=np.asarray(muscles);key=f'group{number}_mask{mask}';saved[key+'_prediction']=prediction;saved[key+'_current']=current;saved[key+'_descending']=np.asarray(descending);saved[key+'_muscles']=mu;difference=prediction[0]-prediction[1];rows.append(dict(mask=mask,routes=[name for bit,name in enumerate(ROUTES) if mask&(1<<bit)],steering_margin=float(-difference[:,0].mean()/2),mean_current_left_minus_right=(current[0]-current[1]).mean(0).tolist(),mean_muscle_left_minus_right=(mu[0]-mu[1]).mean(0).tolist()))
+     if mask==0:identity_lr=max(identity_lr,float(abs(difference).max()));identity_error=max(identity_error,float(abs(prediction-original[f'prediction_{episode}'][begin:end][None]).max()))
+    reports.append(dict(group=number,task=task,prefix_sha256=prefix_hash,masks=rows));write_json(out/'progress.json',dict(groups=len(reports),total_groups=len(tasks),elapsed_seconds=time.perf_counter()-start))
+  assert identity_lr==0 and identity_error<2e-6;e.verify_fixed();np.savez_compressed(out/'trajectories.npz',**saved);write_json(out/'groups.json',reports);margins=np.array([[r['steering_margin'] for r in g['masks']] for g in reports]);route_effects={}
+  for bit,name in enumerate(ROUTES):
+   contexts=[m for m in range(32) if not m&(1<<bit)];deltas=margins[:,[m|(1<<bit) for m in contexts]]-margins[:,contexts];route_effects[name]=dict(mean_contextual_margin_change=float(deltas.mean()),positive_contexts=int((deltas>0).sum()),negative_contexts=int((deltas<0).sum()),total_contexts=deltas.size,individual_mean_margin=float(margins[:,1<<bit].mean()),full_removal_mean_margin=float(margins[:,31^(1<<bit)].mean()))
+  result.update(status='completed_train_five_visual_route_factorial',groups=len(reports),branches=len(reports)*64,identity_maximum_action_difference=identity_lr,identity_maximum_replay_difference=identity_error,mean_signed_margins_by_mask=margins.mean(0).tolist(),direction_counts_by_mask=(margins>0).sum(0).tolist(),target_counts_by_mask=(margins>=.002).sum(0).tolist(),route_effects=route_effects,groups_sha256=sha256(out/'groups.json'),trajectories_sha256=sha256(out/'trajectories.npz'),actual_driving_improvement_verified=False,termination_reason='Declared TRAIN route factorial completed without updates, source/clock relabeling or physical truth claims')
+ except Exception as error:result.update(error=type(error).__name__,reason=str(error),groups=len(reports));raise
+ finally:e.close();gc.enable() if enabled else gc.disable();result['elapsed_seconds']=time.perf_counter()-start;write_json(out/'result.json',result)
+
+if __name__=='__main__':main()

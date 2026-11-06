@@ -33,3 +33,17 @@ def test_map_rays_use_declared_pose_and_hashes_without_actor_images(tmp_path):
     with pytest.raises(ValueError, match='hashes'):
         PrivilegedTrackGeometry(track, reference, track_sha256='0' * 64,
                                 reference_sha256=sha256(reference))
+
+def test_cyclic_reference_uses_actual_segments_on_both_sides_of_seam(tmp_path):
+    track, reference = tmp_path / 'track.csv', tmp_path / 'reference.csv'
+    x = np.linspace(-20., 20., 21)
+    np.savetxt(track, np.c_[x, np.full_like(x, 20.), x, np.full_like(x, -20.)],
+               delimiter=',', header='left_border_x,left_border_y,right_border_x,right_border_y',
+               comments='')
+    line = np.array([[0., 0.], [10., 0.], [10., 10.], [0., 10.]])
+    np.savetxt(reference, np.r_[line, line[:1]], delimiter=',', header='pos_x,pos_y', comments='')
+    geometry = PrivilegedTrackGeometry(track, reference, track_sha256=sha256(track),
+                                       reference_sha256=sha256(reference), cyclic_reference=True)
+    np.testing.assert_array_equal(geometry.line, line)
+    for y in (1., 9.):
+        assert abs(geometry.features(-1., y, 0.)['gap']) == pytest.approx(1.)

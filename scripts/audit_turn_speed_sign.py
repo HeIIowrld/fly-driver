@@ -1,0 +1,18 @@
+"""Independent raw six-muscle/output finite-difference and decoder sign audit."""
+from pathlib import Path
+import numpy as np
+import torch
+from flybrain_drive.evidence import write_json
+from flybrain_drive.graph import sha256
+from flybrain_drive.sac_unified_student import read
+
+def main():
+ torch.set_num_threads(1);root=Path('runs/visual-turn-speed-20261104');source=root/'speed-sign-fd-02';r=read(source/'result.json');assert sha256(source/'probes.npz')==r['raw_probes_sha256'];plan=read(root/'plan-01.json');parent=read(plan['candidate_plan']);fit=Path(parent['motion']['fit']);cpfile=fit/'motion-spatial.pt';assert sha256(cpfile)==parent['motion']['checkpoint_sha256'];head={k:v.numpy().astype(float) for k,v in torch.load(cpfile,map_location='cpu',weights_only=True)['readout'].items()};ref=head['training_reference'];scale=head['training_scale'];w=head['projection.weight'];bias=head['projection.bias'];reports=[];forward_error=0.;attribution_error=0.
+ with np.load(source/'probes.npz') as z:
+  for i,case in enumerate(r['reports']):
+   for record in case['reports']:
+    h=record['step_m_s'];mu=z[f'case_{i}_step_{h}_muscles'].astype(float);p=z[f'case_{i}_step_{h}_prediction'].astype(float);logits=((mu-ref)/scale)@w.T+bias;sigmoid=1/(1+np.exp(-logits[...,1:]));decoded=np.concatenate([np.tanh(logits[...,:1]),sigmoid],axis=-1);forward_error=max(forward_error,float(abs(decoded-p).max()));derivative=(p[1]-p[0])/(2*h);muscle_derivative=(mu[1]-mu[0])/(2*h);dz=logits[1,:,1:]-logits[0,:,1:];slope=np.divide(sigmoid[1]-sigmoid[0],dz,out=sigmoid[0]*(1-sigmoid[0]),where=abs(dz)>1e-12);contrib=(slope[:,0,None]*w[1]-slope[:,1,None]*w[2])*(muscle_derivative/scale);mean=contrib.mean(0);np.testing.assert_allclose(derivative.mean(0),record['mean_vehicle_derivative'],rtol=0,atol=1e-12);np.testing.assert_allclose(mean,record['six_muscle_gas_minus_brake_contributions'],rtol=0,atol=1e-12);error=float(abs(contrib.sum(1)-(derivative[:,1]-derivative[:,2])).max());attribution_error=max(attribution_error,error);assert np.all(muscle_derivative.mean(0)[4:]>0) and float(np.mean(derivative[:,1]-derivative[:,2]))<0;reports.append(dict(task=case['task'],step_m_s=h,power_proxy_derivative=muscle_derivative.mean(0)[4:].tolist(),gas_minus_brake_derivative=float(np.mean(derivative[:,1]-derivative[:,2])),power_pair_fraction_of_signed_readout_derivative=float(mean[4:].sum()/mean.sum()),attribution_error=error))
+ assert forward_error<2e-6 and attribution_error<2e-4
+ direct=dict(gas_power_logit_weights=w[1,4:].tolist(),brake_power_logit_weights=w[2,4:].tolist(),steering_common_power_logit_derivative=float((w[0,4:]/scale[4:]).sum()),global_pure_power_inversion_sufficient_condition=bool((w[1,4:]<=0).all() and (w[2,4:]>=0).all()))
+ result=dict(status='completed_independent_speed_sign_attribution_audit',source_result_sha256=sha256(source/'result.json'),raw_probes_sha256=sha256(source/'probes.npz'),parent_checkpoint_sha256=sha256(cpfile),program_sha256=sha256(__file__),reports=reports,independent_readout_forward_error=forward_error,independent_attribution_error=attribution_error,direct_decoder_sign=direct,speed_direction_semantics_gate_passed=False,optimizer_updates=0,vehicle_control_sent=False,actor_qualified=False,scope='Fixed-parent TRAIN local derivative and learned vehicle decoder algebra. Increased modeled wing-power proxies coincide with stronger decoded braking. No measured wing force, actual vehicle acceleration or all-state circuit monotonicity claim.');write_json(root/'speed-sign-audit-01.json',result);print(direct);print('power_pair_fraction_range',min(v['power_pair_fraction_of_signed_readout_derivative'] for v in reports),max(v['power_pair_fraction_of_signed_readout_derivative'] for v in reports))
+if __name__=='__main__':main()

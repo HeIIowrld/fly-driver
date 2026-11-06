@@ -26,6 +26,9 @@ class OwnedSourceCamera:
                 raise ValueError('Camera coordination path escaped the owned directory')
         if Path(row['trigger_file']).exists() or Path(row['stop_file']).exists():
             raise ValueError('Fresh untriggered camera ownership required')
+        if row.get('native_ready_required'):
+            if Path(row['native_ready_file']).resolve()!=self.plan_path.parent/'native-ready.json' or Path(row['native_ready_file']).exists():
+                raise ValueError('Fresh native-start barrier inside owned coordination directory required')
         self.triggered=False
         self.check(False,None)
 
@@ -57,11 +60,19 @@ class OwnedSourceCamera:
             raise RuntimeError('Camera start may only be requested once')
         Path(self.plan['trigger_file']).touch(exist_ok=False)
         self.triggered=True
-        deadline=time.perf_counter()+8
+        # Optional cold native-process readiness is an initialization boundary,
+        # not a relaxation of any admitted camera/body/actuator age limit.
+        deadline=time.perf_counter()+(45 if self.plan.get('native_ready_required') else 8)
         while True:
             row,_=read_published_json(self.plan['health_file'])
             self.check(False,None)
-            if row.get('frames',0)>=3 and row.get('state')=='capturing':
+            native_ready=not self.plan.get('native_ready_required')
+            if not native_ready and Path(self.plan['native_ready_file']).exists():
+                ready=json.loads(Path(self.plan['native_ready_file']).read_text(encoding='utf8'))
+                if ready['request_id']!=self.plan['request_id'] or ready['generation']!=self.plan['generation'] or ready['prior_actor_steps']!=0:
+                    raise ValueError('Native readiness belongs to another camera episode')
+                native_ready=True
+            if row.get('frames',0)>=3 and row.get('state')=='capturing' and native_ready:
                 return
             if time.perf_counter()>deadline:
                 raise TimeoutError('Prepared paused camera warmup not verified')

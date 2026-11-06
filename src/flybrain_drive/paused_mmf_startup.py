@@ -35,6 +35,14 @@ class PausedMMFStartupGate:
         self.generation, self.epoch = generation, epoch
         self.request_id, self.phase = None, 'admitted'
 
+    @classmethod
+    def completed_metadata_diagnostic(cls,status,request,camera,terminal,clock,evidence,*,now):
+        from .completed_camera_diagnostic import validate_completed_metadata_diagnostic
+        admission=validate_completed_metadata_diagnostic(status,request,camera,terminal,clock,evidence,now=now)
+        gate=cls(status,request,None,terminal)
+        gate.diagnostic_admission=admission
+        return gate
+
     def camera_ready(self, status, camera, request_id):
         if self.phase != 'admitted':
             raise RuntimeError('Camera readiness only once after admission')

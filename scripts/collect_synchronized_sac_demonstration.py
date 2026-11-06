@@ -22,7 +22,10 @@ def main():
     p.add_argument('--axis-config',required=True)
     p.add_argument('--calibration-result',required=True)
     p.add_argument('--expected-lua-sha256',required=True)
+    p.add_argument('--thermal-initialization-run',help='Experimental condition: audited initial thermal run; not actor input')
+    p.add_argument('--alignment-plan',default='runs/teacher-synchronized-20261102/camera-alignment-qualification-plan-memory-receive.json')
     p.add_argument('--teacher-config',default='assets/external/acgym-teacher-candidates-20261102/step_07000000.json')
+    p.add_argument('--moving-stop-reference', help='Teacher-only moving stop calibration')
     p.add_argument('--execute',action='store_true')
     p.add_argument('--source-timing-diagnostic',action='store_true')
     p.add_argument('--full-source-timing-diagnostic',action='store_true')
@@ -34,7 +37,7 @@ def main():
     if a.full_source_timing_diagnostic:a.source_timing_diagnostic=True
     run=begin_run(a.output,dict(arguments=vars(a),seed=780203,
         teacher_configuration_sha256=sha256(a.teacher_config),
-        alignment_plan_sha256=sha256('runs/teacher-synchronized-20261102/camera-alignment-qualification-plan-memory-receive.json'),
+        alignment_plan_sha256=sha256(a.alignment_plan),
         training_admissible=False,student_optimizer_updates=0))
     result=dict(status='planned',ui_actions_sent=0,training_admissible=False,student_optimizer_updates=0)
     snapshots=run/'executed-sources';snapshots.mkdir()
@@ -48,6 +51,7 @@ def main():
             'src/flybrain_drive/ac_metadata_mmf.py','src/flybrain_drive/ac_published_state.py',
             'src/flybrain_drive/owned_file_change_watch.py',
             'src/flybrain_drive/camera_receive_observer.py',
+            'src/flybrain_drive/thermal_teacher_start.py','scripts/audit_initial_thermal_evidence.py',
             'integrations/ac/flybrain_telemetry/flybrain_telemetry.py']:
         path=Path(name);target=snapshots/path.name;target.write_bytes(path.read_bytes())
         if sha256(target)!=sha256(path):
@@ -94,9 +98,18 @@ def main():
             '--axis-config',a.axis_config,'--calibration-result',a.calibration_result,
             '--teacher-config',a.teacher_config,'--transport','tcp','--source-native',
             '--require-quiescent-file-bridge',
-            '--shift-handling','policy','--unlimited-final-stage','--max-gap-m','12',
+            '--shift-handling','policy','--max-gap-m','12',
             '--stage-seconds','3','--full-laps','1','--camera-plan',str(coordination/'ready.json'),
             '--execute','--output',str(run/'teacher')]
+        capped=(a.moving_stop_reference is not None and
+            json.loads(Path(a.moving_stop_reference).read_text(encoding='utf-8')).get('teacher_pacing_profile')
+            =='monza_straight_120_v1')
+        if capped:command+=['--targets','20,40,60,80,120','--final-seconds','55']
+        else:command.append('--unlimited-final-stage')
+        if a.thermal_initialization_run:
+            command+=['--thermal-initialization-run',a.thermal_initialization_run]
+        if a.moving_stop_reference:
+            command+=['--moving-stop-reference',a.moving_stop_reference]
         teacher=subprocess.Popen(command,cwd=Path.cwd(),stdout=handles[1],stderr=subprocess.STDOUT,
             creationflags=subprocess.ABOVE_NORMAL_PRIORITY_CLASS if os.name=='nt' else 0)
         write_json(run/'teacher-process.json',dict(pid=teacher.pid,command=command,
@@ -117,6 +130,8 @@ def main():
         result.update(teacher_status=tr['status'],teacher_laps=tr.get('laps'),
             teacher_result_sha256=sha256(run/'teacher/result.json'))
         result['status']='collected_unqualified_demonstration' if tr['status']=='curriculum_completed' else 'incomplete_teacher_demonstration'
+        if tr['status']=='teacher_moving_stop_calibration_completed':
+            result['status']='collected_teacher_moving_stop_calibration'
     except Exception as error:
         result.update(status='failed',error=type(error).__name__,reason=str(error))
     finally:

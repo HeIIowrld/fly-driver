@@ -1,4 +1,4 @@
-"""Inventory installed Monza metadata for offline teacher evidence, not actor input."""
+"""Inventory installed offline circuit metadata for offline teacher evidence, not actor input."""
 
 import argparse
 import configparser
@@ -13,11 +13,12 @@ from flybrain_drive.graph import sha256
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--track-directory', required=True)
+    parser.add_argument('--track', choices=('monza','magione'), default='monza')
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
     root = Path(args.track_directory)
     assets = {'sections': root/'data/sections.ini', 'ai_lane': root/'ai/fast_lane.ai',
-              'ideal_line': root/'data/ideal_line.ai', 'main_mesh': root/'monza.kn5'}
+              'ideal_line': root/'data/ideal_line.ai', 'main_mesh': root/(args.track+'.kn5')}
     for path in assets.values():
         if not path.is_file():
             raise ValueError('Installed track asset missing: ' + str(path))
@@ -38,7 +39,7 @@ def main():
         'teacher_only': True, 'actor_input': False, 'licensed_asset_copies': 0})
     if any(sha256(path) != hashes[name] for name, path in assets.items()):
         raise ValueError('Installed source changed while auditing')
-    result = {'status': 'completed_read_only_inventory', 'track': 'monza',
+    result = {'status': 'completed_read_only_inventory', 'track': args.track,
         'assets': {name: {'path': str(path), 'sha256': hashes[name],
                          'bytes': path.stat().st_size} for name, path in assets.items()},
         'sections': sections, 'section_coordinates_assumed_normalized_spline': False,

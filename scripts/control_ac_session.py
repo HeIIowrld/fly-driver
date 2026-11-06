@@ -21,7 +21,7 @@ from flybrain_drive.teacher_pace import PACE_COMMAND, PACE_REQUEST, validate_pac
 from scripts.record_ac_wgc import physics_record
 
 
-def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk):
+def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk, thermal_admission=None, magione_stage=None):
     """One owned paused-camera API resume before teacher control acquisition.
 
     Keep evidence inside the enclosing run without rehashing source while the
@@ -78,6 +78,11 @@ def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk):
             command='resume',generation=before['generation'],epoch=before['epoch'],
             expires_clock=before['script_clock']+3,camera_request_id=owner.plan['request_id'],
             owned_mmf_resume=True)
+        if magione_stage is not None:
+            if (magione_stage['generation']!=before['generation'] or magione_stage['epoch']!=before['epoch']
+                    or before['track_id']!='magione' or before['car_id']!='bmw_z4_gt3'):
+                raise ValueError('Owned camera resume stage differs from the live Magione session')
+            request['expected_track_id']='magione'
         journal=root/'intent-journal';journal.mkdir(exist_ok=True)
         write_json(journal/(request['id']+'.json'),dict(request=request,
             role='owned_camera_teacher_recording_resume',controller_released=True))
@@ -115,10 +120,21 @@ def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk):
         write_json(out/'after.json',dict(session=after,native=physics_record(later)))
         if later.packet_id<=first.packet_id or status.snapshot()['builtin_ai_controlled']:
             raise ValueError('Native live advancement/AI-off resume not verified')
-        if raw['gear'][0]!=2 or not all(75<=t<=85 for t in later.fields['tyreCoreTemperature']):
-            raise ValueError('Actual warm first gear changed on resume; deferred restart is not a ready start')
+        from flybrain_drive.thermal_teacher_start import admit_teacher_resume
+        if magione_stage is None:
+            condition=admit_teacher_resume(after,later.fields,gear=raw['gear'][0],
+                auto_shifter=raw['autoShifterOn'][0],thermal_admission=thermal_admission)
+        else:
+            actual=list(later.fields['tyreCoreTemperature'])
+            if (after['epoch']!=magione_stage['epoch'] or after['track_id']!='magione'
+                    or raw['gear'][0]!=2 or raw['autoShifterOn'][0]!=1
+                    or raw['numberOfTyresOut'][0]!=0 or abs(later.fields['speedKmh'])>=.1
+                    or later.fields['gas']>=.02 or later.fields['brake']<=.98
+                    or not all(abs(t-b)<=3 for t,b in zip(actual,magione_stage['actual_start_temperature_c'],strict=True))):
+                raise ValueError('Measured Magione staging condition changed on owned resume')
+            condition=dict(condition='magione_staged',actual_resume_temperature_c=actual,actor_input=False)
         write_json(out/'result.json',dict(status='completed_owned_camera_resume',
-            lifecycle_requests_sent=1,actuator_messages_sent=0,ui_actions_sent=0))
+            lifecycle_requests_sent=1,actuator_messages_sent=0,ui_actions_sent=0,condition=condition))
         return after
 
 
@@ -274,6 +290,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--command', choices=['status', 'restart', 'start', 'pause', 'resume',
                                             'disable-ideal-line',
+                                            'set-tyres-temperature-initial', 'verify-initial-tyres-temperature',
                                             'expert-probe', 'expert-motion-probe',
                                             'expert-collect30', 'expert-motion-speed30',
                                             'expert-collect30-speed30', 'expert-speed-recovery15',
@@ -283,8 +300,21 @@ def main():
                                             PACE_COMMAND],
                         default='status')
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--settle-initial-thermal-readback',action='store_true',help='Record unadmitted brake-held startup motion before strict three-packet thermal readback')
+    parser.add_argument('--resume-before-live-initialization',action='store_true',help='Own one pre-setting API resume with an already-open native reader and strict stationary readiness')
+    parser.add_argument('--wake-native-before-live-initialization',action='store_true',help='Explicit one-shot physics awake before the live native pre-window')
+    parser.add_argument('--live-initialization', action='store_true', help='Explicit stationary live one-shot thermal preparation; requires new source capability')
+    parser.add_argument('--temperature-c', type=float)
+    parser.add_argument('--initialization-run', help='Read-only thermal verification: original call evidence')
+    parser.add_argument('--resume-for-readback', action='store_true',
+                        help='Thermal preparation only: one explicit CSP resume before native verification')
+    parser.add_argument('--pause-after-readback', action='store_true',
+                        help='Thermal preparation only: explicit CSP pause immediately after live native verification')
+    parser.add_argument('--axis-config', default='configs/ac-axis-probe.json')
     parser.add_argument('--expected-lua-sha256',
                         help='Explicit pinned alternate lifecycle source for diagnostics')
+    parser.add_argument('--heldout-magione', action='store_true',
+                        help='Explicit source-pinned offline Magione status/start/pause/resume/restart')
     parser.add_argument('--allow-live-aid-command', action='store_true',
                         help='Ideal-line command only, with verified stationary native brake hold')
     parser.add_argument('--camera-request-id',
@@ -292,6 +322,13 @@ def main():
     parser.add_argument('--ai-steer-multiplier', type=float, choices=[1., .9], default=1.)
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
+    if args.heldout_magione and (not args.expected_lua_sha256
+            or args.command not in ('status', 'start', 'pause', 'resume', 'restart')):
+        raise ValueError('Exact heldout lifecycle source and status/start/pause/resume/restart required')
+    expected_track = 'magione' if args.heldout_magione else 'monza'
+    if args.command in ('set-tyres-temperature-initial','verify-initial-tyres-temperature'):
+        from scripts.control_initial_thermal import run_initial_thermal
+        return run_initial_thermal(args)
     if args.allow_live_aid_command and args.command != 'disable-ideal-line':
         raise ValueError('Live aid option is limited to the ideal-line command')
     run = begin_run(args.output, dict(arguments=vars(args), scope=__doc__, seed=862830,
@@ -322,7 +359,7 @@ def main():
         native = WindowsACWindow()
         windows = native.discover()
         if (len(windows) != 1 or int(before['window_handle'].removesuffix('ULL')) != windows[0].hwnd
-                or before['car_id'] != 'bmw_z4_gt3' or before['track_id'] != 'monza'
+                or before['car_id'] != 'bmw_z4_gt3' or before['track_id'] != expected_track
                 or before['is_online']):
             raise ValueError('Reviewed offline original AC engine identity required')
         result['foreground_before'] = bool(native.user.GetForegroundWindow() == windows[0].hwnd)
@@ -331,6 +368,16 @@ def main():
             'integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua')
         if sha256(deployed) != expected_lua:
             raise ValueError('Lifecycle app source/deployment differ')
+        if args.heldout_magione:
+            from flybrain_drive.ac_image_buffer import ExistingNamedMapping
+            from flybrain_drive.ac_native_physics import decode_static_identity_prefix
+            with ExistingNamedMapping('Local\\acpmf_static', 200) as mapping:
+                identity = decode_static_identity_prefix(mapping.read())
+            if (result['foreground_before'] or identity['track'] != expected_track
+                    or identity['car_model'] != before['car_id']
+                    or before.get('capabilities', {}).get('heldout_track_lifecycle_v1') is not True):
+                raise ValueError('Background native BMW/Magione and scoped CSP capability required')
+            write_json(run / 'native-identity.json', identity)
         write_json(run / 'before.json', before)
         if args.command == 'status' or not args.execute:
             result.update(status='read_only', session=before)
@@ -365,6 +412,8 @@ def main():
             request = dict(schema='flybrain.csp.session.request.v1', id=uuid.uuid4().hex,
                 command=args.command, generation=before['generation'], epoch=before['epoch'],
                 expires_clock=before['script_clock']+3)
+            if args.heldout_magione:
+                request['expected_track_id'] = expected_track
             if args.allow_live_aid_command:
                 request['allow_live_stationary'] = True
             if probe:
@@ -454,11 +503,17 @@ def main():
                 try:
                     after, modified, retries = read_session_heartbeat(root / 'status.json')
                     result['heartbeat_metadata_retries'] += retries
-                    validate_heartbeat(after, time.time()-modified, mutating=False)
-                    reached = target_reached(args.command, before, after)
-                    if reached:
-                        write_json(run / 'after.json', after)
-                        break
+                    age = time.time()-modified
+                    if math.isfinite(age) and age > 2:
+                        # An accepted mutation can briefly stop heartbeat publication.
+                        # Retain the original deadline and wait for new evidence only.
+                        result['post_request_stale_heartbeats'] = result.get('post_request_stale_heartbeats', 0) + 1
+                    else:
+                        validate_heartbeat(after, age, mutating=False)
+                        reached = target_reached(args.command, before, after)
+                        if reached:
+                            write_json(run / 'after.json', after)
+                            break
                 except (FileNotFoundError, PermissionError):
                     pass
                 time.sleep(.02)

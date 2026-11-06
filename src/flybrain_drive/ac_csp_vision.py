@@ -16,6 +16,7 @@ import numpy as np
 from PIL import Image
 
 from .ac_camera_archive import bundle_camera_files
+from .camera_body_alignment import preserved_source_render_metadata
 from .ac_camera_mount import configured_mount, validate_frame_mount
 from .ac_capture import WindowsACWindow
 from .ac_csp_clock import CSPClockBounds, clock_ping, initialize_clock
@@ -240,7 +241,12 @@ class CSPVisionRecorder:
                  async_frame_persistence=False, mmf_metadata=False, source_timing_v1=False,
                  frame_writer_factory=None, preserve_producer_time=False,
                  expected_source_sha256=None, start_gate=None, prepared_event=None,
-                 source_body_recording=False,lifecycle_only_camera_status=False,mmf_stop_signal=False,memory_only_receive_checks=False):
+                 source_body_recording=False,lifecycle_only_camera_status=False,mmf_stop_signal=False,
+                 memory_only_receive_checks=False,expected_track="monza"):
+        if expected_track not in ("monza", "magione") or (expected_track=="magione"
+                and (expected_source_sha256 is None or not mmf_metadata)):
+            raise ValueError("An explicit source-pinned MMF camera is required for Magione")
+        self.expected_track = expected_track
         if any(event is not None and not isinstance(event, threading.Event)
                 for event in (start_gate, prepared_event)):
             raise ValueError('Explicit cancellable capture preparation events required')
@@ -430,7 +436,7 @@ class CSPVisionRecorder:
                     phases['metadata_loaded_at'] = self.host_clock()
                     if (frame['request_id'] != self.request_id or frame['index'] != index
                             or frame.get('generation') != self.clock.generation
-                            or frame['car_id'] != 'bmw_z4_gt3' or frame['track_id'] != 'monza'):
+                            or frame['car_id'] != 'bmw_z4_gt3' or frame['track_id'] != self.expected_track):
                         raise ValueError('Camera identity, generation or layout changed')
                     validate_frame_aid_state(frame)
                     validate_frame_mount(frame, self.config)
@@ -520,6 +526,9 @@ class CSPVisionRecorder:
                             rgb_sha256=hashlib.sha256(rgb.tobytes()).hexdigest(),
                             render_started_lower=self.clock.render_start_lower(
                                 view['render_started_clock'], self.clock.generation))
+                        witness = preserved_source_render_metadata(view)
+                        if witness is not None:
+                            receipt_view['source_render_metadata'] = witness
                         if self.preserve_producer_time:
                             source_time = view['render_started_clock']
                             if (isinstance(source_time, bool) or not np.isfinite(source_time)

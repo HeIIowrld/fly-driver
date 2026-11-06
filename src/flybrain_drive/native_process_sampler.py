@@ -60,13 +60,15 @@ class NativeProcessSampler:
     The production mapping option is implemented but is not live-validated.
     """
     def __init__(self, *, period=.002, max_samples=20000, capacity=128,
-                 max_age=.05, recorded=None):
+                 max_age=.05, recorded=None, drain_on_stop=False):
         if not (0 < period <= .02 and type(max_samples) is int and max_samples > 0
                 and type(capacity) is int and capacity > 0 and 0 < max_age <= .05):
             raise ValueError('bounded sampler configuration required')
         if recorded is not None and (not isinstance(recorded, tuple) or not recorded
                 or any(not isinstance(x, bytes) or len(x) != AI_STATUS_PREFIX.size for x in recorded)):
             raise ValueError('explicit finite recorded 420-byte prefixes required')
+        if type(drain_on_stop) is not bool:raise ValueError('Explicit retirement-drain option required')
+        self.drain_on_stop=drain_on_stop;self.retired_rows=[];self.rejected_rows=[]
         self.period, self.max_age = period, max_age
         self.ctx = mp.get_context('spawn')
         self.stop_event = self.ctx.Event()
@@ -133,6 +135,7 @@ class NativeProcessSampler:
         now = clock()
         if not math.isfinite(receipt) or not math.isfinite(now) or not 0 <= now-receipt <= self.max_age:
             self.failure = 'native process sample stale or future at consumption'
+            self.rejected_rows.append(dict(sequence=sequence,row=row,actor_admitted=False,reason=self.failure,rejected_monotonic_seconds=now))
             raise RuntimeError(self.failure)
         self.expected += 1
         return row
@@ -141,7 +144,22 @@ class NativeProcessSampler:
         if not self.started:
             return
         self.stop_event.set()
-        self.process.join(timeout)
+        if self.drain_on_stop:
+            # Only after stop, quarantine queued records to let the producer's
+            # feeder flush before join. These records never become actor input.
+            deadline=time.perf_counter()+timeout
+            while self.process.is_alive() and time.perf_counter()<deadline:
+                try:
+                    sequence,row=self.output.get(timeout=.01)
+                    self.retired_rows.append(dict(sequence=sequence,row=row,actor_admitted=False))
+                except queue.Empty:pass
+                self.process.join(0)
+            while True:
+                try:
+                    sequence,row=self.output.get_nowait()
+                    self.retired_rows.append(dict(sequence=sequence,row=row,actor_admitted=False))
+                except queue.Empty:break
+        else:self.process.join(timeout)
         if self.process.is_alive():
             raise TimeoutError('native sampler process still live')
         try:
