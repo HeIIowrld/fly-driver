@@ -20,14 +20,17 @@ from scripts.record_ac_wgc import physics_record
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--axis-config', type=Path, default=Path('configs/ac-axis-probe.json'))
     p.add_argument('--output', required=True)
     a = p.parse_args()
-    axis = json.loads(Path('configs/ac-axis-probe.json').read_text(encoding='utf8'))
+    axis = json.loads(a.axis_config.read_text(encoding='utf8'))
     run = begin_run(a.output, dict(scope=__doc__, axis=axis, bounded_requests=27))
     result = dict(status='failed', goal_achieved=False, ui_actions_sent=0)
     session = reader = ai = None
     requests, samples = [], []
     try:
+        if axis["car_model"] != "bmw_z4_gt3" or axis["track"] != "monza":
+            raise ValueError("Reviewed Monza BMW Z4 GT3 axis configuration required")
         api = WindowsACWindow()
         windows = api.discover()
         assert len(windows) == 1

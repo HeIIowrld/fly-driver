@@ -76,6 +76,6 @@ the cleanup scope. Never expose MECAR_SSH_* credential values or remove an activ
 
 과거 NPZ 중복 사본 214개는 실제 삭제했다. 고유 원본 67종과 기존 dataset/run manifest·실행 기록은 보존했고 `.episode-links.json`과 공통 로더가 옛 경로를 해석한다. 누락된 사본 경로를 발견해도 자동으로 전부 재복제하지 않는다. 원본과 참조표를 보존하고 `episode_storage.resolve_payload_path`/`load_array` 및 `graph.sha256`을 사용한다. 옛 소스의 직접 파일 읽기는 `scripts/with_materialized_episodes.py`로 일시 복원 후 재정리한다. 완료 근거는 `docs/historical-episode-compaction-20261029.md`다.
 
-## 실제 작업 디렉터리 (사용자 확인 2026-10-30)
+## 작업 디렉터리
 
-이 프로젝트의 shell 명령은 모두 `\\hyunjin\homes\hjpark\02_Personal\01_학교\20.활동\개인프로젝트\flybrain`을 `workdir`로 명시한다. 앱의 기존 chat cwd가 상위 `02_Personal`로 표시되어도 상위 폴더에서 코드를 생성하거나 실행하지 않는다. 새 worktree/checkout으로 바꾸지 않고 이 기존 flybrain 폴더와 변경을 유지한다.
+각자 자신의 flybrain clone에서 명령을 실행한다. 공유 NAS 작업 폴더는 소유자의 실행 상태를 보존한다.

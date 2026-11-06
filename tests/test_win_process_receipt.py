@@ -5,9 +5,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from flybrain_drive.win_process_receipt import ProcessReceipt
+from flybrain_drive.win_process_receipt import ProcessReceipt, require_single_engine
 
 pytestmark = pytest.mark.skipif(os.name != 'nt', reason='Windows native process receipt')
+
+
+def test_single_visible_window_does_not_hide_another_native_engine():
+    foreground_independent = {"Name": "acs.exe", "ProcessId": 123}
+    windowless = {"Name": "acs_x86.exe", "ProcessId": 456}
+    require_single_engine(123, [foreground_independent])
+    for inventory in ([], [windowless], [foreground_independent, windowless]):
+        with pytest.raises(ValueError, match="Exactly one native AC engine"):
+            require_single_engine(123, inventory)
 
 
 def test_receipt_observes_same_child_handle_through_actual_exit():

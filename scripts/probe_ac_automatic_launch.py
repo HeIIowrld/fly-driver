@@ -23,25 +23,37 @@ from scripts.record_ac_wgc import physics_record
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--resume-before-first-gear',action='store_true')
+    parser.add_argument('--thermal-initialization-run')
+    parser.add_argument('--pause-after-first-gear',action='store_true',help='One owned API pause immediately after observed stationary first gear')
+    parser.add_argument('--expected-lua-sha256')
     parser.add_argument('--ensure-first-gear',action='store_true',
                         help='Accept observed existing first gear without another button press')
+    parser.add_argument('--telemetry-transport', choices=('file', 'tcp'), default='file',
+                        help='TCP requires original source-native timestamps and a gear-only request')
     parser.add_argument('--axis-config', default='configs/ac-axis-probe.json')
     parser.add_argument('--gear-up-button', type=int,
                         help='Explicit zero-based button; gear-only test with no throttle pulse')
     parser.add_argument('--calibration-result', required=True)
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
+    if args.resume_before_first_gear and (not args.execute or not args.pause_after_first_gear or not args.thermal_initialization_run):
+        raise ValueError('Owned gear resume requires explicit thermal receipt, gear-only execution and final pause')
+    if args.pause_after_first_gear and (not args.execute or args.gear_up_button is None or not args.expected_lua_sha256):
+        raise ValueError('First-gear freeze requires explicit execution, reviewed gear-only button and lifecycle source')
     config = json.loads(Path(args.axis_config).read_text(encoding='utf8'))
     if (args.gear_up_button is not None
             and config.get('gear_buttons_zero_based', {}).get('up') != args.gear_up_button):
         raise ValueError('Button must match explicitly reviewed game profile configuration')
+    if args.telemetry_transport == 'tcp' and args.gear_up_button is None:
+        raise ValueError('TCP is restricted to the stationary gear-only probe')
     calibration = json.loads(Path(args.calibration_result).read_text())
     run = begin_run(args.output, dict(arguments=vars(args), axis_configuration=config,
         calibration=calibration, scope=__doc__,
         throttle=0 if args.gear_up_button is not None else .05,
         pulse_seconds=0 if args.gear_up_button is not None else .4,
         speed_limit_kmh=2., displacement_limit_m=.25, ui_actions_sent=0))
-    reader, status, session = None, None, None
+    reader, status, session, client = None, None, None, None
     events = []
     result = dict(status='not_ready', ui_actions_sent=0, goal_achieved=False)
     try:
@@ -50,15 +62,24 @@ def main():
         if len(windows) != 1:
             raise ValueError('One original AC engine required')
         window = windows[0]
-        client = FileTelemetryClient(Path(os.environ['LOCALAPPDATA']) / 'flybrain/telemetry',
-                                     timeout=.15)
+        if args.telemetry_transport == 'tcp':
+            from flybrain_drive.ac_latest_tcp import LatestTcpTelemetryClient
+            from flybrain_drive.source_native_snapshot import WindowsQpc, source_age_seconds
+            clock = WindowsQpc()
+            client = LatestTcpTelemetryClient(
+                source_admission=lambda packet: source_age_seconds(packet, clock) <= .05,
+                maximum_packets=500)
+        else:
+            client = FileTelemetryClient(Path(os.environ['LOCALAPPDATA']) / 'flybrain/telemetry',
+                                         timeout=.15)
         reader, status = NativePhysicsReader(timeout=.15), NativeTeacherStatusReader()
         origin = None
 
         def receive():
             if (sha256(config['profile_path']) != config['profile_sha256']
                     or api.probe(window.hwnd, require_foreground=False) != window
-                    or status.snapshot()['builtin_ai_controlled']):
+                    or status.snapshot()['builtin_ai_controlled']
+                    or args.telemetry_transport == 'tcp' and api.user.GetForegroundWindow() == window.hwnd):
                 raise ValueError('Engine/profile/control ownership changed')
             packet, physics = client.receive(), reader.receive()
             namespace = packet.raw['privileged_teacher']
@@ -90,10 +111,20 @@ def main():
                              steering_request_scale=.6)
         if abs(first['speed_kmh']) > .1:
             raise ValueError('Car must already be stationary')
+        if args.resume_before_first_gear:
+            from flybrain_drive.thermal_gear_resume import resume_prepared_thermal_for_gear
+            sdk=load_vjoy_sdk(config['dll_path'],config['dll_sha256'])
+            resume_prepared_thermal_for_gear(output=run/'owned-thermal-resume',window=window,axis=config,sdk=sdk,source_sha256=args.expected_lua_sha256,initialization=args.thermal_initialization_run)
+            packet,first=receive()
         if args.ensure_first_gear and first['gear']==2:
             result.update(status='completed',first_gear_observed=True,
                 already_in_first=True,max_speed_kmh=abs(first['speed_kmh']),
                 final_speed_kmh=first['speed_kmh'],final_brake=first['native']['fields']['brake'])
+            if args.pause_after_first_gear:
+                from flybrain_drive.first_gear_freeze import pause_first_gear
+                sdk=load_vjoy_sdk(config['dll_path'],config['dll_sha256'])
+                pause_first_gear(output=run/'first-gear-freeze',window=window,axis=config,sdk=sdk,reader=reader,source_sha256=args.expected_lua_sha256)
+                result['paused_first_gear_verified']=True
             return
         if args.gear_up_button is not None and first['gear'] != 1:
             raise ValueError('Begin in neutral for the single-button test; never overshift')
@@ -140,6 +171,12 @@ def main():
                 max_speed_kmh=max(abs(e['speed_kmh']) for e in events),
                 max_displacement_m=max(e['displacement_m'] for e in events),
                 final_speed_kmh=row['speed_kmh'], final_brake=row['native']['fields']['brake'])
+            if args.pause_after_first_gear:
+                if not result['first_gear_observed']:raise ValueError('First gear not observed; cannot freeze')
+                write_json(run/'closing-request.json',session.close())
+                from flybrain_drive.first_gear_freeze import pause_first_gear
+                pause_first_gear(output=run/'first-gear-freeze',window=window,axis=config,sdk=sdk,reader=reader,source_sha256=args.expected_lua_sha256)
+                result['paused_first_gear_verified']=True
     except Exception as error:
         result.update(status='aborted', error=type(error).__name__, reason=str(error))
     except BaseException as error:
@@ -155,6 +192,12 @@ def main():
             reader.close()
         if status is not None:
             status.close()
+        if args.telemetry_transport == 'tcp' and client is not None:
+            try:
+                client.close()
+                result['tcp_receiver_terminated'] = not client.thread.is_alive()
+            except RuntimeError as error:
+                result.update(status='aborted', reason=str(error), tcp_receiver_terminated=False)
         write_json(run / 'samples.json', events)
         result.update(actuator_messages_sent=session.submit_attempts if session else 0,
             model_action_requests=0, actor_input=False, foreground_samples=sum(

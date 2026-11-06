@@ -46,6 +46,9 @@ def main():
   optimizer_updates=0,actuator_messages_sent=0,exact_exposure_timestamp_verified=False))
  result=dict(status='failed',optimizer_updates=0,actor_deployed=False)
  try:
+  identity_meta=read(a.identity);identity=identity_meta['identity']
+  if identity_meta['window_handle']!=read(root/'camera/ownership-plan.json')['window_handle']:raise ValueError('Static identity witness came from another engine window')
+  if identity['car_model']!='bmw_z4_gt3' or identity['track']!='monza':raise ValueError('Verified source identity differs')
   torch.set_num_threads(1)
   if not torch.cuda.is_available():raise RuntimeError('Working existing GPU runtime required; do not bypass Windows policy')
   model,lineage=assemble_student();pool=copy.deepcopy(model.scene_pool).to('cuda').eval().requires_grad_(False);del model
@@ -63,9 +66,7 @@ def main():
   if camera['camera_archive']['bundle_sha256']!=qr['camera_bundle_sha256'] or camera['native_body_sha256']!=qr['native_body_sha256']:raise ValueError('Qualified raw hashes changed')
   body,body_times=native_samples(root/'camera/native-body.jsonl',qr['native_body_sha256'])
   episode_id=read(root/'camera/ownership-plan.json')['request_id']
-  body_cfg=read('configs/ac-virtual-navigation-body-v2.json');identity_meta=read(a.identity);identity=identity_meta['identity']
-  if identity_meta['window_handle']!=read(root/'camera/ownership-plan.json')['window_handle']:raise ValueError('Static identity witness came from another engine window')
-  if identity['car_model']!='bmw_z4_gt3' or identity['track']!='monza':raise ValueError('Verified source identity differs')
+  body_cfg=read('configs/ac-virtual-navigation-body-v2.json');
   contract_hash=sha256('configs/ac-virtual-navigation-body-v2.json')
   # Each native packet is encoded at its own first receipt, in original order.
   encoder=NavigationBodyEncoder('configs/ac-virtual-navigation-body-v2.json',native_identity=identity)

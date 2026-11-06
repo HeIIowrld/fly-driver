@@ -10,13 +10,15 @@ import numpy as np
 from .graph import sha256
 
 
-def legacy_signed_gap(point, line):
+def legacy_signed_gap(point, line, *, cyclic=False):
     """Preserve nearest-pivot/adjacent-segment priority and legacy sign convention."""
     point, line = np.asarray(point, float), np.asarray(line, float)
     if (point.shape != (2,) or line.ndim != 2 or line.shape[1] != 2 or len(line) < 3
             or not np.isfinite(point).all() or not np.isfinite(line).all()):
         raise ValueError('Finite teacher point and reference line required')
-    pivot = min(int(np.argmin(np.linalg.norm(line - point, axis=1))), len(line) - 2)
+    pivot = int(np.argmin(np.linalg.norm(line - point, axis=1)))
+    if not cyclic:
+        pivot = min(pivot, len(line) - 2)
 
     def segment(start, end):
         vector, relative = end - start, point - start
@@ -29,7 +31,7 @@ def legacy_signed_gap(point, line):
         return nearest, fraction, sign, np.linalg.norm(nearest - point)
 
     earlier = segment(line[pivot - 1], line[pivot])
-    later = segment(line[pivot], line[pivot + 1])
+    later = segment(line[pivot], line[(pivot + 1) % len(line)])
     earlier_inside, later_inside = (0 < item[1] < 1 for item in (earlier, later))
     chosen = earlier if earlier_inside else later
     if earlier_inside and later_inside:
@@ -38,12 +40,19 @@ def legacy_signed_gap(point, line):
 
 
 class PrivilegedTrackGeometry:
-    def __init__(self, track_csv, reference_csv, *, track_sha256, reference_sha256):
+    def __init__(self, track_csv, reference_csv, *, track_sha256, reference_sha256, cyclic_reference=False):
         if sha256(track_csv) != track_sha256 or sha256(reference_csv) != reference_sha256:
             raise ValueError('Teacher track/reference hashes differ')
         track = np.genfromtxt(track_csv, delimiter=',', names=True)
         reference = np.genfromtxt(reference_csv, delimiter=',', names=True)
         self.line = np.column_stack([reference['pos_x'], reference['pos_y']])
+        self.cyclic_reference = cyclic_reference
+        if cyclic_reference:
+            if len(self.line)<4 or not np.array_equal(self.line[0],self.line[-1]):
+                raise ValueError('Explicit duplicate closure required for cyclic teacher geometry')
+            self.line = self.line[:-1]
+            if np.any(np.linalg.norm(np.roll(self.line,-1,axis=0)-self.line,axis=1)<=0):
+                raise ValueError('Cyclic reference has a zero-length segment')
         columns = []
         for name in ('right_border_x', 'right_border_y', 'left_border_x', 'left_border_y'):
             full = np.asarray(track[name])
@@ -77,4 +86,4 @@ class PrivilegedTrackGeometry:
         # Reproduce the upstream intersection-to-origin norm, including rounding.
         intersection = np.stack([x + cosine[:, 0] * nearest, y + sine[:, 0] * nearest], -1)
         sensors = np.linalg.norm(intersection - [x, y], axis=1)
-        return dict(gap=legacy_signed_gap([x, y], self.line), sensors=sensors)
+        return dict(gap=legacy_signed_gap([x, y], self.line, cyclic=self.cyclic_reference), sensors=sensors)

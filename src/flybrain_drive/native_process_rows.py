@@ -8,9 +8,9 @@ from .native_process_sampler import NativeProcessSampler
 
 
 class NativeProcessRowsSampler:
-    def __init__(self, *, period=.002, maximum_samples=20000, capacity=128, recorded=None):
+    def __init__(self, *, period=.002, maximum_samples=20000, capacity=128, recorded=None, drain_on_stop=False):
         self.source = NativeProcessSampler(period=period, max_samples=maximum_samples,
-                                           capacity=capacity, recorded=recorded)
+                                           capacity=capacity, recorded=recorded, drain_on_stop=drain_on_stop)
         self.rows = []
         self.error = None
         self._ready = threading.Event()
@@ -20,6 +20,7 @@ class NativeProcessRowsSampler:
     def _run(self):
         try:
             while True:
+                if self._stopping.is_set() and self.source.drain_on_stop:break
                 try:
                     row = self.source.poll(timeout=.05)
                 except RuntimeError as exc:

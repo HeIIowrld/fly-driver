@@ -92,3 +92,14 @@ def source_render_witness(view):
     return dict(render_seconds=clock[3]-clock[2],
         physics_timestamp_ms=before['physics_timestamp_ms'],
         sim_physics_lag_ms=before['sim_time_ms']-before['physics_timestamp_ms'])
+
+
+def preserved_source_render_metadata(view):
+    """Carry original render/body evidence to online diagnostics without admitting it."""
+    import copy
+    keys=('source_body_before_render','source_body_after_render','render_started_clock','render_call_finished_clock')
+    present=[key in view for key in keys]
+    # Legacy camera metadata still has render clocks without source witnesses.
+    if not any(present[:2]):return None
+    if not all(present):raise ValueError('Partial source render/body metadata')
+    return {key:copy.deepcopy(view[key]) for key in keys}
