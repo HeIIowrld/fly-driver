@@ -42,6 +42,10 @@ def test_buffer_does_not_select_stale_intermediate_sample_to_hide_real_gap():
     with pytest.raises(ValueError, match='No fresh received TCP packet'):
         client.receive(minimum_source_interval=.02, maximum_source_interval=.08)
     assert client.last_selected_source == 0.
+    observed = client.cadence_failure_observation
+    assert observed['buffered_packets_in_window'] == 1
+    assert observed['fresh_receipts_in_window'] == 0
+    assert observed['latest_source_interval_seconds'] == pytest.approx(.1029)
 
 
 def test_buffer_chooses_newest_eligible_original_packet():
@@ -56,6 +60,7 @@ def test_explicit_new_history_first_sample_starts_new_cadence_anchor():
         previous_source=0.)
     with pytest.raises(ValueError, match='No fresh received TCP packet'):
         client.receive(minimum_source_interval=.02, maximum_source_interval=.08)
+    assert client.cadence_failure_observation['buffered_packets_in_window'] == 0
     # Only the caller's explicit new-builder boundary uses unconstrained cadence.
     assert client.receive(minimum_source_interval=.02, maximum_source_interval=None) is client.latest
     assert client.last_selected_source == .1628
@@ -150,3 +155,24 @@ def test_real_capture_does_not_drop_valid_packet_during_68ms_engine_hitch():
     client.packets.append(fresh);client.latest=fresh
     assert client.receive(minimum_source_interval=.02,maximum_source_interval=.08) is fresh
     assert fresh.source_monotonic_seconds-first.source_monotonic_seconds<.08
+
+
+def test_socket_timeout_keeps_terminal_original_receipt():
+    producer = load_app().Publisher(port=0)
+    client = LatestTcpTelemetryClient(port=producer.port, timeout=.5)
+    try:
+        producer.publish({'speed': 1})
+        wait_packet(client, 1)
+        original = client.receive()
+        with client.condition:
+            assert client.condition.wait_for(lambda: client.error is not None, timeout=2)
+        failure = client.failure_observation
+        assert failure['kind'] == 'socket_timeout'
+        assert failure['last_original_sequence'] == 1
+        assert failure['last_original_receipt'] == original.received_monotonic_seconds
+        assert failure['observed_monotonic_seconds'] > original.received_monotonic_seconds
+        with pytest.raises(RuntimeError, match='collector failed'):
+            client.receive()
+    finally:
+        client.close()
+        producer.close()

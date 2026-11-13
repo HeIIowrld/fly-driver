@@ -24,6 +24,8 @@ from flybrain_drive.ac_expert_handoff import (
 )
 from flybrain_drive.ac_file import FileTelemetryClient
 from flybrain_drive.ac_image_buffer import ExistingNamedMapping
+from flybrain_drive.ac_latest_tcp import LatestTcpTelemetryClient
+from flybrain_drive.ac_native_clock import NativeGraphicsTimingReader
 from flybrain_drive.ac_native_physics import (
     PHYSICS_LAYOUT,
     PHYSICS_PREFIX,
@@ -85,6 +87,8 @@ def main():
                         help='Keep original event bytes locally; archive after control closes')
     parser.add_argument('--require-background', action='store_true',
                         help='Stop if AC is foreground; never change window focus')
+    parser.add_argument('--record-lap-evidence', action='store_true',
+                        help='Archive raw graphics timing beside SDK/native diagnostics')
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
     curve = args.handoff_context in ('curve200', 'curve320')
@@ -207,6 +211,9 @@ def main():
     gc.callbacks.append(trace_gc)
     reader, status_reader, session, vision = None, None, None, None
     sdk, current_session = None, None
+    graphics_reader = None
+    lap_sdk_source = None
+    sdk_source_proof = None
     handoff = None
     receipt_collector = None
     handoff_rows, handoff_times, handoff_roles = [], [], []
@@ -233,6 +240,11 @@ def main():
         current_session = client.session_id
         reader = NativePhysicsReader(timeout=.15, clock=host_clock)
         status_reader = NativeTeacherStatusReader()
+        if args.record_lap_evidence:
+            graphics_reader = NativeGraphicsTimingReader()
+            lap_sdk_source = LatestTcpTelemetryClient(clock=host_clock)
+            if lap_sdk_source.session_id != current_session:
+                raise ValueError('Lap evidence TCP producer differs from student telemetry')
         geometry = None
         if tracking:
             g = json.loads(Path('configs/ac-teacher-geometry-result.json').read_text(
@@ -261,8 +273,14 @@ def main():
             def receive():
                 packet = client.snapshot() if args.diagnostic_snapshot else client.receive()
                 sample = reader.receive()
-                emit(dict(kind='raw_pair', sdk=record_packet(packet),
-                          native=physics_record(sample)))
+                evidence = dict(kind='raw_pair', sdk=record_packet(packet),
+                                native=physics_record(sample))
+                if graphics_reader is not None:
+                    try:
+                        evidence['graphics'] = graphics_reader.snapshot().metadata()
+                    except (OSError, RuntimeError, ValueError) as error:
+                        evidence['graphics_error'] = str(error)
+                emit(evidence)
                 if (abs(packet.received_monotonic_seconds-sample.received_monotonic_seconds) > .05
                         or packet.raw['producer_session_id'] != current_session):
                     raise ValueError('Student diagnostic sensor identity/receipt skew changed')
@@ -540,6 +558,20 @@ def main():
             reader.close()
         if status_reader is not None:
             status_reader.close()
+        if graphics_reader is not None:
+            graphics_reader.close()
+        if lap_sdk_source is not None:
+            try:
+                lap_sdk_source.close()
+                sdk_archive = run/'tcp-source-packets.jsonl'
+                with sdk_archive.open('x', encoding='utf8') as stream:
+                    for packet in lap_sdk_source.packets:
+                        stream.write(json.dumps(record_packet(packet), allow_nan=False)+'\n')
+                sdk_source_proof = dict(sha256=sha256(sdk_archive),
+                    packets=len(lap_sdk_source.packets), receiver_terminated=True,
+                    error=str(lap_sdk_source.error) if lap_sdk_source.error is not None else None)
+            except (OSError, RuntimeError, ValueError) as error:
+                sdk_source_proof = dict(receiver_terminated=False, error=str(error))
         if vision is not None:
             try:
                 result['vision'] = vision.close()
@@ -568,6 +600,13 @@ def main():
             events = [json.loads(line) for line in
                       events_file.read_text(encoding='utf8').splitlines()]
             result['student_requests'] = sum(e['kind'] == 'student_request' for e in events)
+            if args.record_lap_evidence:
+                raw_pairs = [e for e in events if e['kind'] == 'raw_pair']
+                recorded = sum('graphics' in e for e in raw_pairs)
+                result['lap_evidence'] = dict(raw_pairs=len(raw_pairs), graphics_records=recorded,
+                    missing_graphics=len(raw_pairs)-recorded, events_sha256=sha256(events_file),
+                    actor_input=False, official_validity_verified=False,
+                    sdk_source=sdk_source_proof)
         result.update(diagnostic_pose_used_by_actor=False, teacher_action_used=False,
             exposure_sync_verified=False, multiview_ready=False, goal_achieved=False)
         if args.expert_handoff:

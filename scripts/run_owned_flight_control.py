@@ -15,8 +15,8 @@ def main():
     if a.module == 'scripts.evaluate_sac_teacher_curriculum' and '--heldout-magione-geometry' not in arguments:
         raise ValueError('This owned teacher launch is restricted to Magione calibration')
     if prefix.with_suffix('.started.json').exists():raise ValueError('Unique launcher receipt required')
-    binary='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe'
-    library='C:/Users/research-user/AppData/Local/flybrain-bio-20261029/flyvis-env/Lib/site-packages'
+    binary=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe')
+    library=str(Path.home() / 'AppData/Local/flybrain-bio-20261029/flyvis-env/Lib/site-packages')
     env=os.environ.copy();env['PYTHONPATH']=library+';src;.';env['OPENBLAS_NUM_THREADS']='1'
     command=[binary,'-m','scripts.flight_control_worker_entry','--module',a.module,'--worker-receipt',str(prefix.with_suffix('.worker-terminal.json')),'--',*arguments];errors=[]
     with prefix.with_suffix('.stdout.log').open('x',encoding='utf8') as out,prefix.with_suffix('.stderr.log').open('x',encoding='utf8') as err:

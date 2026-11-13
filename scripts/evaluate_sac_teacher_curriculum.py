@@ -38,7 +38,7 @@ from flybrain_drive.ac_vjoy import AxisBinding, VJoySession, load_vjoy_sdk
 from flybrain_drive.evidence import begin_run, write_json
 from flybrain_drive.graph import sha256
 from flybrain_drive.async_event_archive import AsyncEventArchive
-from flybrain_drive.teacher_curriculum import LapEvidence, EvaluationStateGuard, speed_request
+from flybrain_drive.teacher_curriculum import LapEvidence, EvaluationStateGuard, monza_chicane_teacher_target, speed_request
 from flybrain_drive.source_native_snapshot import WindowsQpc, decode_source_native, source_age_seconds
 from flybrain_drive.owned_source_camera import OwnedSourceCamera
 from flybrain_drive.control_guard_metadata_process import ControlGuardMetadataProcess
@@ -118,6 +118,14 @@ def main():
     if a.moving_stop_reference:
         reference = json.loads(Path(a.moving_stop_reference).read_text(encoding='utf-8'))
         reference_profile = reference.get('teacher_pacing_profile')
+        from flybrain_drive.moving_stop_calibration import (MONZA_CHICANE_STOP_PROFILE, MONZA_TEACHER_STOP_PROFILES,
+            MONZA_UPSTREAM_TARGETS, MONZA_UPSTREAM_FINAL_SECONDS)
+        if reference_profile in MONZA_TEACHER_STOP_PROFILES and (
+                heldout or a.moving_student_plan or a.moving_stop_audit or a.unlimited_final_stage
+                or a.transport != 'tcp' or tuple(targets) != MONZA_UPSTREAM_TARGETS
+                or a.stage_seconds != 3 or a.final_seconds != MONZA_UPSTREAM_FINAL_SECONDS):
+            raise ValueError('Exact bounded Monza upstream teacher-only schedule required')
+
         from flybrain_drive.magione_stage import MAGIONE_MOVING_STAGE_PROFILES
         accepted_heldout_profiles = {heldout_profile}
         if a.heldout_geometric_speed:
@@ -459,6 +467,10 @@ def main():
                                 guard()
                                 shifting = state_guard.check(current.state, native_state['gear'],
                                     native_state['autoShifterOn'], tick, ceiling)
+                                pacing_target = target
+                                if (a.moving_stop_reference and reference_profile == MONZA_CHICANE_STOP_PROFILE):
+                                    pacing_target = monza_chicane_teacher_target(
+                                        target, current.state['NormalizedSplinePosition'])
                                 gate = None
                                 if stop_calibration is not None:
                                     gate = stop_calibration.observe(last_source_packet[0], latest_control_native,
@@ -491,7 +503,7 @@ def main():
                                         product_dtype=codec['legacy_product_dtype'])
                                     limited = (requested.copy() if a.unlimited_final_stage and
                                         stage == len(targets)-1 else speed_request(
-                                            requested, current.state['speed']*3.6, target))
+                                            requested, current.state['speed']*3.6, pacing_target))
                                 if lateral is not None and not a.heldout_geometric_speed:
                                     limited=lateral_request(limited,current.state,lateral)
                                 controls = legacy_request_to_normalized_controls(limited)
@@ -512,7 +524,7 @@ def main():
                                     original=last_source_packet[0].raw['source_native_snapshot']
                                     source_receipt=original['qpc_started_ticks']/source_qpc.frequency
                                     receipt=moving_trial.pacing(controls,result['teacher_requests']+1,source_receipt)
-                                emit('teacher_request', stage=stage, target_kmh=target,
+                                emit('teacher_request', stage=stage, target_kmh=target, pacing_target_kmh=pacing_target,
                                     decision_started_host_time=tick,
                                     next_decision_deadline_host_time=next_decision_deadline+.04,
                                     automatic_shift_coast=bool(shifting and a.shift_handling == 'coast'),
@@ -661,7 +673,9 @@ def main():
                 tcp_source_archive_sha256=sha256(run/'tcp-source-packets.jsonl'),
                 tcp_receiver_terminated=not client.thread.is_alive(),
                 tcp_cadence_constrained_selections=client.cadence_constrained_selections,
-                tcp_collector_error=str(client.error) if client.error else None)
+                tcp_collector_error=str(client.error) if client.error else None,
+                tcp_cadence_failure_observation=client.cadence_failure_observation,
+                tcp_failure_observation=client.failure_observation)
         if events_path.exists():
             shutil.copy2(events_path, run/'events.jsonl')
             if sha256(events_path) != sha256(run/'events.jsonl'):

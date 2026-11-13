@@ -19,7 +19,7 @@ from .evidence import write_json
 from .ac_published_state import read_published_json
 
 
-def _record(path,stop,status,maximum_samples,recorded):
+def _record(path,stop,status,maximum_samples,recorded,diagnostic_ai):
     mapping=archive=None
     health_stop=threading.Event();health_latest=[None];health_errors=[]
     def publish_health():
@@ -32,7 +32,8 @@ def _record(path,stop,status,maximum_samples,recorded):
     original_gc=gc.isenabled()
     count=0;packets=set();last_receipt=last_packet=None
     maximum_gap=maximum_enqueue_age=0.
-    result=dict(status='failed',samples=0,synthetic_replay=recorded is not None)
+    result=dict(status='failed',samples=0,synthetic_replay=recorded is not None,
+                diagnostic_ai_capture=diagnostic_ai)
     try:
         archive=AsyncEventArchive(path)
         if recorded is None:
@@ -62,7 +63,8 @@ def _record(path,stop,status,maximum_samples,recorded):
                     engine_atomicity_verified=False,physical_sample_time_verified=False)
             authority=sample.authority_record()
             receipt=authority['received_monotonic_seconds'];packet=authority['packet_id']
-            if authority['builtin_ai_controlled'] or last_packet is not None and packet<last_packet:
+            if ((authority['builtin_ai_controlled'] and not diagnostic_ai)
+                    or last_packet is not None and packet<last_packet):
                 raise ValueError('Independent file body authority/packet continuity failed')
             if last_receipt is not None:
                 gap=receipt-last_receipt
@@ -105,7 +107,7 @@ def _record(path,stop,status,maximum_samples,recorded):
 
 
 class NativeBodyFileProcess:
-    def __init__(self,path,*,maximum_samples=120000,recorded=None):
+    def __init__(self,path,*,maximum_samples=120000,recorded=None,diagnostic_ai=False):
         if not 1<=maximum_samples<=120000:
             raise ValueError('Finite <=120000 native copy budget required')
         if recorded is not None and (not isinstance(recorded,tuple) or not recorded
@@ -115,7 +117,7 @@ class NativeBodyFileProcess:
         self.started_host_time=time.perf_counter()
         ctx=mp.get_context('spawn');self.stop=ctx.Event()
         self.status,child=ctx.Pipe(duplex=False)
-        self.process=ctx.Process(target=_record,args=(str(path),self.stop,child,maximum_samples,recorded))
+        self.process=ctx.Process(target=_record,args=(str(path),self.stop,child,maximum_samples,recorded,diagnostic_ai))
         self.process.start();child.close()
         if not self.status.poll(10) or self.status.recv()!=('ready',):
             self.stop.set();self.process.join(5)

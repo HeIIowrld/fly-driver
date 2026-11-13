@@ -3,6 +3,7 @@ import argparse
 import base64
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -11,7 +12,8 @@ from flybrain_drive.ac_native_physics import decode_physics_prefix
 from flybrain_drive.ac_native_position import decode_diagnostic_position
 from flybrain_drive.evidence import begin_run, write_json
 from flybrain_drive.graph import sha256
-from flybrain_drive.moving_stop_calibration import native_track_fields, signed_reserve
+from flybrain_drive.moving_stop_calibration import (MONZA_TEACHER_STOP_PROFILES, native_track_fields,
+    signed_reserve, upstream_teacher_stop_plan, upstream_heading_match)
 from flybrain_drive.sac_unified_student import read
 
 
@@ -60,6 +62,16 @@ def main():
     teacher = root if args.magione_geometry else root/"teacher"
     geometry = args.magione_geometry or "configs/ac-teacher-geometry-result.json"
     terminal = read(teacher/"result.json")
+    manifest = teacher/"manifest.json"
+    config = read(manifest)["config"] if manifest.is_file() else {}
+    reference_path = config.get("arguments", {}).get("moving_stop_reference")
+    reference = read(reference_path) if reference_path and Path(reference_path).is_file() else {}
+    upstream = reference.get("teacher_pacing_profile") in MONZA_TEACHER_STOP_PROFILES
+    upstream_plan = None
+    if upstream:
+        if sha256(reference_path) != config["moving_stop_reference_sha256"]:
+            raise ValueError("Original upstream stop reference differs")
+        upstream_plan = upstream_teacher_stop_plan(reference)
     if args.magione_geometry:
         config = read(teacher/"manifest.json")["config"]
         if (config.get("expected_track") != "magione"
@@ -77,6 +89,7 @@ def main():
         registrations = {}
         registered_poses = []
         requests = []
+        upstream_checks = []
         samples = []
         for line in path.open(encoding="utf-8"):
             row = json.loads(line)
@@ -89,6 +102,11 @@ def main():
                     registered_poses.append(pos)
                 registrations.setdefault(pos.packet_id,dict(error_m=float(error), speed_kmh=row["speed_kmh"],
                     receipt_skew_seconds=pos.received_perf_counter_seconds-row["sdk_received"]))
+            elif kind == "upstream_teacher_entry_check":
+                if not upstream:
+                    raise ValueError("Original upstream stop reference is unavailable")
+                if row["measurement"]["eligible"]:
+                    upstream_checks.append(row)
             elif kind == "stop_calibration_request":
                 requests.append(row)
             elif kind == "stop_calibration_native":
@@ -141,6 +159,19 @@ def main():
                     heading = (motion/distance).tolist()
                     break
             result.update(entry_native_position=start.metadata(), entry_forward_native_xz=heading)
+            if upstream:
+                if len(upstream_checks) != 1 or position(upstream_checks[0]["position"]) != start:
+                    raise ValueError("One original matching upstream gate before independent stop required")
+                previous = next((p for p in reversed(registered_poses)
+                    if p.packet_id < start.packet_id
+                    and math.hypot(p.coordinates_native_xyz_m[0]-start.coordinates_native_xyz_m[0],
+                                   p.coordinates_native_xyz_m[2]-start.coordinates_native_xyz_m[2]) >= .01), None)
+                measurement = upstream_heading_match(upstream_plan, previous, start,
+                    requests[0]["speed_kmh"], requests[0]["request"]["driver_call_started_perf_counter_seconds"])
+                if measurement is None or not measurement["eligible"]:
+                    raise ValueError("Independent audit could not verify original upstream gate")
+                result.update(teacher_only=True, upstream_entry_measurement=measurement,
+                    predicted_continuous_clearance_m=upstream_plan["predicted_minimum_center_clearance_m"])
             if args.magione_geometry:
                 if heading is None:
                     raise ValueError("Original moving heading unavailable at Magione stop request")
@@ -153,7 +184,8 @@ def main():
         result["moving_stop_calibration_passed"] = (
             terminal["status"]=="teacher_moving_stop_calibration_completed"
             and result.get("stationary_verified") is True and result.get("maximum_tyres_out")==0
-            and (not args.magione_geometry or result["signed_minimum_center_to_border_m"]>=1.8))
+            and (not (args.magione_geometry or upstream) or result["signed_minimum_center_to_border_m"]>=1.8)
+            and (not upstream or terminal["moving_stop_calibration"]["new_damage"] is False))
     except Exception as error:
         result["reason"] = f"{type(error).__name__}: {error}"
         raise

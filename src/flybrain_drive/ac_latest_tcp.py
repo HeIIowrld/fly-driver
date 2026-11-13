@@ -22,6 +22,8 @@ class LatestTcpTelemetryClient:
         self.condition = threading.Condition()
         self.stopped = threading.Event()
         self.error = None
+        self.failure_observation = None
+        self.cadence_failure_observation = None
         self.latest = None
         self.last_selected = None
         self.last_selected_source = None
@@ -45,6 +47,16 @@ class LatestTcpTelemetryClient:
         except BaseException as error:
             if not self.stopped.is_set():
                 with self.condition:
+                    stamp = self.clock()
+                    latest = self.latest
+                    self.failure_observation = dict(
+                        kind=("socket_timeout" if isinstance(error, socket.timeout)
+                              else "peer_closed_or_reset" if isinstance(error, ConnectionError)
+                              else "source_error"),
+                        error_type=type(error).__name__, error=str(error), observed_monotonic_seconds=stamp,
+                        last_original_sequence=latest.sequence if latest is not None else None,
+                        last_original_receipt=latest.received_monotonic_seconds if latest is not None else None,
+                        pending_frame_bytes=len(self.client.buffer))
                     self.error = error
                     self.condition.notify_all()
 
@@ -60,14 +72,24 @@ class LatestTcpTelemetryClient:
                 packet = self.latest
                 now = self.clock()
                 if packet is not None and self.last_selected_source is not None and maximum_source_interval is not None:
-                    eligible = [p for p in self.packets[-32:] if
+                    in_window = [p for p in self.packets[-32:] if
                         p.sequence > self.last_selected and
-                        minimum_source_interval <= p.source_monotonic_seconds-self.last_selected_source <= maximum_source_interval
-                        and 0 <= now-p.received_monotonic_seconds <= self.maximum_age
-                        and (self.source_admission is None or self.source_admission(p))]
+                        minimum_source_interval <= p.source_monotonic_seconds-self.last_selected_source <= maximum_source_interval]
+                    fresh = [p for p in in_window if 0 <= now-p.received_monotonic_seconds <= self.maximum_age]
+                    eligible = [p for p in fresh if self.source_admission is None or self.source_admission(p)]
                     if eligible:
                         packet = eligible[-1]
                     elif packet.source_monotonic_seconds-self.last_selected_source > maximum_source_interval:
+                        self.cadence_failure_observation = dict(
+                            observed_monotonic_seconds=now,
+                            last_selected_sequence=self.last_selected,
+                            latest_sequence=packet.sequence,
+                            latest_source_interval_seconds=packet.source_monotonic_seconds-self.last_selected_source,
+                            latest_receipt_age_seconds=now-packet.received_monotonic_seconds,
+                            maximum_source_interval_seconds=maximum_source_interval,
+                            buffered_packets_in_window=len(in_window),
+                            fresh_receipts_in_window=len(fresh),
+                        )
                         raise ValueError('No fresh received TCP packet within source cadence envelope')
                     else:
                         packet = None

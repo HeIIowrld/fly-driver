@@ -84,7 +84,7 @@
 ## 범위·실패·검증
 
 - 카메라/몸 적격성은 원래 **bounded** 기준이다. 정확한 GPU 노출 순간·physics tick atomicity는 미검증이다. 원래50ms 몸·150ms 시야·40ms 결정·25ms bounded 정합을 완화하지 않았다. 현재는 오프라인으로, live acquisition→회로→actuator 시간과 자율 완주는 검증하지 않았다.
-- 기본 GPU PyTorch와 기존 flyvis-env는 Windows 앱 제어 정책 `WinError4551` DLL 오류였다. 기존 CPU 환경 `C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Scripts/python.exe`의 torch2.9.1+cpu를 사용했고 정책은 변경하지 않았다. pytest9.2.0을 이 CPU 환경에 설치했다.
+- 기본 GPU PyTorch와 기존 flyvis-env는 Windows 앱 제어 정책 `WinError4551` DLL 오류였다. 기존 CPU 환경 `%LOCALAPPDATA%/PythonEnvs/flybrain-resolution-20261017/Scripts/python.exe`의 torch2.9.1+cpu를 사용했고 정책은 변경하지 않았다. pytest9.2.0을 이 CPU 환경에 설치했다.
 - 첫 `continuation8-01/`, `credit32-01/`는 NumPy bool을 PyTorch gradient 모드에 넘기는 타입 오류로 optimizer0에 실패했다. 원본/실행 소스를 보존하고 Python bool 변환 후 동일 데이터/학습 설정의 계획03으로 재실행했다.
 - 라벨/결측/미래 경계·학습 전용 통계·보조 head gradient·기존 통합 회로/시간 문맥 **35검사 통과**. 반복 실행을 고유 검사70개로 합치지 않는다. 확장 검사 중 기존 `test_unified_feedback_intervention.py`는 CPU 환경 scipy 부재로 collection 실패했으며 통과로 세지 않았다. `runtime-and-validation-receipt.json`, `target-and-circuit-tests-final.txt` 참고.
 - 네 checkpoint의 고정 상태45개/haltere·현재/미래 저장 지표와 네 개입의 저장 지표를 별도 audit로 확인했다. 감사는 저장 계수/배열/해시/상태 재계산이며, 모든 후보 신경회로의 두 번째 독립 전체 재실행은 아니다.

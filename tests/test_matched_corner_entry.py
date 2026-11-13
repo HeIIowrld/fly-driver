@@ -67,3 +67,17 @@ def test_advancing_graphics_packets_can_repeat_native_position(monkeypatch):
     assert calibration.previous_graphics.packet_id == before["packet_id"]
     with pytest.raises(ValueError, match="Fresh"):
         corner_entry_measurement(plan, before, expired, now=1.055)
+
+
+def test_upstream_teacher_stop_requires_fresh_resolved_matching_motion():
+    plan,before,after=make()
+    def position(row):
+        return SimpleNamespace(packet_id=row["packet_id"],
+            received_perf_counter_seconds=row["original_position_receipt"],
+            coordinates_native_xyz_m=row["position_native_xyz_m"])
+    measure=moving_stop_calibration.upstream_heading_match
+    assert measure(plan,position(before),position(after),102.,1.04)["eligible"]
+    assert not measure(plan,position(before),position(after),105.,1.04)["eligible"]
+    assert measure(plan,position(before),position(after),102.,1.10) is None
+    before["position_native_xyz_m"]=[100.2,0.,200.7]
+    assert not measure(plan,position(before),position(after),102.,1.04)["eligible"]

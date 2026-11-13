@@ -95,7 +95,7 @@ def main():
     shutil.copyfile(__file__,run/'executed-entrypoint.py');write_json(run/'backend-initialization.json',warm)
     camera=sampler=runtime=ticker=None;events=[];native_samples={};native_position=0;result=dict(status='failed',actor_qualified=False,optimizer_updates=0,actuator_messages_sent=0,ui_actions_sent=0)
     try:
-        runtime=NativeFlightProcessRuntime(model,head,dn,optical,body,encoder,python_executable='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe',library_directory='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages')
+        runtime=NativeFlightProcessRuntime(model,head,dn,optical,body,encoder,python_executable=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),library_directory=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'))
         write_json(run/'worker-ready.json',runtime.ready)
         sampler=NativeProcessRowsSampler(maximum_samples=20000);sampler.start()
         camera=CSPVisionRecorder(window.hwnd,camera_config,max_frames=160,period=.04,max_bytes=256*1024**2,image_format='bmp',shared_transport=True,batched_shared_copy=True,async_frame_persistence=True,mmf_metadata=True,preserve_producer_time=True,expected_source_sha256=PIN,mmf_stop_signal=True,memory_only_receive_checks=True)

@@ -1,6 +1,6 @@
-# 공동 연구 / Contributing
+# 共同 연구 / Contributing
 
-팀 작업 기준은 [프로젝트 대전제](docs/PROJECT_CHARTER.md), [로드맵](docs/ROADMAP.md), [협업 방식](docs/COLLABORATION.md)이다. `HeIIowrld/fly-driver`의 `main`을 공유 기준으로 사용한다. 별도 브랜치에서 작업하고 PR로 검토한다.
+팀 작업 기준은 [프로젝트 대전제](docs/PROJECT_CHARTER.md), [로드맵](docs/ROADMAP.md), [협업 방식](docs/COLLABORATION.md)이다. 개인 저장소 `HeIIowrld/fly-driver`의 `main`을 현재 공유 기준으로 사용한다. 팀 원본 저장소로 반영하려면 별도 PR을 사용한다.
 
 ## 개발 환경과 코드
 
@@ -19,8 +19,6 @@ python -m pytest tests/test_graph.py tests/test_racing_goal.py tests/test_camera
 - 현재 적격 SAC 시연 학습 경로: `scripts/prepare_synchronized_sac_student.py` → `scripts/train_qualified_sac_unified.py` → `scripts/audit_qualified_sac_student_fit.py`.
 - 입력 경계/준비물/실제 실행 기록은 [정합 교사 학습 보고서](docs/teacher-synchronized-learning-20261102.md)를 확인한다. CLI 인자는 각 스크립트 소스의 argparse와 run manifest를 따른다.
 - FlyVis 저자 모델·커넥톰·교사 가중치·적격 원본 에피소드·분할/계획 manifest는 이 Git 저장소에 포함하지 않는다. 일반 pip 설치만으로 기존 학습을 재현할 수 없다. 필요한 자료는 `configs/assets.json`과 원본 run manifest의 경로/해시/사용권을 확인해 접근 가능한 공용 저장소에서 준비한다. 누락된 데이터나 자격 증거를 만들어 대체하지 않는다.
-
-과거 실험 설정과 기록에 있는 장비·계정 경로는 환경별 예시다. 실제 AC나 원격 학습에 사용하기 전에 본인 환경의 경로와 자료 해시를 확인한다. 학생 제어의 계약과 미검증 범위는 [학생 폐루프 인계](docs/handoff-student-closed-loop-20261105.md)와 [제동·코너 비교 기록](docs/braking-corner-learning-20261105.md)에 정리돼 있다.
 
 ## 변경과 실행 결과
 

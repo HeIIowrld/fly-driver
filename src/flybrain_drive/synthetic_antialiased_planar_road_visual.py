@@ -15,17 +15,21 @@ class AntialiasedSyntheticPlanarRoadVisual:
     It models neither vehicle dynamics nor a scanned Assetto Corsa circuit.
     """
 
-    def __init__(self, camera, *, width_m=8.0, bend_start_m=12.0, curvature=0.018, samples_per_axis=2):
+    def __init__(self, camera, *, width_m=8.0, bend_start_m=12.0, curvature=0.018,
+                 samples_per_axis=2, forward_limit_m=20.0, lateral_limit_m=20.0):
         if type(samples_per_axis) is not int or samples_per_axis not in (1, 2, 4):
             raise ValueError('Explicit supported supersampling factor required')
         self.samples_per_axis = samples_per_axis
         height, width = 180*samples_per_axis, 320*samples_per_axis
         if (camera.get('view_order') != list(VIEW_ORDER)
-                or not all(math.isfinite(v) for v in (width_m, bend_start_m, curvature))
+                or not all(math.isfinite(v) for v in (width_m, bend_start_m, curvature, forward_limit_m, lateral_limit_m))
                 or not 3 <= width_m <= 20 or not 3 <= bend_start_m <= 30
-                or not 0 < curvature <= .05):
+                or not 0 < curvature <= .05 or not 20 <= forward_limit_m <= 100
+                or not 20 <= lateral_limit_m <= 100):
             raise ValueError('Four declared views and bounded synthetic road required')
         self.width_m, self.bend_start_m, self.curvature = width_m, bend_start_m, curvature
+        self.forward_limit_m = forward_limit_m
+        self.lateral_limit_m = lateral_limit_m
         y, x = np.mgrid[:height, :width]
         self.rays, self.origins = [], []
         for name in VIEW_ORDER:
@@ -45,9 +49,9 @@ class AntialiasedSyntheticPlanarRoadVisual:
 
     def render(self, *, bend, forward_m, texture_seed, yaw_rad=0.0, lateral_m=0.0):
         if (bend not in (-1, 0, 1) or isinstance(bend, bool)
-                or not math.isfinite(forward_m) or not 0 <= forward_m <= 20
+                or not math.isfinite(forward_m) or not 0 <= forward_m <= self.forward_limit_m
                 or isinstance(lateral_m, bool) or not isinstance(lateral_m, (int, float))
-                or not math.isfinite(lateral_m) or abs(lateral_m) > 20
+                or not math.isfinite(lateral_m) or abs(lateral_m) > self.lateral_limit_m
                 or type(texture_seed) is not int or texture_seed < 0
                 or isinstance(yaw_rad, bool) or not isinstance(yaw_rad, (int, float))
                 or not math.isfinite(yaw_rad) or abs(yaw_rad) > math.pi):

@@ -21,12 +21,21 @@ from flybrain_drive.teacher_pace import PACE_COMMAND, PACE_REQUEST, validate_pac
 from scripts.record_ac_wgc import physics_record
 
 
-def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk, thermal_admission=None, magione_stage=None):
+IMOLA_OWNED_MMF_SOURCE_SHA256 = '61990296d32ff088327d8da659f1c60a79050bf16500443e419cac5781628615'
+IMOLA_OWNED_MOTION_SOURCE_SHA256 = 'f4df5e21e3c6acbf346d7bacf52f63eaf049b50d9d5b3cf353e7d76d390bcb4a'
+IMOLA_OWNED_COLLECTION_SOURCE_SHA256 = '58e6a23f97571dc7ed3dcd8335fe95b7be8fa8577db007a9bc142b6915713822'
+
+
+def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk,
+                                      thermal_admission=None, magione_stage=None, imola=False):
     """One owned paused-camera API resume before teacher control acquisition.
 
     Keep evidence inside the enclosing run without rehashing source while the
     finite camera is recording. No controller writes, UI input or API retries.
     """
+    if imola and (thermal_admission is not None or magione_stage is not None
+                  or owner.plan['source_sha256'] != IMOLA_OWNED_MMF_SOURCE_SHA256):
+        raise ValueError('Exact Imola owned MMF source and separate diagnostic mode required')
     out=Path(output);out.mkdir(exist_ok=False)
     root=Path(os.environ['LOCALAPPDATA'])/'flybrain/csp-session'
     api=WindowsACWindow()
@@ -51,6 +60,9 @@ def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk, therm
             raise ValueError('Owned paused camera/session metadata agreement not observed within1s')
         time.sleep(.01)
     write_json(out/'preflight-observations.json',observations)
+    if imola and (before.get('track_id') != 'imola' or before.get('car_id') != 'bmw_z4_gt3'
+                  or before.get('capabilities', {}).get('imola_stationary_lifecycle_v1') is not True):
+        raise ValueError('Imola owned MMF capability and offline BMW session required')
     if (not before['paused'] or before['is_online'] or before['in_menu']
             or before['ai_controlled'] or before['expert_probe_active']
             or before.get('pending_receipt_id') or before.get('error')
@@ -78,14 +90,17 @@ def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk, therm
             command='resume',generation=before['generation'],epoch=before['epoch'],
             expires_clock=before['script_clock']+3,camera_request_id=owner.plan['request_id'],
             owned_mmf_resume=True)
-        if magione_stage is not None:
+        if imola:
+            request['expected_track_id']='imola'
+        elif magione_stage is not None:
             if (magione_stage['generation']!=before['generation'] or magione_stage['epoch']!=before['epoch']
                     or before['track_id']!='magione' or before['car_id']!='bmw_z4_gt3'):
                 raise ValueError('Owned camera resume stage differs from the live Magione session')
             request['expected_track_id']='magione'
         journal=root/'intent-journal';journal.mkdir(exist_ok=True)
         write_json(journal/(request['id']+'.json'),dict(request=request,
-            role='owned_camera_teacher_recording_resume',controller_released=True))
+            role='owned_camera_diagnostic_resume' if imola else 'owned_camera_teacher_recording_resume',
+            controller_released=True))
         fresh,mtime,_=read_session_heartbeat(root/'status.json')
         validate_heartbeat(fresh,time.time()-mtime,mutating=True)
         if fresh.get('camera_request_id')!=owner.plan['request_id']:
@@ -121,7 +136,14 @@ def resume_owned_camera_for_recording(owner, *, output, window, axis, sdk, therm
         if later.packet_id<=first.packet_id or status.snapshot()['builtin_ai_controlled']:
             raise ValueError('Native live advancement/AI-off resume not verified')
         from flybrain_drive.thermal_teacher_start import admit_teacher_resume
-        if magione_stage is None:
+        if imola:
+            if (after['epoch'] != before['epoch'] or after['track_id'] != 'imola'
+                    or after['car_id'] != before['car_id'] or after['is_online']
+                    or abs(later.fields['speedKmh']) >= .1 or later.fields['gas'] >= .02
+                    or later.fields['brake'] <= .98):
+                raise ValueError('Imola stationary full-brake handoff was lost after resume')
+            condition=dict(condition='imola_stationary_diagnostic', actor_input=False)
+        elif magione_stage is None:
             condition=admit_teacher_resume(after,later.fields,gear=raw['gear'][0],
                 auto_shifter=raw['autoShifterOn'][0],thermal_admission=thermal_admission)
         else:
@@ -313,6 +335,11 @@ def main():
     parser.add_argument('--axis-config', default='configs/ac-axis-probe.json')
     parser.add_argument('--expected-lua-sha256',
                         help='Explicit pinned alternate lifecycle source for diagnostics')
+    parser.add_argument('--expected-track', help='Require this exact track ID for a read-only status check')
+    parser.add_argument('--imola-lifecycle', action='store_true',
+                        help='Use a pinned offline Imola lifecycle producer')
+    parser.add_argument('--imola-owned-camera-plan', type=Path,
+                        help='Start the owned paused camera and resume once with the brake held')
     parser.add_argument('--heldout-magione', action='store_true',
                         help='Explicit source-pinned offline Magione status/start/pause/resume/restart')
     parser.add_argument('--allow-live-aid-command', action='store_true',
@@ -322,16 +349,43 @@ def main():
     parser.add_argument('--ai-steer-multiplier', type=float, choices=[1., .9], default=1.)
     parser.add_argument('--output', required=True)
     args = parser.parse_args()
+    imola_collection = args.imola_lifecycle and args.command == 'expert-collect30'
+    imola_motion = imola_collection or args.imola_lifecycle and args.command == 'expert-motion-probe'
+    plan_source = IMOLA_OWNED_MMF_SOURCE_SHA256
+    if imola_motion:
+        plan_source = IMOLA_OWNED_COLLECTION_SOURCE_SHA256 if imola_collection else IMOLA_OWNED_MOTION_SOURCE_SHA256
+    if args.imola_owned_camera_plan is not None and (
+            not args.imola_lifecycle or not (args.command == 'resume' or imola_motion) or not args.execute
+            or args.expected_lua_sha256 != plan_source
+            or args.camera_request_id is not None):
+        parser.error('Owned Imola camera requires explicit execution and the exact candidate hash')
+    if imola_motion and args.imola_owned_camera_plan is None:
+        parser.error('Imola motion requires an original owned camera plan')
     if args.heldout_magione and (not args.expected_lua_sha256
             or args.command not in ('status', 'start', 'pause', 'resume', 'restart')):
         raise ValueError('Exact heldout lifecycle source and status/start/pause/resume/restart required')
-    expected_track = 'magione' if args.heldout_magione else 'monza'
+    if args.expected_track is not None and (
+            args.command != 'status' or args.execute or args.heldout_magione or args.imola_lifecycle
+            or not args.expected_track or args.expected_track != args.expected_track.strip()):
+        parser.error('--expected-track requires a nonempty track ID and read-only status')
+    if args.imola_lifecycle and (
+            args.heldout_magione or not args.expected_lua_sha256
+            or args.command not in ('start', 'pause', 'resume', 'restart', 'expert-motion-probe', 'expert-collect30')):
+        parser.error('--imola-lifecycle requires an exact Lua hash and start/pause/resume/restart')
+    expected_track = args.expected_track or 'monza'
+    if args.heldout_magione:
+        expected_track = 'magione'
+    elif args.imola_lifecycle:
+        expected_track = 'imola'
     if args.command in ('set-tyres-temperature-initial','verify-initial-tyres-temperature'):
         from scripts.control_initial_thermal import run_initial_thermal
         return run_initial_thermal(args)
     if args.allow_live_aid_command and args.command != 'disable-ideal-line':
         raise ValueError('Live aid option is limited to the ideal-line command')
-    run = begin_run(args.output, dict(arguments=vars(args), scope=__doc__, seed=862830,
+    arguments = dict(vars(args))
+    if args.imola_owned_camera_plan is not None:
+        arguments['imola_owned_camera_plan'] = str(args.imola_owned_camera_plan)
+    run = begin_run(args.output, dict(arguments=arguments, scope=__doc__, seed=862830,
                                      ui_actions_sent=0, actuator_messages_sent=0))
     result = dict(status='failed', ui_actions_sent=0, actuator_messages_sent=0,
                   lifecycle_requests_sent=0, goal_achieved=False)
@@ -350,6 +404,7 @@ def main():
     probe = args.command == 'expert-probe' or motion
     motion_seconds = 30 if collection else 3
     native_observer = None
+    motion_camera_owner = None
     try:
         root = Path(os.environ['LOCALAPPDATA']) / 'flybrain/csp-session'
         before, modified, retries = read_session_heartbeat(root / 'status.json')
@@ -368,19 +423,39 @@ def main():
             'integrations/ac_csp/FlyBrainCamera/FlyBrainCamera.lua')
         if sha256(deployed) != expected_lua:
             raise ValueError('Lifecycle app source/deployment differ')
-        if args.heldout_magione:
+        if args.heldout_magione or args.imola_lifecycle:
             from flybrain_drive.ac_image_buffer import ExistingNamedMapping
             from flybrain_drive.ac_native_physics import decode_static_identity_prefix
             with ExistingNamedMapping('Local\\acpmf_static', 200) as mapping:
                 identity = decode_static_identity_prefix(mapping.read())
+            capability = ('imola_stationary_lifecycle_v1' if args.imola_lifecycle
+                          else 'heldout_track_lifecycle_v1')
             if (result['foreground_before'] or identity['track'] != expected_track
                     or identity['car_model'] != before['car_id']
-                    or before.get('capabilities', {}).get('heldout_track_lifecycle_v1') is not True):
-                raise ValueError('Background native BMW/Magione and scoped CSP capability required')
+                    or before.get('capabilities', {}).get(capability) is not True):
+                raise ValueError('Background native BMW, exact track and scoped CSP capability required')
             write_json(run / 'native-identity.json', identity)
         write_json(run / 'before.json', before)
         if args.command == 'status' or not args.execute:
             result.update(status='read_only', session=before)
+        elif args.imola_owned_camera_plan is not None and not imola_motion:
+            from flybrain_drive.owned_source_camera import OwnedSourceCamera
+
+            axis = read(Path(args.axis_config))
+            sdk = load_vjoy_sdk(axis['dll_path'], axis['dll_sha256'])
+            owner = OwnedSourceCamera(args.imola_owned_camera_plan, generation=before['generation'],
+                                      window_handle=windows[0].hwnd, installed_source=deployed)
+            evidence = run / 'owned-camera-resume'
+            try:
+                owner.start_paused_warmup()
+                after = resume_owned_camera_for_recording(owner, output=evidence, window=windows[0],
+                                                          axis=axis, sdk=sdk, imola=True)
+            except Exception:
+                result['lifecycle_publication_possible'] = (evidence / 'request.json').exists()
+                owner.request_stop()
+                raise
+            result.update(status='completed', target_state_observed=True, lifecycle_requests_sent=1,
+                          session=after)
         else:
             if args.command == 'disable-ideal-line' and (
                     type(before.get('ideal_line_shown')) is not bool
@@ -393,10 +468,40 @@ def main():
                                       brake_pulse=brake_pulse, speed60=speed60, pace=pace)
                 if fast and args.ai_steer_multiplier != .9:
                     raise ValueError('30kmh expert profile requires bounded AI steer .9')
-                if collection and (args.ai_steer_multiplier != .9 or not args.camera_request_id):
+                if collection and (args.ai_steer_multiplier != .9 or not (args.camera_request_id or imola_collection)):
                     raise ValueError('30-second collection requires owned camera and AI steer .9')
-            axis = read(Path('configs/ac-axis-probe.json'))
+            axis = read(Path(args.axis_config if imola_motion else 'configs/ac-axis-probe.json'))
             sdk = load_vjoy_sdk(axis['dll_path'], axis['dll_sha256'])
+            if imola_motion:
+                from flybrain_drive.owned_source_camera import OwnedSourceCamera
+
+                capability = 'imola_owned_collection_v1' if imola_collection else 'imola_owned_motion_v1'
+                if (before['camera_active'] or before.get('capabilities', {}).get(capability) is not True
+                        or sdk.GetVJDStatus(axis['device_id']) != 1
+                        or sha256(axis['profile_path']) != axis['profile_sha256']):
+                    raise ValueError('Imola motion requires the exact inactive camera and released profile')
+                motion_camera_owner = OwnedSourceCamera(
+                    args.imola_owned_camera_plan, generation=before['generation'],
+                    window_handle=windows[0].hwnd, installed_source=deployed)
+                if imola_collection and (motion_camera_owner.plan['period'] != .1
+                                         or not 360 <= motion_camera_owner.plan['frames'] <= 400):
+                    raise ValueError('Imola collection requires 360–400 original groups at 100ms')
+                motion_camera_owner.start_paused_warmup()
+                args.camera_request_id = motion_camera_owner.plan['request_id']
+                deadline = time.monotonic() + 1
+                while time.monotonic() < deadline:
+                    current, modified, _ = read_session_heartbeat(root / 'status.json')
+                    validate_heartbeat(current, time.time()-modified, mutating=True)
+                    motion_camera_owner.check(current['camera_active'], current.get('camera_request_id'))
+                    if current.get('camera_request_id') == args.camera_request_id:
+                        if (current['generation'], current['epoch'], current['track_id']) != (
+                                before['generation'], before['epoch'], expected_track):
+                            raise ValueError('Imola session changed during camera startup')
+                        before = current
+                        break
+                    time.sleep(.01)
+                else:
+                    raise TimeoutError('Owned Imola camera absent from session heartbeat')
             owns_camera = (motion and args.camera_request_id is not None
                            and before.get('camera_request_id') == args.camera_request_id)
             if (sdk.GetVJDStatus(axis['device_id']) != 1
@@ -412,7 +517,7 @@ def main():
             request = dict(schema='flybrain.csp.session.request.v1', id=uuid.uuid4().hex,
                 command=args.command, generation=before['generation'], epoch=before['epoch'],
                 expires_clock=before['script_clock']+3)
-            if args.heldout_magione:
+            if args.heldout_magione or args.imola_lifecycle:
                 request['expected_track_id'] = expected_track
             if args.allow_live_aid_command:
                 request['allow_live_stationary'] = True
@@ -443,6 +548,10 @@ def main():
             fresh, modified, retries = read_session_heartbeat(root/'status.json')
             result['heartbeat_metadata_retries'] += retries
             validate_heartbeat(fresh, time.time()-modified, mutating=True)
+            if imola_motion:
+                motion_camera_owner.check(fresh['camera_active'], fresh.get('camera_request_id'))
+                if fresh.get('camera_request_id') != args.camera_request_id:
+                    raise ValueError('Owned Imola camera changed before probe publication')
             request = fresh_unpublished_request(before, fresh, request,
                 publication_started=bool(result['lifecycle_requests_sent']))
             intent_path = journal/(request['id']+'.json')
@@ -534,6 +643,8 @@ def main():
     finally:
         if native_observer:
             native_observer.close()
+        if motion_camera_owner is not None and result['status'] != 'completed':
+            motion_camera_owner.request_stop()
     write_json(run / 'result.json', result)
     if result['status'] == 'failed':
         raise RuntimeError(result['reason'])
