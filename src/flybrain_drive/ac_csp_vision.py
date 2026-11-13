@@ -4,6 +4,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import shutil
 import threading
 import time
@@ -243,9 +244,10 @@ class CSPVisionRecorder:
                  expected_source_sha256=None, start_gate=None, prepared_event=None,
                  source_body_recording=False,lifecycle_only_camera_status=False,mmf_stop_signal=False,
                  memory_only_receive_checks=False,expected_track="monza"):
-        if expected_track not in ("monza", "magione") or (expected_track=="magione"
-                and (expected_source_sha256 is None or not mmf_metadata)):
-            raise ValueError("An explicit source-pinned MMF camera is required for Magione")
+        if not isinstance(expected_track, str) or re.fullmatch(r"[a-z0-9_-]+", expected_track) is None:
+            raise ValueError("An exact AC track ID is required")
+        if expected_track != "monza" and (expected_source_sha256 is None or mmf_metadata is not True):
+            raise ValueError("An explicit source-pinned MMF camera is required outside Monza")
         self.expected_track = expected_track
         if any(event is not None and not isinstance(event, threading.Event)
                 for event in (start_gate, prepared_event)):
@@ -740,6 +742,13 @@ class CSPVisionRecorder:
                 if now >= deadline:
                     raise
                 time.sleep(min(.001, deadline-now))
+
+    def recorded_candidates(self):
+        """Return retained groups after the finite recorder has stopped, for offline checks."""
+        if self.thread.is_alive() or self.error is not None:
+            raise ValueError("Completed camera recorder required for offline candidates")
+        with self.lock:
+            return [dict(row, views=[dict(view) for view in row["views"]]) for row in self.frames]
 
     def samples_for(self, candidate):
         validate_frame_aid_state(candidate)

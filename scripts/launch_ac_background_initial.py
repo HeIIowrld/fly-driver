@@ -17,7 +17,9 @@ from flybrain_drive.evidence import begin_run,write_json
 from flybrain_drive.graph import sha256
 from flybrain_drive.initial_thermal_contract import validate_thermal_native
 from flybrain_drive.win_process_receipt import ProcessReceipt, engine_inventory
-from scripts.control_ac_session import read_session_heartbeat,validate_heartbeat
+from scripts.control_ac_session import (
+    IMOLA_OWNED_MOTION_SOURCE_SHA256, read_session_heartbeat, validate_heartbeat,
+)
 from scripts.restart_heldout_track import native_identity
 
 
@@ -25,7 +27,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--axis-config',required=True);p.add_argument('--race-ini',required=True)
     p.add_argument('--expected-lua-sha256',required=True)
-    p.add_argument('--track',choices=('monza','magione'),default='monza')
+    p.add_argument('--track',choices=('monza','magione','imola'),default='monza')
     p.add_argument('--execute',action='store_true');p.add_argument('--output',required=True)
     a=p.parse_args();axis=json.loads(Path(a.axis_config).read_text(encoding='utf-8'))
     exe=Path('C:/Program Files (x86)/Steam/steamapps/common/assettocorsa/acs.exe')
@@ -37,6 +39,14 @@ def main():
         raise ValueError('Pinned original offline one-car BMW configuration for the selected track required')
     if axis.get('track') != a.track or axis.get('car_model') != 'bmw_z4_gt3':
         raise ValueError('Axis configuration does not match selected track and car')
+    capability='initial_tyre_temperature_v1'
+    if a.track == 'imola':
+        if (Path(a.race_ini).resolve()!=Path(axis['profile_path']).resolve().with_name('race.ini')
+                or cfg.get('SESSION_0','TYPE',fallback=None)!='4'
+                or cfg.get('RACE','CONFIG_TRACK',fallback=None)!=''
+                or a.expected_lua_sha256!=IMOLA_OWNED_MOTION_SOURCE_SHA256):
+            raise ValueError('Actual offline Imola hotlap profile and pinned motion producer required')
+        capability='imola_owned_motion_v1'
     if sha256(lua)!=a.expected_lua_sha256 or sha256(axis['profile_path'])!=axis['profile_sha256']:
         raise ValueError('Reviewed deployment and actual control profile required')
     race_hash=sha256(a.race_ini)
@@ -82,8 +92,8 @@ def main():
                                 or hb.get('track_id')!=a.track or hb.get('car_id')!='bmw_z4_gt3'
                                 or hb.get('is_online') is not False
                                 or hb.get('camera_active') is not False
-                                or hb.get('capabilities',{}).get('initial_tyre_temperature_v1') is not True):
-                            raise ValueError('Waiting for new owned thermal-capable producer')
+                                or hb.get('capabilities',{}).get(capability) is not True):
+                            raise ValueError('Waiting for the requested new owned producer')
                         if api.user.GetForegroundWindow()==owned[0].hwnd:
                             raise RuntimeError('Engine foreground despite hidden launch; no desktop fallback')
                         with NativeTeacherPhysicsReader(timeout=.15) as reader:

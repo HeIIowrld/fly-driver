@@ -167,15 +167,15 @@ def main():
     gc_scope=defer_automatic_cyclic_gc() if a.defer_visual_gc else None
     gc_receipt=gc_scope.__enter__() if gc_scope else None
     try:
-        cpu='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe'
-        library='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'
+        cpu=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe')
+        library=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages')
         if moving:
             from flybrain_drive.flight_decision_mailbox import FlightDecisionMailbox
             from flybrain_drive.owned_pause_process import OwnedPauseProcess
             mailbox=FlightDecisionMailbox()
             pause_worker=OwnedPauseProcess(run/'final-pause',read(run/'manifest.json'),pin,cpu,library,heldout_magione=magione)
             write_json(run/'pause-worker-ready.json',pause_worker.ready)
-        runtime=CurrentFlightControlOwnerProcess(actor_kind=a.actor_kind,run_id=run.resolve().as_posix(),checkpoint=a.current_checkpoint,checkpoint_sha256=a.current_checkpoint_sha256,directory=run,python_executable='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe',library_directory='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages',flush_denormal=a.flush_body_denormal,mailbox_spec=mailbox.spec if moving else None,native_sample_budget=45000 if moving else 20000,body_threads=a.moving_body_threads)
+        runtime=CurrentFlightControlOwnerProcess(actor_kind=a.actor_kind,run_id=run.resolve().as_posix(),checkpoint=a.current_checkpoint,checkpoint_sha256=a.current_checkpoint_sha256,directory=run,python_executable=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),library_directory=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'),flush_denormal=a.flush_body_denormal,mailbox_spec=mailbox.spec if moving else None,native_sample_budget=45000 if moving else 20000,body_threads=a.moving_body_threads)
         write_json(run/'worker-ready.json',runtime.ready)
         if not runtime.ready['receipt']['motion_features_required']:raise ValueError('Current actor requires motion features')
         start_gate=threading.Event();prepared=threading.Event()
@@ -222,7 +222,7 @@ def main():
         else:
             command+=['--targets','10,20','--stage-seconds','2','--final-seconds','2']
         if a.teacher_lateral_calibration:command+=['--low-speed-lateral-calibration',a.teacher_lateral_calibration]
-        teacher_env=os.environ.copy();teacher_env['PYTHONPATH']='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.';teacher_env['OPENBLAS_NUM_THREADS']='1'
+        teacher_env=os.environ.copy();teacher_env['PYTHONPATH']=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.');teacher_env['OPENBLAS_NUM_THREADS']='1'
         teacher_log=(run/'teacher.log').open('x',encoding='utf8')
         teacher=subprocess.Popen(command,cwd=Path.cwd(),env=teacher_env,stdout=teacher_log,stderr=subprocess.STDOUT,
             creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0)|getattr(subprocess,'ABOVE_NORMAL_PRIORITY_CLASS',0))
@@ -470,8 +470,8 @@ def main():
             except Exception as error:result['pause_worker_close_error']=str(error)
         elif camera is not None:
             try:
-                pause_env=os.environ.copy();pause_env['PYTHONPATH']='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.'
-                pause=subprocess.run(['C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe','-m','scripts.control_ac_session','--command','pause','--expected-lua-sha256',pin,'--execute','--output',str(run/'final-pause')],env=pause_env,capture_output=True,text=True,timeout=30,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));result['pause_returncode']=pause.returncode;write_json(run/'pause-process.json',dict(returncode=pause.returncode,stdout=pause.stdout,stderr=pause.stderr))
+                pause_env=os.environ.copy();pause_env['PYTHONPATH']=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.')
+                pause=subprocess.run([str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),'-m','scripts.control_ac_session','--command','pause','--expected-lua-sha256',pin,'--execute','--output',str(run/'final-pause')],env=pause_env,capture_output=True,text=True,timeout=30,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));result['pause_returncode']=pause.returncode;write_json(run/'pause-process.json',dict(returncode=pause.returncode,stdout=pause.stdout,stderr=pause.stderr))
             except Exception as error:result['pause_error']=str(error)
         if camera is not None:
             try:result['camera_archive']=camera.archive_to(run/'vision',bundle=True)

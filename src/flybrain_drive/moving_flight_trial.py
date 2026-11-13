@@ -12,7 +12,7 @@ from .learned_high_speed_braking_evidence import evaluate_braking
 from .magione_stage import MAGIONE_MOVING_STAGE_PROFILES
 from .matched_corner_entry import native_motion_resolved
 from .moving_flight_authority import MovingFlightAuthority
-from .moving_stop_calibration import MONZA_GEOMETRY_PATH, native_track_fields, validate_natural_monza_reference
+from .moving_stop_calibration import MONZA_GEOMETRY_PATH, MONZA_TEACHER_STOP_PROFILES, native_track_fields, validate_natural_monza_reference
 from .sac_unified_student import read
 
 
@@ -23,6 +23,8 @@ def admit_calibration(reference_path, audit_path):
     root = Path(config["args"]["recording"])
     reference = read(reference_path)
     profile = reference.get("teacher_pacing_profile")
+    if profile in MONZA_TEACHER_STOP_PROFILES:
+        raise ValueError("Upstream teacher stop cannot authorize student control")
     magione = profile in MAGIONE_MOVING_STAGE_PROFILES
     natural = not magione and validate_natural_monza_reference(reference)
     teacher = root if magione else root/"teacher"

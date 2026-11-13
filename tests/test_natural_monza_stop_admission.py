@@ -100,3 +100,25 @@ def test_natural_reference_rejects_changed_source_or_heading(reference_and_audit
         file.write("\n")
     with pytest.raises(ValueError,match="Exact natural Monza"):
         admit_calibration(ref_path,audit_path)
+
+
+
+@pytest.mark.parametrize("profile", moving_stop_calibration.MONZA_TEACHER_STOP_PROFILES)
+def test_upstream_teacher_profile_cannot_authorize_student(reference_and_audit,profile):
+    ref_path, ref, audit_path, _, _ = reference_and_audit
+    write(ref_path, {**ref, "pacing_only": True,
+        "teacher_pacing_profile": profile})
+    with pytest.raises(ValueError, match="cannot authorize student"):
+        admit_calibration(ref_path, audit_path)
+
+
+def test_chicane_pacing_keeps_the_measured_stop_target_and_earlier_stage():
+    from flybrain_drive.teacher_curriculum import monza_chicane_teacher_target
+    pace = monza_chicane_teacher_target
+    assert pace(102., .08999) == 102.
+    assert pace(102., .09) == 80.
+    assert pace(102., .119338) == 80.
+    assert pace(102., .1203) == 102.
+    assert pace(60., .112) == 60.
+    with pytest.raises(ValueError, match="progress"):
+        pace(102., float("nan"))

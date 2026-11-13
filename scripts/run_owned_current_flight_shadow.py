@@ -33,8 +33,8 @@ def main():
     if not a.execute:raise ValueError('Explicit owned finite simulation execution required')
     prefix=Path(a.receipt_prefix)
     if Path(a.output).exists() or prefix.with_suffix('.started.json').exists():raise ValueError('Fresh owned run and launcher receipt required')
-    binary='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe'
-    library='C:/Users/research-user/AppData/Local/flybrain-bio-20261029/flyvis-env/Lib/site-packages'
+    binary=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe')
+    library=str(Path.home() / 'AppData/Local/flybrain-bio-20261029/flyvis-env/Lib/site-packages')
     env=os.environ.copy();env['PYTHONPATH']=library+';src;.';env['OPENBLAS_NUM_THREADS']='1'
     command=[binary,'-m','scripts.shadow_current_flight_teacher_motion','--candidate-plan',a.candidate_plan,
         '--thermal-initialization-run',a.thermal_initialization_run,'--current-checkpoint',a.current_checkpoint,'--current-checkpoint-sha256',a.current_checkpoint_sha256,'--execute','--output',a.output]

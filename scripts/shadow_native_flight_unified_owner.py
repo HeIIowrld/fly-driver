@@ -132,7 +132,7 @@ def main():
     if recovery is not None:write_json(run/'completed-metadata-diagnostic.json',recovery)
     camera=sampler=runtime=ticker=None;events=[];native_samples={};native_position=0;result=dict(status='failed',actor_qualified=False,optimizer_updates=0,actuator_messages_sent=0,ui_actions_sent=0)
     try:
-        runtime=NativeFlightBodyOwnerProcess(model,head,dn,optical,body,encoder,native_identity={k:identity[k] for k in read(EXT/'contract.json')['native_identity']},directory=run,python_executable='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe',library_directory='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages')
+        runtime=NativeFlightBodyOwnerProcess(model,head,dn,optical,body,encoder,native_identity={k:identity[k] for k in read(EXT/'contract.json')['native_identity']},directory=run,python_executable=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),library_directory=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'))
         write_json(run/'worker-ready.json',runtime.ready)
         camera=CSPVisionRecorder(window.hwnd,camera_config,max_frames=240,period=.04,max_bytes=256*1024**2,image_format='bmp',shared_transport=True,batched_shared_copy=True,async_frame_persistence=True,mmf_metadata=True,preserve_producer_time=True,expected_source_sha256=PIN,mmf_stop_signal=True,memory_only_receive_checks=True)
         runtime.begin_episode(camera.request_id,status['generation'])

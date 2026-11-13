@@ -26,7 +26,7 @@ Actor에는 영상과 허용된 몸 감각만 준다. 지도·world pose·절대
 모든 shell 명령은 아래 폴더를 **workdir로 명시**한다. 상위 폴더에 코드를 만들지 않는다.
 
 ```text
-\\research-nas\homes\research-user\02_Personal\01_학교\20.활동\개인프로젝트\flybrain
+<flybrain-workspace>
 ```
 
 기존 폴더와 미커밋 변경을 유지한다. reset/clean·브랜치 전환·새 worktree로 우회하지 않고 다른 변경을 임의로 묶지 않는다. 이 작업은 FlyBrain이며 AIDE의 원격 202 규칙 대상이 아니다.
@@ -84,10 +84,10 @@ Actor에는 영상과 허용된 몸 감각만 준다. 지도·world pose·절대
 
 ## 환경과 실행 상태 — 반드시 재확인
 
-- Windows PowerShell, Python `C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe`.
-- CPU PYTHONPATH: `C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.` (torch2.9.1+cpu).
-- GPU PYTHONPATH: `C:/Users/research-user/AppData/Local/flybrain-bio-20261029/flyvis-env/Lib/site-packages;src;.` (torch2.9.1 ROCm/AMD9070XT). 기존 봉인된 launcher처럼 CPU/GPU 프로세스 환경을 분리하고 OPENBLAS_NUM_THREADS=1·torch threads1을 사용한다.
-- Git can report dubious NAS ownership. A per-command `git -c safe.directory='//research-nas/homes/research-user/02_Personal/01_학교/20.활동/개인프로젝트/flybrain' ...` worked; do not change global config unnecessarily.
+- Windows PowerShell, Python `%LOCALAPPDATA%/Programs/Python/Python312/python.exe`.
+- CPU PYTHONPATH: `%LOCALAPPDATA%/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.` (torch2.9.1+cpu).
+- GPU PYTHONPATH: `%LOCALAPPDATA%/flybrain-bio-20261029/flyvis-env/Lib/site-packages;src;.` (torch2.9.1 ROCm/AMD9070XT). 기존 봉인된 launcher처럼 CPU/GPU 프로세스 환경을 분리하고 OPENBLAS_NUM_THREADS=1·torch threads1을 사용한다.
+- Git can report dubious NAS ownership. A per-command `git -c safe.directory='<flybrain-workspace>' ...` worked; do not change global config unnecessarily.
 - Latest installed Lua SHA recorded: `0c20d720a7a2bf20a7e30fdc7370ee5e9932babf71fb360a78a5f07719360b7e`. Recheck required source contract before live work; do not bypass mismatch.
 - Last external snapshot: `runs/dual-reference-learning-20261105/external-state-01.json`, paused=true/epoch9, generation `1117858ULL:0.0016212`, Monza/BMW Z4 GT3. It is a historical observation, not current live state. This handoff did not query AC or process liveness.
 - Latest fit/evaluation/audits finished. Old failed shadow teardown had remaining handles: PID50656/32480/45084/21676/36336 and original tool handle15748. Old recorded wait258 or code259/1 did not prove process termination. These are not ongoing training. Check identity/creation time/owned run before action; do not kill a reused PID or restart from timeout alone. Successful shadow-04 owned processes exited0 and teacher/camera/archives closed separately.

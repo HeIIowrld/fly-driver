@@ -5,6 +5,7 @@ import pytest
 
 from flybrain_drive.ac_camera_mount import (
     EXTERIOR_FRONT_CONTRACT,
+    EXTERIOR_SIDE_120_CONTRACT,
     configured_mount,
     validate_frame_mount,
 )
@@ -58,3 +59,20 @@ def test_mount_checks_actual_returned_centers_not_only_metadata_revision():
     front['view_matrix_diagnostic'] = str(view.tolist())
     with pytest.raises(ValueError, match='centers'):
         validate_frame_mount(frame, dict(camera_mount_contract=EXTERIOR_FRONT_CONTRACT))
+
+
+def test_wide_side_mount_requires_actual_120_degree_side_matrices():
+    frame = fixture()
+    old_config = dict(camera_mount_contract=EXTERIOR_FRONT_CONTRACT)
+    wide_config = dict(camera_mount_contract=EXTERIOR_SIDE_120_CONTRACT)
+    frame.update(camera_layout_revision=4, camera_mount_contract=EXTERIOR_SIDE_120_CONTRACT)
+    with pytest.raises(ValueError, match='side FOV'):
+        validate_frame_mount(frame, wide_config)
+    scale = 1 / np.sqrt(3)
+    for view in frame['views'][1:3]:
+        projection = np.zeros((4, 4))
+        projection[0, 0], projection[1, 1], projection[2, 3] = .5625 * scale, scale, -1.
+        view.update(projection_matrix_diagnostic=str(projection.tolist()), requested_fov_degrees=120)
+    validate_frame_mount(frame, wide_config)
+    with pytest.raises(ValueError, match='differs'):
+        validate_frame_mount(frame, old_config)

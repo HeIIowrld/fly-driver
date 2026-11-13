@@ -151,7 +151,7 @@ def main():
     gc_scope=defer_automatic_cyclic_gc() if a.defer_visual_gc else None
     gc_receipt=gc_scope.__enter__() if gc_scope else None
     try:
-        runtime=NativeFlightBodyOwnerProcess(model,head,dn,optical,body,encoder,native_identity={k:identity[k] for k in read(EXT/'contract.json')['native_identity']},directory=run,python_executable='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe',library_directory='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages',defer_cyclic_gc=a.defer_body_gc,flush_denormal=a.flush_body_denormal,motion_port=motion_port)
+        runtime=NativeFlightBodyOwnerProcess(model,head,dn,optical,body,encoder,native_identity={k:identity[k] for k in read(EXT/'contract.json')['native_identity']},directory=run,python_executable=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),library_directory=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'),defer_cyclic_gc=a.defer_body_gc,flush_denormal=a.flush_body_denormal,motion_port=motion_port)
         write_json(run/'worker-ready.json',runtime.ready)
         if runtime.ready['motion_features_required']!=(motion_port is not None):raise ValueError('CPU owner motion runtime readiness differs')
         start_gate=threading.Event();prepared=threading.Event()
@@ -164,7 +164,7 @@ def main():
         coordination.mkdir(parents=True,exist_ok=False)
         coordinator=TeacherShadowCameraCoordinator(camera,start_gate,coordination,window_handle=window.hwnd,source_sha256=pin,recording=run,native_ready_required=True)
         write_json(run/'camera-ownership-plan.json',coordinator.plan)
-        cpu='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe'
+        cpu=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe')
         command=[cpu,'-m','scripts.evaluate_sac_teacher_curriculum','--axis-config',AXIS,
             '--calibration-result','runs/thermal-driving-20261103/steering-calibration-02/result.json',
             '--teacher-config','assets/external/acgym-teacher-candidates-20261102/step_07000000.json',
@@ -173,7 +173,7 @@ def main():
             '--camera-plan',str(coordination/'ready.json'),'--thermal-initialization-run',a.thermal_initialization_run,
             '--execute','--output',str(run/'teacher')]
         if a.teacher_lateral_calibration:command+=['--low-speed-lateral-calibration',a.teacher_lateral_calibration]
-        teacher_env=os.environ.copy();teacher_env['PYTHONPATH']='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.';teacher_env['OPENBLAS_NUM_THREADS']='1'
+        teacher_env=os.environ.copy();teacher_env['PYTHONPATH']=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.');teacher_env['OPENBLAS_NUM_THREADS']='1'
         teacher_log=(run/'teacher.log').open('x',encoding='utf8')
         teacher=subprocess.Popen(command,cwd=Path.cwd(),env=teacher_env,stdout=teacher_log,stderr=subprocess.STDOUT,
             creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0)|getattr(subprocess,'ABOVE_NORMAL_PRIORITY_CLASS',0))
@@ -313,8 +313,8 @@ def main():
             write_json(run/'native-copy.json',sampler.rows);result['native_sha256']=sha256(run/'native-copy.json')
         if camera is not None:
             try:
-                pause_env=os.environ.copy();pause_env['PYTHONPATH']='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.'
-                pause=subprocess.run(['C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe','-m','scripts.control_ac_session','--command','pause','--expected-lua-sha256',pin,'--execute','--output',str(run/'final-pause')],env=pause_env,capture_output=True,text=True,timeout=30,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));result['pause_returncode']=pause.returncode;write_json(run/'pause-process.json',dict(returncode=pause.returncode,stdout=pause.stdout,stderr=pause.stderr))
+                pause_env=os.environ.copy();pause_env['PYTHONPATH']=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages;src;.')
+                pause=subprocess.run([str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),'-m','scripts.control_ac_session','--command','pause','--expected-lua-sha256',pin,'--execute','--output',str(run/'final-pause')],env=pause_env,capture_output=True,text=True,timeout=30,creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0));result['pause_returncode']=pause.returncode;write_json(run/'pause-process.json',dict(returncode=pause.returncode,stdout=pause.stdout,stderr=pause.stderr))
             except Exception as error:result['pause_error']=str(error)
         if camera is not None:
             try:result['camera_archive']=camera.archive_to(run/'vision',bundle=True)

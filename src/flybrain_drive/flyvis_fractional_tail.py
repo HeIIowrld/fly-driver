@@ -24,8 +24,8 @@ class FractionalVisualTail(GraphedVisualTail):
     """Nominal binary graphs unchanged; one original fractional step with dynamic dt input."""
 
     @torch.no_grad()
-    def __init__(self, network, initial_state):
-        super().__init__(network, initial_state)
+    def __init__(self, network, initial_state, *, batch_size=4, extra_chunks=()):
+        super().__init__(network, initial_state, batch_size=batch_size, extra_chunks=extra_chunks)
         self.fractional_dt = torch.tensor(.00317, device=self.device, dtype=torch.float32)
         side = torch.cuda.Stream(device=self.device)
         side.wait_stream(torch.cuda.current_stream(self.device))
@@ -48,14 +48,14 @@ class FractionalVisualTail(GraphedVisualTail):
         if dt == .005:
             return super().simulate(movie_input, dt, initial_state, as_states, as_layer_activity)
         if (not as_states or as_layer_activity or initial_state is None or not 0 < dt < .005
-                or movie_input.shape != (4, 1, 1, 721)
+                or movie_input.shape != (self.batch_size, 1, 1, 721)
                 or movie_input.device != self.device or movie_input.dtype != torch.float32
                 or self.network.training or any(p.requires_grad for p in self.network.parameters())
                 or self.network._state_hooks or self._versions() != self.versions
                 or set(initial_state.nodes) != {'activity'} or initial_state.edges):
             raise ValueError('One exact fractional held step in the same frozen network required')
         with torch.device(self.device):
-            self.network.stimulus.zero(4, 1)
+            self.network.stimulus.zero(self.batch_size, 1)
             self.network.stimulus.add_input(movie_input)
             self.static_current.copy_(self.network.stimulus()[:, 0])
             self.static_activity.copy_(initial_state.nodes.activity)

@@ -30,7 +30,7 @@ def main():
  try:
   for arm in ['input_adjoint']:
    checkpoint=ROOT/f'{arm}-fit-01/ports.pt';owner_dir=out/arm;owner_dir.mkdir()
-   runtime=CurrentFlightOwnerProcess(checkpoint=checkpoint,checkpoint_sha256=sha256(checkpoint),directory=owner_dir,python_executable='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe',library_directory='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages');pred=[];muscles=[];ages=[]
+   runtime=CurrentFlightOwnerProcess(checkpoint=checkpoint,checkpoint_sha256=sha256(checkpoint),directory=owner_dir,python_executable=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),library_directory=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'));pred=[];muscles=[];ages=[]
    try:
     runtime.begin_replay(c['episode_id'])
     for i in range(n):

@@ -24,15 +24,16 @@ class GraphedVisualTail(FrozenVisualTail):
     """Independent static graph buffers; returned states never alias reusable graph outputs."""
 
     @torch.no_grad()
-    def __init__(self, network, initial_state):
+    def __init__(self, network, initial_state, *, batch_size=4, extra_chunks=()):
         super().__init__(network)
-        if (set(initial_state.nodes) != {'activity'} or initial_state.edges
-                or initial_state.nodes.activity.shape != (4, 45669)
+        if (batch_size not in (4, 8) or set(initial_state.nodes) != {'activity'} or initial_state.edges
+                or initial_state.nodes.activity.shape != (batch_size, 45669)
                 or self.device.type != 'cuda'):
-            raise ValueError('Exact published four-camera activity-only CUDA state required')
+            raise ValueError('Exact activity-only CUDA state for one or two four-view streams required')
         from flyvis.utils.tensor_utils import AutoDeref
 
         self.AutoDeref = AutoDeref
+        self.batch_size = batch_size
         self.static_activity = initial_state.nodes.activity.clone()
         self.static_current = torch.zeros_like(self.static_activity)
         self.nominal_dt = torch.tensor(.005, device=self.device, dtype=torch.float32)
@@ -46,7 +47,9 @@ class GraphedVisualTail(FrozenVisualTail):
         self.graphs = {}
         # Four private pools, no shared-pool ordering assumption. Binary chunks preserve
         # every step while requiring at most four launches for any admitted held batch.
-        for count in (1, 2, 4, 8):
+        if any(type(n) is not int or not 1 <= n <= 16 for n in extra_chunks):
+            raise ValueError('Graph chunk lengths must be integers in 1..16')
+        for count in sorted({1, 2, 4, 8, *extra_chunks}):
             graph = torch.cuda.CUDAGraph()
             with (torch.cuda.graph(graph, stream=side), torch.device(self.device),
                   PreparedNominalConstant(self.nominal_dt)):
@@ -68,7 +71,7 @@ class GraphedVisualTail(FrozenVisualTail):
     def simulate(self, movie_input, dt, initial_state, as_states=False, as_layer_activity=False):
         if (not as_states or as_layer_activity or initial_state is None
                 or not 0 < dt <= .005 or movie_input.ndim != 4
-                or movie_input.shape[0] != 4 or movie_input.shape[2:] != (1, 721)
+                or movie_input.shape[0] != self.batch_size or movie_input.shape[2:] != (1, 721)
                 or not 1 <= movie_input.shape[1] <= 16
                 or movie_input.shape[1] > 1 and movie_input.stride(1) != 0
                 or movie_input.device != self.device or movie_input.dtype != torch.float32
@@ -77,14 +80,15 @@ class GraphedVisualTail(FrozenVisualTail):
                 or set(initial_state.nodes) != {'activity'} or initial_state.edges):
             raise ValueError('Same frozen graph, original held inputs and explicit state required')
         with torch.device(self.device):
-            self.network.stimulus.zero(4, 1)
+            self.network.stimulus.zero(self.batch_size, 1)
             self.network.stimulus.add_input(movie_input[:, :1])
             current = self.network.stimulus()[:, 0]
             if dt == .005:
                 self.static_current.copy_(current)
                 self.static_activity.copy_(initial_state.nodes.activity)
                 remaining = movie_input.shape[1]
-                for count in (8, 4, 2, 1):
+                chunks = (remaining,) if remaining in self.graphs else (8, 4, 2, 1)
+                for count in chunks:
                     while remaining >= count:
                         graph, output = self.graphs[count]
                         graph.replay()

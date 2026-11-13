@@ -1347,7 +1347,8 @@ local function begin(request, now)
   assert(not expertProbe, 'Stationary expert API probe must finish before camera acquisition')
   if request.camera_sensor_layout ~= nil then
     local sim, car = ac.getSim(), ac.getCar(0)
-    assert(request.camera_sensor_layout == 'exterior_front_v3'
+    assert((request.camera_sensor_layout == 'exterior_front_v3'
+      or request.camera_sensor_layout == 'exterior_side120_v4')
       and ac.getCarID(0) == 'bmw_z4_gt3' and not request.camera_motion_probe
       and not request.allow_ideal_line_probe and request.mmf_metadata == true
       and request.host_persistence_protocol == 'immutable_ram_v3'
@@ -1594,7 +1595,11 @@ local function capture(now)
     rear = {car.position - car.look * 2.4 + car.up * 1.0, -car.look, 90}
   }
   local motionDiagnostic = nil
-  local normalExterior = active.request.camera_sensor_layout == 'exterior_front_v3'
+  local wideSide = active.request.camera_sensor_layout == 'exterior_side120_v4'
+  local normalExterior = wideSide or active.request.camera_sensor_layout == 'exterior_front_v3'
+  if wideSide then
+    layout.left[3], layout.right[3] = 120, 120
+  end
   if normalExterior then
     layout.front[1] = car.position + car.look * 2.5 + car.up * 1.0
   end
@@ -1686,13 +1691,15 @@ local function capture(now)
     car_id = ac.getCarID(0), track_id = ac.getTrackID(), views = rows,
     camera_layout = (normalExterior or motionDiagnostic
       and motionDiagnostic.front_mount == 'bmw_z4_gt3_bumper_v1')
-      and 'virtual front eye car.position+look*2.5+up*1.0; FOV56; exterior side/rear'
+      and ('virtual front eye car.position+look*2.5+up*1.0; FOV56; exterior side/rear'
+        .. (wideSide and '; side vertical FOV120 requested' or ''))
       or 'native dashboard POS with requested FOV56; model +X driver-left; exterior side/rear',
     native_dash_position_local = vector(dashLocal),
-    camera_layout_revision = (normalExterior or motionDiagnostic
+    camera_layout_revision = wideSide and 4 or (normalExterior or motionDiagnostic
       and motionDiagnostic.front_mount == 'bmw_z4_gt3_bumper_v1') and 3 or 2,
     camera_mount_contract = normalExterior and {
-      schema='flybrain.ac.camera_mount.v1', layout_id='exterior_front_v3', layout_revision=3,
+      schema='flybrain.ac.camera_mount.v1', layout_id=active.request.camera_sensor_layout,
+      layout_revision=wideSide and 4 or 3, side_vertical_fov_deg=wideSide and 120 or nil,
       front_mount='bmw_z4_gt3_bumper_v1', front_offset_forward_m=2.5,
       front_offset_up_m=1.0, scene='full_scene', car_id='bmw_z4_gt3'} or nil,
     native_dash_camera_sections_diagnostic = dashConfig.sections,

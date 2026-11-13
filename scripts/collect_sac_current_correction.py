@@ -4,7 +4,7 @@ from pathlib import Path
 from flybrain_drive.evidence import begin_run,write_json
 from flybrain_drive.graph import sha256
 ROOT=Path('runs/steering-precorners-20261103')
-PYTHON='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Scripts/python.exe'
+PYTHON=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Scripts/python.exe')
 
 def main():
  replay=Path('scripts/diagnose_sac_precorner_exchange_v2.py');audit=Path('scripts/audit_sac_visual_port_correction.py')

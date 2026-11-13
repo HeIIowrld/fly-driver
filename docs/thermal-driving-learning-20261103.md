@@ -30,7 +30,7 @@ SDK LapInvalidated=0과 native 랩 카운터/타이머·약1랩 진행률·정�
 
 ## 모델 입력 준비
 
-기존 승인된 FlyVis 환경 `C:/Users/research-user/AppData/Local/flybrain-bio-20261029/flyvis-env`에서 Torch2.9.1+rocm7.2.1과 AMD RX9070XT 실제 텐서 연산을 확인했다(`flyvis-gpu-probe-01.txt`). CPU 경로만의 CUDA=false와 전체 GPU 부재를 혼동하지 않는다. 원래 GPU 전처리 소스/author weights·5ms held-input 적분/에피소드1회 reset을 그대로 사용했다.
+기존 승인된 FlyVis 환경 `%LOCALAPPDATA%/flybrain-bio-20261029/flyvis-env`에서 Torch2.9.1+rocm7.2.1과 AMD RX9070XT 실제 텐서 연산을 확인했다(`flyvis-gpu-probe-01.txt`). CPU 경로만의 CUDA=false와 전체 GPU 부재를 혼동하지 않는다. 원래 GPU 전처리 소스/author weights·5ms held-input 적분/에피소드1회 reset을 그대로 사용했다.
 
 세 `*-actor-data-01/`과 `*-actor-audit-01/`이 완료했다. 총 **48,956사건**이며 원래 시각·첫 native receipt·packet·mask·교사 라벨을 보존한다. 정합되지 않은 초기3/4그룹은 frozen 시각 recurrence에도 넣지 않았다. 몸21의 옛 가속3축/roll·pitch rate false mask는 바꾸지 않았다. 새 자료의 native-only tick도 명시적 비감독 mask를 유지한다. 원천→held 몸 age 최대 약12ms다.
 

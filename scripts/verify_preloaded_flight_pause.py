@@ -5,8 +5,8 @@ from flybrain_drive.evidence import begin_run,write_json
 from flybrain_drive.sac_unified_student import read
 from flybrain_drive.owned_pause_process import OwnedPauseProcess
 from scripts.preflight_current_flight_control import inspect,PIN
-CPU='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe'
-LIB='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'
+CPU=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe')
+LIB=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages')
 def main():
  p=argparse.ArgumentParser();p.add_argument('--output',required=True);a=p.parse_args();out=begin_run(a.output,dict(seed=None,ui_actions_sent=0,vehicle_control_sent=False));before=inspect();write_json(out/'before-state.json',before);worker=OwnedPauseProcess(out/'pause',read(out/'manifest.json'),PIN,CPU,LIB)
  try:

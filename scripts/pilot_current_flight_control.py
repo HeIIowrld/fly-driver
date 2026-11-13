@@ -22,8 +22,8 @@ from scripts.control_ac_session import read_session_heartbeat,validate_heartbeat
 from scripts.shadow_current_flight_teacher_motion import previous_camera
 from scripts.preflight_current_flight_control import inspect,PIN
 
-CPU='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe'
-CPULIB='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'
+CPU=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe')
+CPULIB=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages')
 
 
 def main():

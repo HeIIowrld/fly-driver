@@ -17,7 +17,7 @@ def main():
     out=begin_run('runs/current-flight-owner-20261104/native-probe-01',dict(checkpoint_sha256=sha256(checkpoint),program_sha256=sha256(__file__),heartbeat=before,heartbeat_file_modified=modified,heartbeat_read_retries=retries,native_identity=identity,vehicle_control_sent=False,simulator_mutation_api_calls=0))
     owner=None;result=dict(status='failed',vehicle_control_sent=False,simulator_mutation_api_calls=0,desktop_automation_calls=0)
     try:
-        owner=CurrentFlightOwnerProcess(checkpoint=checkpoint,checkpoint_sha256=sha256(checkpoint),directory=out,python_executable='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe',library_directory='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages')
+        owner=CurrentFlightOwnerProcess(checkpoint=checkpoint,checkpoint_sha256=sha256(checkpoint),directory=out,python_executable=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),library_directory=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'))
         owner.begin_live('current-native-readonly-20261104-01',before['generation'],identity)
         statuses=[]
         for _ in range(5):

@@ -30,7 +30,7 @@ def main():
  try:
   for arm,checkpoint,expected_path,expected_key in [('parent',ROOT/'input_adjoint-fit-01/ports.pt',ROOT/'input_adjoint-evaluation-01/predictions.npz','prediction_0'),('dual_guard',Path('runs/dual-reference-learning-20261105/dual_guard-fit-01/ports.pt'),Path('runs/dual-reference-learning-20261105/dual_guard-evaluation-01/predictions.npz'),'prediction_0')]:
    owner_dir=out/arm;owner_dir.mkdir()
-   runtime=CurrentFlightControlOwnerProcess(actor_kind=arm,run_id=out.name,checkpoint=checkpoint,checkpoint_sha256=sha256(checkpoint),directory=owner_dir,python_executable='C:/Users/research-user/AppData/Local/Programs/Python/Python312/python.exe',library_directory='C:/Users/research-user/AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages');pred=[];muscles=[];ages=[]
+   runtime=CurrentFlightControlOwnerProcess(actor_kind=arm,run_id=out.name,checkpoint=checkpoint,checkpoint_sha256=sha256(checkpoint),directory=owner_dir,python_executable=str(Path.home() / 'AppData/Local/Programs/Python/Python312/python.exe'),library_directory=str(Path.home() / 'AppData/Local/PythonEnvs/flybrain-resolution-20261017/Lib/site-packages'));pred=[];muscles=[];ages=[]
    try:
     runtime.begin_replay(c['episode_id'])
     for i in range(n):

@@ -29,3 +29,23 @@ def test_old_observation_cannot_be_renewed_by_cache_access(tmp_path):
   reader.clock=lambda:time.perf_counter()+1
   with pytest.raises(TimeoutError,match='Original camera'):reader.snapshot()
  finally:reader.close()
+
+
+def test_original_camera_mismatch_records_changed_geometry(tmp_path):
+ window=SimpleNamespace(hwnd=1,pid=2,left=10,top=20,width=640,height=360)
+ shifted=SimpleNamespace(**{**vars(window),'left':30})
+ probes=iter((window,shifted))
+ changed=threading.Event()
+ def probe(*args,**kwargs):
+  value=next(probes)
+  if value is shifted and not changed.wait(1):
+   raise TimeoutError('Test did not release the changed geometry')
+  return value
+ reader=CameraReceiveObserver(SimpleNamespace(probe=probe),window,tmp_path/'result.json')
+ try:
+  changed.set()
+  reader.thread.join(1)
+  with pytest.raises(RuntimeError,match='Original camera side observation failed'):
+   reader.snapshot()
+ finally:result=reader.close()
+ assert result['failure_observation']['changed_fields']=={'left':{'expected':10,'actual':30}}

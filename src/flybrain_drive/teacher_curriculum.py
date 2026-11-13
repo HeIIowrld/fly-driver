@@ -20,6 +20,13 @@ def speed_request(requested, speed_kmh, target):
     return np.array([controls[0], 2*controls[1]-1, 2*controls[2]-1])
 
 
+def monza_chicane_teacher_target(target, progress):
+    """Bound the teacher's first-chicane approach before the diagnostic stop."""
+    if not math.isfinite(progress) or not 0. <= progress <= 1.:
+        raise ValueError("Original spline progress required for teacher pacing")
+    return min(target, 80.) if .09 <= progress < .1203 else target
+
+
 class EvaluationStateGuard:
     """Qualify at most 300ms of measured automatic-shift neutral.
 

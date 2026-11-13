@@ -101,11 +101,17 @@ def main():
             '--shift-handling','policy','--max-gap-m','12',
             '--stage-seconds','3','--full-laps','1','--camera-plan',str(coordination/'ready.json'),
             '--execute','--output',str(run/'teacher')]
-        capped=(a.moving_stop_reference is not None and
-            json.loads(Path(a.moving_stop_reference).read_text(encoding='utf-8')).get('teacher_pacing_profile')
-            =='monza_straight_120_v1')
-        if capped:command+=['--targets','20,40,60,80,120','--final-seconds','55']
-        else:command.append('--unlimited-final-stage')
+        from flybrain_drive.moving_stop_calibration import (MONZA_TEACHER_STOP_PROFILES,
+            MONZA_UPSTREAM_TARGETS, MONZA_UPSTREAM_FINAL_SECONDS)
+        profile = (json.loads(Path(a.moving_stop_reference).read_text(encoding='utf-8')).get('teacher_pacing_profile')
+                   if a.moving_stop_reference else None)
+        if profile == 'monza_straight_120_v1':
+            command += ['--targets','20,40,60,80,120','--final-seconds','55']
+        elif profile in MONZA_TEACHER_STOP_PROFILES:
+            command += ['--targets',','.join(str(int(x)) for x in MONZA_UPSTREAM_TARGETS),
+                        '--final-seconds',str(MONZA_UPSTREAM_FINAL_SECONDS)]
+        else:
+            command.append('--unlimited-final-stage')
         if a.thermal_initialization_run:
             command+=['--thermal-initialization-run',a.thermal_initialization_run]
         if a.moving_stop_reference:

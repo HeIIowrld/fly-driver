@@ -35,6 +35,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--recording', required=True)
     p.add_argument('--output', required=True)
+    p.add_argument('--offline-only', action='store_true',
+                   help='Audit recorded lap evidence without reading live AC or vJoy')
     a = p.parse_args()
     source = Path(a.recording)
     result = json.loads((source/'result.json').read_text(encoding='utf8'))
@@ -189,33 +191,37 @@ def main():
     if requests and (not closes or closes[-1]['request']['requested_control'] !=
             dict(steering=0., throttle=0., brake=1.)):
         raise ValueError('Final neutral/full-brake close is absent')
-    axis = manifest['config']['axis_configuration']
-    vjoy = load_vjoy_sdk(axis['dll_path'], axis['dll_sha256'])
-    samples = []
-    with NativePhysicsReader(timeout=.15) as reader:
-        deadline = time.perf_counter()+15
-        while time.perf_counter() < deadline:
-            sample = reader.receive()
-            samples.append(physics_record(sample))
-            if len(samples) >= 3 and all(abs(x['fields']['speedKmh']) < .1 and
-                    x['fields']['gas'] < .02 and x['fields']['brake'] >= .98 for x in samples[-3:]):
-                break
-            time.sleep(.05)
-    native_ai = NativeTeacherStatusReader()
-    try:
-        ai = native_ai.snapshot()
-    finally:
-        native_ai.close()
-    hb, modified = read_published_json(Path(os.environ['LOCALAPPDATA'])/'flybrain/csp-session/status.json')
-    stopped = (len(samples) >= 3 and len({x['packet_id'] for x in samples[-3:]}) == 3
-        and all(abs(x['fields']['speedKmh']) < .1 and x['fields']['gas'] < .02 and
-                x['fields']['brake'] >= .98 for x in samples[-3:])
-        and vjoy.GetVJDStatus(axis['device_id']) == 1 and not ai['builtin_ai_controlled']
-        and not hb['ai_controlled'] and not hb['camera_active'] and not hb['expert_probe_active']
-        and 0 <= time.time()-modified <= 2)
+    samples, ai, hb, stopped = [], None, None, None
+    if not a.offline_only:
+        axis = manifest['config']['axis_configuration']
+        vjoy = load_vjoy_sdk(axis['dll_path'], axis['dll_sha256'])
+        samples = []
+        with NativePhysicsReader(timeout=.15) as reader:
+            deadline = time.perf_counter()+15
+            while time.perf_counter() < deadline:
+                sample = reader.receive()
+                samples.append(physics_record(sample))
+                if len(samples) >= 3 and all(abs(x['fields']['speedKmh']) < .1 and
+                        x['fields']['gas'] < .02 and x['fields']['brake'] >= .98 for x in samples[-3:]):
+                    break
+                time.sleep(.05)
+        native_ai = NativeTeacherStatusReader()
+        try:
+            ai = native_ai.snapshot()
+        finally:
+            native_ai.close()
+        hb, modified = read_published_json(Path(os.environ['LOCALAPPDATA'])/'flybrain/csp-session/status.json')
+        stopped = (len(samples) >= 3 and len({x['packet_id'] for x in samples[-3:]}) == 3
+            and all(abs(x['fields']['speedKmh']) < .1 and x['fields']['gas'] < .02 and
+                    x['fields']['brake'] >= .98 for x in samples[-3:])
+            and vjoy.GetVJDStatus(axis['device_id']) == 1 and not ai['builtin_ai_controlled']
+            and not hb['ai_controlled'] and not hb['camera_active'] and not hb['expert_probe_active']
+            and 0 <= time.time()-modified <= 2)
     raw_sources = np.array([packet['timestamp_ac'] for _, packet in sdk_rows])
     raw_receipts = np.array([receipt['received_monotonic_seconds'] for receipt, _ in sdk_rows])
-    write_json(run/'result.json', dict(status='completed', verified_valid_laps=sum(x['verified_valid_lap'] for x in laps),
+    write_json(run/'result.json', dict(
+        status='completed_offline_lap_audit' if a.offline_only else 'completed',
+        verified_valid_laps=sum(x['verified_valid_lap'] for x in laps),
         laps=laps, crossings=crossings, maximum_tyres_out_all_raw=max_tyres,
         initial_native_fields=initial_native_fields, maximum_speed_kmh=maximum_speed_kmh,
         compatibility_file_io_counts_during_teacher=teacher_file_io_counts,
@@ -229,7 +235,8 @@ def main():
         teacher_requests=len(requests), request_interval_mean_ms=float(np.diff(
             [x['host_time'] for x in requests]).mean()*1000) if len(requests)>1 else None,
         final_neutral_close_verified=bool(closes), post_stop_verified=stopped,
-        post_stop_native=samples[-3:], post_stop_ai=ai, post_stop_session=hb,
+        post_stop_native=None if a.offline_only else samples[-3:],
+        post_stop_ai=ai, post_stop_session=hb,
         raw_payload_hashes_verified=True, actuator_messages_sent=0, ui_actions_sent=0,
         student_optimizer_updates=0))
     print(json.dumps(dict(laps=laps, post_stop_verified=stopped)))
