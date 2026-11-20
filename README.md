@@ -1,5 +1,7 @@
 # FlyBrain
 
+**첫 랩 기억과 레이싱 라인 학습 — 2026-11-20.** 고정 제어기로 Nürburgring Sprint A 111.742초와 Silverstone International 81.553초를 재현했다. 경로·속도 모델의 학습 순서와 차량 제어 담당과의 연결 지점을 정리했다. [실험 결과와 학습 전략](docs/racing-line-learning-strategy.md)
+
 처음 참여하는 팀원은 [협업과 오프라인 검증](CONTRIBUTING.md)을 먼저 보고, [학생 폐루프 인계](docs/handoff-student-closed-loop-20261105.md)에서 현재 제어 계약을 확인한다.
 
 **감각 거리 분해와 회차별 가속 학습 — 2026-11-06.** 페이싱 자료는 실제 감각의 다섯 묶음에 모두 가까웠다. 회차별 가속 학습은 실제 117km/h 재생에서 악화돼 미승격이다. Monza의 전면 창 조건은 계속 확인됐다. [학습·실행 기록](docs/braking-corner-learning-20261105.md).
